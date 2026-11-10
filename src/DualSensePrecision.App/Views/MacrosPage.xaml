@@ -1,0 +1,122 @@
+<Page
+    x:Class="DualSensePrecision.App.Views.MacrosPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="Transparent"
+    PreviewKeyDown="OnPreviewKeyDown">
+
+    <ScrollViewer>
+        <StackPanel Padding="{StaticResource DsPagePadding}" Spacing="20" MaxWidth="1280" HorizontalAlignment="Left">
+
+            <StackPanel>
+                <TextBlock Text="Macros" Style="{StaticResource DsPageTitle}" />
+                <TextBlock x:Name="SubtitleText" Style="{StaticResource DsPageSubtitle}" />
+            </StackPanel>
+
+            <InfoBar IsOpen="True" IsClosable="True" Severity="Warning" Title="Check the game's rules first"
+                     Message="Some games ban macros or automated input, and using them online can get an account suspended. Macros here can only press buttons, keys and mouse buttons — there is no stick or mouse movement, so they can't aim or control recoil." />
+
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="300" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Macro list -->
+                <Border Style="{StaticResource DsCard}" VerticalAlignment="Top">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Your macros" Style="{StaticResource DsSectionTitle}" />
+                        <ListView x:Name="MacroList" SelectionMode="Single" SelectionChanged="OnMacroSelected" MaxHeight="420" />
+                        <TextBlock x:Name="EmptyText" Style="{StaticResource DsBody}" FontSize="12" Text="No macros yet. Click New to make one." />
+                        <Grid ColumnSpacing="8" RowSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Button Content="New" Click="OnNew" HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}" />
+                            <Button Grid.Column="1" Content="Duplicate" Click="OnDuplicate" HorizontalAlignment="Stretch" />
+                            <Button Grid.Row="1" Content="Import…" Click="OnImport" HorizontalAlignment="Stretch" />
+                            <Button Grid.Row="1" Grid.Column="1" Content="Export…" Click="OnExport" HorizontalAlignment="Stretch" />
+                            <Button Grid.Row="2" Grid.ColumnSpan="2" Content="Delete" Click="OnDelete" HorizontalAlignment="Stretch" />
+                        </Grid>
+                        <Border Style="{StaticResource DsInsetCard}">
+                            <StackPanel Spacing="6">
+                                <Button Content="Stop all macros" Click="OnStopAll" HorizontalAlignment="Stretch" />
+                                <TextBlock Style="{StaticResource DsBody}" FontSize="11"
+                                           Text="Or press Create + Options together on the controller to stop every macro instantly." />
+                                <TextBlock x:Name="RunningText" Style="{StaticResource DsMono}" FontSize="11" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- Editor -->
+                <Border x:Name="EditorCard" Grid.Column="1" Style="{StaticResource DsCard}" VerticalAlignment="Top">
+                    <StackPanel Spacing="16">
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="NameBox" Header="Name" MaxLength="48" TextChanged="OnNameChanged" />
+                            <ToggleSwitch x:Name="EnabledSwitch" Grid.Column="1" Header="Enabled" Toggled="OnEnabledToggled" VerticalAlignment="Bottom" />
+                        </Grid>
+
+                        <ComboBox x:Name="ModeBox" Header="When its button is pressed" HorizontalAlignment="Stretch" SelectionChanged="OnModeChanged">
+                            <ComboBoxItem Content="Play once" />
+                            <ComboBoxItem Content="Repeat while held" />
+                            <ComboBoxItem Content="Toggle: press to start repeating, press again to stop" />
+                        </ComboBox>
+
+                        <!-- Recording -->
+                        <Border Style="{StaticResource DsInsetCard}" Padding="14,12">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="RecordButton" Click="OnRecord" MinWidth="170" />
+                                <TextBlock x:Name="RecordText" Grid.Column="1" Style="{StaticResource DsBody}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Steps -->
+                        <StackPanel Spacing="8">
+                            <Grid>
+                                <TextBlock Text="Steps" Style="{StaticResource DsSectionTitle}" />
+                                <TextBlock x:Name="TotalsText" HorizontalAlignment="Right" Style="{StaticResource DsMono}" />
+                            </Grid>
+                            <StackPanel x:Name="StepsPanel" Spacing="6" />
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button Content="+ Button press" Click="OnAddButton" />
+                                <Button Content="+ Key press" Click="OnAddKey" />
+                                <Button Content="+ Mouse click" Click="OnAddMouse" />
+                                <Button Content="+ Wait" Click="OnAddDelay" />
+                                <Button Content="Clear" Click="OnClearSteps" />
+                            </StackPanel>
+                            <TextBlock x:Name="WarningsText" Style="{StaticResource DsBody}" FontSize="12" Foreground="{StaticResource DsWarningBrush}" />
+                        </StackPanel>
+
+                        <!-- Test + assignment -->
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="PlayButton" Content="Play now (3 s countdown)" Click="OnPlayNow" />
+                            <TextBlock x:Name="PlayText" Grid.Column="1" Style="{StaticResource DsBody}" FontSize="12" VerticalAlignment="Center" TextWrapping="Wrap"
+                                       Text="Controller buttons go to the virtual controller; keys go to whichever window is in front." />
+                        </Grid>
+                        <TextBlock x:Name="AssignedText" Style="{StaticResource DsBody}" />
+                        <TextBlock x:Name="StatusText" Style="{StaticResource DsBody}" Foreground="{StaticResource DsDangerBrush}" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

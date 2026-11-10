@@ -1,0 +1,85 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace DualSensePrecision.Configuration;
+
+public enum AppTheme { Dark, Light, System }
+
+public sealed record AppSettings
+{
+    public int SchemaVersion { get; init; } = 1;
+    public bool LaunchOnStartup { get; init; }
+    public bool MinimizeToTray { get; init; } = true;
+    public bool AutomaticControllerDetection { get; init; } = true;
+    public string? DefaultProfileId { get; init; }
+    public string? ActiveProfileId { get; init; }
+    public AppTheme Theme { get; init; } = AppTheme.Dark;
+    public string AccentColor { get; init; } = "#3D7BFF";
+    public bool Animations { get; init; } = true;
+    public bool PerformanceLogging { get; init; }
+    public bool DiagnosticLogging { get; init; }
+    public bool CheckForUpdates { get; init; } = true;
+
+    /// <summary>Development mode: use the simulated controller. Always shown with a "SIMULATED" badge.</summary>
+    public bool UseMockController { get; init; }
+
+    /// <summary>Virtual output rate cap in Hz. 0 = event-driven (one output per input report, no added latency).</summary>
+    public int OutputRateHz { get; init; }
+}
+
+public static class AppPaths
+{
+    public static string Root { get; set; } = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DualSensePrecision");
+
+    public static string SettingsFile => Path.Combine(Root, "settings.json");
+    public static string ProfilesDir => Path.Combine(Root, "profiles");
+    public static string LogsDir => Path.Combine(Root, "logs");
+}
+
+public static class Json
+{
+    public static readonly JsonSerializerOptions Options = new()
+    {
+        WriteIndented = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Converters = { new JsonStringEnumConverter() },
+        AllowTrailingCommas = true,
+        ReadCommentHandling = JsonCommentHandling.Skip,
+    };
+
+    /// <summary>Write to a temp file then replace, so a crash mid-write never corrupts the original.</summary>
+    public static void WriteAtomic<T>(string path, T value)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        string tmp = path + ".tmp";
+        File.WriteAllText(tmp, JsonSerializer.Serialize(value, Options));
+        File.Move(tmp, path, overwrite: true);
+    }
+}
+
+public sealed class SettingsStore
+{
+    private readonly string _path;
+    public string? LastError { get; private set; }
+
+    public SettingsStore(string? path = null) => _path = path ?? AppPaths.SettingsFile;
+
+    public AppSettings Load()
+    {
+        try
+        {
+            if (!File.Exists(_path)) return new AppSettings();
+            return JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(_path), Json.Options) ?? new AppSettings();
+        }
+        catch (Exception ex)
+        {
+            // Corrupt settings: keep a copy for diagnosis and continue with defaults — never fail silently.
+            LastError = $"Settings file could not be read and was reset ({ex.Message}). A backup was kept as settings.json.bad.";
+            try { File.Copy(_path, _path + ".bad", overwrite: true); } catch { }
+            return new AppSettings();
+        }
+    }
+
+    public void Save(AppSettings settings) => Json.WriteAtomic(_path, settings);
+}

@@ -1,0 +1,75 @@
+<Page
+    x:Class="DualSensePrecision.App.Views.HomePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:DualSensePrecision.App.Controls"
+    xmlns:app="using:DualSensePrecision.App"
+    Background="Transparent">
+
+    <ScrollViewer>
+        <StackPanel Padding="{StaticResource DsPagePadding}" Spacing="20" MaxWidth="1200" HorizontalAlignment="Left">
+
+            <!-- Hero -->
+            <Border CornerRadius="14" Padding="28" BorderBrush="{StaticResource DsStrokeBrush}" BorderThickness="1">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#16203A" Offset="0" />
+                        <GradientStop Color="#12151C" Offset="0.65" />
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Grid ColumnSpacing="24">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="{x:Bind StatusLabel, Mode=OneWay}" Style="{StaticResource DsLabel}" Foreground="{x:Bind StatusBrush, Mode=OneWay}" />
+                        <TextBlock Text="{x:Bind Headline, Mode=OneWay}" FontSize="30" FontWeight="SemiBold" Foreground="{StaticResource DsTextPrimaryBrush}" TextWrapping="Wrap" />
+                        <TextBlock Text="{x:Bind Detail, Mode=OneWay}" Style="{StaticResource DsBody}" FontSize="14" />
+                        <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,12,0,0">
+                            <Button Content="Controller details" Click="OnOpenController" Style="{StaticResource AccentButtonStyle}" />
+                            <Button Content="Performance" Click="OnOpenPerformance" />
+                        </StackPanel>
+                    </StackPanel>
+                    <!-- Simple live stick dots: proves input is flowing at a glance -->
+                    <Grid Grid.Column="1" ColumnSpacing="16" VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Width="96" Height="96">
+                            <Ellipse Stroke="{StaticResource DsStrokeBrush}" StrokeThickness="1.5" />
+                            <Canvas>
+                                <Ellipse x:Name="LeftDot" Width="12" Height="12" Fill="{StaticResource DsAccentBrush}" Canvas.Left="42" Canvas.Top="42" />
+                            </Canvas>
+                        </Grid>
+                        <Grid Grid.Column="1" Width="96" Height="96">
+                            <Ellipse Stroke="{StaticResource DsStrokeBrush}" StrokeThickness="1.5" />
+                            <Canvas>
+                                <Ellipse x:Name="RightDot" Width="12" Height="12" Fill="{StaticResource DsAccentBrush}" Canvas.Left="42" Canvas.Top="42" />
+                            </Canvas>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <controls:MetricTile Label="REPORT RATE" Value="{x:Bind Rate, Mode=OneWay}" Unit="Hz" Hint="Measured from the controller" />
+                <controls:MetricTile Grid.Column="1" Label="BATTERY" Value="{x:Bind Battery, Mode=OneWay}" Hint="{x:Bind Charging, Mode=OneWay}" />
+                <controls:MetricTile Grid.Column="2" ValueFontSize="20" Label="ACTIVE PROFILE" Value="{x:Bind ProfileName, Mode=OneWay}" Hint="Applied to processed input" />
+                <controls:MetricTile Grid.Column="3" Label="VIRTUAL CONTROLLER" ValueFontSize="20" Value="{x:Bind VirtualStatus, Mode=OneWay}" Hint="{x:Bind VirtualHint, Mode=OneWay}" />
+            </Grid>
+
+            <Border Style="{StaticResource DsCard}" Visibility="{x:Bind app:Converters.VisibleWhen(IsMock), Mode=OneWay}">
+                <TextBlock Style="{StaticResource DsBody}" Foreground="{StaticResource DsWarningBrush}"
+                           Text="Development mode: input is simulated. Turn off 'Use simulated controller' in Settings to use your real DualSense." />
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

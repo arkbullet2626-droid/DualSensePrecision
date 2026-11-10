@@ -1,0 +1,15 @@
+<UserControl
+    x:Class="DualSensePrecision.App.Controls.SliderRow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <StackPanel Spacing="0">
+        <Grid>
+            <TextBlock x:Name="LabelText" FontSize="13" Foreground="{StaticResource DsTextPrimaryBrush}" />
+            <TextBlock x:Name="ValueText" HorizontalAlignment="Right" Style="{StaticResource DsMono}"
+                       Foreground="{StaticResource DsTextPrimaryBrush}" />
+        </Grid>
+        <Slider x:Name="Slider" ValueChanged="OnSliderValueChanged" IsThumbToolTipEnabled="False" Margin="0,-2,0,0" />
+        <TextBlock x:Name="DescriptionText" Style="{StaticResource DsBody}" FontSize="11" Margin="0,-6,0,0" />
+    </StackPanel>
+</UserControl>

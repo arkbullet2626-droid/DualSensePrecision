@@ -1,0 +1,48 @@
+<Page
+    x:Class="DualSensePrecision.App.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="Transparent">
+
+    <ScrollViewer>
+        <StackPanel Padding="{StaticResource DsPagePadding}" Spacing="20" MaxWidth="900" HorizontalAlignment="Left">
+            <StackPanel>
+                <TextBlock Text="Settings" Style="{StaticResource DsPageTitle}" />
+                <TextBlock Text="Stored in %LOCALAPPDATA%\DualSensePrecision. Nothing here requires administrator rights." Style="{StaticResource DsPageSubtitle}" />
+            </StackPanel>
+
+            <Border Style="{StaticResource DsCard}">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="Controller" Style="{StaticResource DsSectionTitle}" />
+                    <ToggleSwitch x:Name="AutoDetect" Header="Automatic controller detection" Toggled="OnChanged" />
+                    <ToggleSwitch x:Name="Mock" Header="Use simulated controller (development)" Toggled="OnChanged" />
+                    <TextBlock Style="{StaticResource DsBody}" Text="The simulated controller exists for UI development. Every screen marks its data as simulated, and none of it is a hardware measurement." />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource DsCard}">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="Interface" Style="{StaticResource DsSectionTitle}" />
+                    <ToggleSwitch x:Name="Animations" Header="Page transitions and animations" Toggled="OnChanged" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource DsCard}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Not yet available in this build" Style="{StaticResource DsSectionTitle}" />
+                    <TextBlock Style="{StaticResource DsBody}" Text="Launch on startup · Minimize to tray · Theme and accent colour · Performance and diagnostic logging · Update checking · Reset application · Export diagnostics — scheduled for Milestones 5–8. They are listed here rather than shown as switches that don't do anything." />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource DsCard}">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Virtual controller" Style="{StaticResource DsSectionTitle}" />
+                    <TextBlock Style="{StaticResource DsBody}" Text="Uses VIIPER with the signed usbip-win2 driver (ViGEmBus was not used: it is archived and no longer updated). Set it up and switch it on from the Virtual Controller page. DualSense Precision never installs drivers itself." />
+                </StackPanel>
+            </Border>
+
+            <TextBlock x:Name="SavedText" Style="{StaticResource DsBody}" />
+            <TextBlock x:Name="VersionText" Style="{StaticResource DsBody}" FontSize="12" Foreground="{StaticResource DsTextTertiaryBrush}" />
+        </StackPanel>
+    </ScrollViewer>
+</Page>

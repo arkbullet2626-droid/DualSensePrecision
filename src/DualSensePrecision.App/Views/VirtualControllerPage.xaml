@@ -1,0 +1,87 @@
+<Page
+    x:Class="DualSensePrecision.App.Views.VirtualControllerPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="Transparent">
+
+    <ScrollViewer>
+        <StackPanel Padding="{StaticResource DsPagePadding}" Spacing="20" MaxWidth="1100" HorizontalAlignment="Left">
+
+            <StackPanel>
+                <TextBlock Text="Virtual Controller" Style="{StaticResource DsPageTitle}" />
+                <TextBlock Style="{StaticResource DsPageSubtitle}"
+                           Text="Presents your tuned DualSense to games as an Xbox 360 controller, so stick curves, deadzones, trigger settings and remaps take effect in-game." />
+            </StackPanel>
+
+            <!-- Main switch + status -->
+            <Border Style="{StaticResource DsCard}">
+                <StackPanel Spacing="14">
+                    <Grid>
+                        <StackPanel Spacing="4">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <Ellipse x:Name="StateDot" Width="10" Height="10" VerticalAlignment="Center" />
+                                <TextBlock x:Name="StateTitle" Style="{StaticResource DsSectionTitle}" FontSize="17" />
+                            </StackPanel>
+                            <TextBlock x:Name="StateDetail" Style="{StaticResource DsBody}" />
+                        </StackPanel>
+                        <ToggleSwitch x:Name="EnableSwitch" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                      OnContent="Xbox 360 on" OffContent="Off" Toggled="OnEnableToggled" />
+                    </Grid>
+                    <TextBlock Style="{StaticResource DsBody}" FontSize="12" Foreground="{StaticResource DsTextTertiaryBrush}"
+                               Text="Saved per profile. Switching profiles turns it on or off to match." />
+                </StackPanel>
+            </Border>
+
+            <!-- Live verification -->
+            <Border Style="{StaticResource DsCard}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="What Windows sees" Style="{StaticResource DsSectionTitle}" />
+                    <TextBlock Style="{StaticResource DsBody}" FontSize="12"
+                               Text="Read back through XInput, the same way games read Xbox controllers. If these values move with your sticks, games will see them." />
+                    <TextBlock x:Name="XInputText" Style="{StaticResource DsMono}" />
+                    <Grid ColumnSpacing="24">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="SENDING" Style="{StaticResource DsLabel}" />
+                            <TextBlock x:Name="RateText" Text="—" Style="{StaticResource DsMetricValue}" FontSize="20" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="GAME RUMBLE" Style="{StaticResource DsLabel}" />
+                            <TextBlock x:Name="RumbleText" Text="—" Style="{StaticResource DsMetricValue}" FontSize="20" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="VIIPER" Style="{StaticResource DsLabel}" />
+                            <TextBlock x:Name="VersionText" Text="—" Style="{StaticResource DsMetricValue}" FontSize="20" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Setup -->
+            <Border x:Name="SetupCard" Style="{StaticResource DsCard}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="One-time setup" Style="{StaticResource DsSectionTitle}" />
+                    <TextBlock Style="{StaticResource DsBody}"
+                               Text="The virtual controller needs VIIPER, a free open-source tool, plus the signed usbip-win2 driver it installs. DualSense Precision never installs drivers without your say-so." />
+                    <TextBlock Style="{StaticResource DsBody}" Foreground="{StaticResource DsTextPrimaryBrush}" TextWrapping="Wrap"
+                               Text="Easiest: run the DualSense Precision setup again and leave 'Download and install VIIPER' ticked. Windows asks for permission for the driver; restart if it asks." />
+                    <TextBlock Style="{StaticResource DsBody}" Foreground="{StaticResource DsTextPrimaryBrush}" Text="Or install it yourself in PowerShell:" />
+                    <Border Style="{StaticResource DsInsetCard}">
+                        <TextBlock Text="winget install Alia5.VIIPER" Style="{StaticResource DsMono}" Foreground="{StaticResource DsTextPrimaryBrush}" />
+                    </Border>
+                    <TextBlock Style="{StaticResource DsBody}" TextWrapping="Wrap"
+                               Text="then start VIIPER from the Start menu, choose Install, and keep 'Install USBIP' and 'Autostart' ticked." />
+                    <HyperlinkButton Content="VIIPER on GitHub" NavigateUri="https://github.com/Alia5/VIIPER" Padding="0" />
+                </StackPanel>
+            </Border>
+
+            <!-- Double input -->
+            <InfoBar IsOpen="True" IsClosable="False" Severity="Warning" Title="Games may see two controllers"
+                     Message="Windows still shows your real DualSense too, so games that read both can get doubled input. For Steam games, set the game's Properties → Controller to 'Disable Steam Input' so Steam doesn't also translate the DualSense. Hiding the DualSense from games entirely (HidHide) is optional and will come in a later update — only with your permission." />
+        </StackPanel>
+    </ScrollViewer>
+</Page>

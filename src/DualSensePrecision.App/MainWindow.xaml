@@ -1,0 +1,81 @@
+<Window
+    x:Class="DualSensePrecision.App.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="DualSense Precision">
+
+    <Grid Background="{StaticResource DsBackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Custom title bar -->
+        <Grid x:Name="TitleBar" Padding="16,0,140,0">
+            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <Border Width="18" Height="18" CornerRadius="5" Background="{StaticResource DsAccentBrush}">
+                    <TextBlock Text="P" FontSize="11" FontWeight="Bold" Foreground="White"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <TextBlock Text="DualSense Precision" FontSize="12" Foreground="{StaticResource DsTextSecondaryBrush}" VerticalAlignment="Center" />
+                <Border x:Name="MockBadge" Style="{StaticResource DsPill}" Background="#33FFB547" Visibility="Collapsed">
+                    <TextBlock Text="SIMULATED CONTROLLER" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource DsWarningBrush}" />
+                </Border>
+            </StackPanel>
+        </Grid>
+
+        <NavigationView
+            x:Name="Nav"
+            Grid.Row="1"
+            PaneDisplayMode="Left"
+            IsBackButtonVisible="Collapsed"
+            IsSettingsVisible="True"
+            OpenPaneLength="232"
+            IsPaneToggleButtonVisible="True"
+            SelectionChanged="OnNavSelectionChanged">
+
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="Home" Tag="Home"><NavigationViewItem.Icon><FontIcon Glyph="&#xE80F;" /></NavigationViewItem.Icon></NavigationViewItem>
+                <NavigationViewItem Content="Controller" Tag="Controller"><NavigationViewItem.Icon><FontIcon Glyph="&#xE7FC;" /></NavigationViewItem.Icon></NavigationViewItem>
+                <NavigationViewItem Content="Virtual Controller" Tag="Virtual"><NavigationViewItem.Icon><FontIcon Glyph="&#xE71B;" /></NavigationViewItem.Icon></NavigationViewItem>
+                <NavigationViewItemSeparator />
+                <NavigationViewItem Content="Stick Settings" Tag="Sticks"><NavigationViewItem.Icon><FontIcon Glyph="&#xE9E9;" /></NavigationViewItem.Icon></NavigationViewItem>
+                <NavigationViewItem Content="Button Mapping" Tag="Buttons"><NavigationViewItem.Icon><FontIcon Glyph="&#xE8AB;" /></NavigationViewItem.Icon></NavigationViewItem>
+                <NavigationViewItem Content="Trigger Settings" Tag="Triggers"><NavigationViewItem.Icon><FontIcon Glyph="&#xE945;" /></NavigationViewItem.Icon></NavigationViewItem>
+                <NavigationViewItem Content="Macros" Tag="Macros"><NavigationViewItem.Icon><FontIcon Glyph="&#xE943;" /></NavigationViewItem.Icon></NavigationViewItem>
+                <NavigationViewItemSeparator />
+                <NavigationViewItem Content="Performance" Tag="Performance"><NavigationViewItem.Icon><FontIcon Glyph="&#xE9D9;" /></NavigationViewItem.Icon></NavigationViewItem>
+                <NavigationViewItem Content="Controller Tester" Tag="Tester"><NavigationViewItem.Icon><FontIcon Glyph="&#xEC7A;" /></NavigationViewItem.Icon></NavigationViewItem>
+                <NavigationViewItem Content="Profiles" Tag="Profiles"><NavigationViewItem.Icon><FontIcon Glyph="&#xE8F1;" /></NavigationViewItem.Icon></NavigationViewItem>
+                <NavigationViewItem Content="Appearance" Tag="Appearance"><NavigationViewItem.Icon><FontIcon Glyph="&#xE790;" /></NavigationViewItem.Icon></NavigationViewItem>
+            </NavigationView.MenuItems>
+
+            <NavigationView.PaneFooter>
+                <StackPanel>
+                <ComboBox x:Name="ProfileSwitcher" Margin="12,8,12,0" HorizontalAlignment="Stretch"
+                          Header="Profile" SelectionChanged="OnProfileSwitcherChanged" />
+                <Border Margin="12,8,12,12" Padding="12,10" CornerRadius="8" Background="{StaticResource DsSurfaceBrush}"
+                        BorderBrush="{StaticResource DsStrokeBrush}" BorderThickness="1">
+                    <StackPanel Spacing="2">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Ellipse x:Name="StatusDot" Width="8" Height="8" Fill="{StaticResource DsTextTertiaryBrush}" VerticalAlignment="Center" />
+                            <TextBlock x:Name="StatusText" Text="No controller" FontSize="12" Foreground="{StaticResource DsTextPrimaryBrush}" />
+                        </StackPanel>
+                        <TextBlock x:Name="StatusDetail" Text="Connect a DualSense with a USB-C cable" FontSize="11"
+                                   Foreground="{StaticResource DsTextTertiaryBrush}" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+                </StackPanel>
+            </NavigationView.PaneFooter>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <InfoBar x:Name="ErrorBar" IsOpen="False" Severity="Error" Margin="32,12,32,0" />
+                <Frame x:Name="ContentFrame" Grid.Row="1" />
+            </Grid>
+        </NavigationView>
+    </Grid>
+</Window>

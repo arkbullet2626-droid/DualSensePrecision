@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DualSensePrecision.Core\DualSensePrecision.Core.csproj" />
+    <ProjectReference Include="..\..\src\DualSensePrecision.InputEngine\DualSensePrecision.InputEngine.csproj" />
+    <ProjectReference Include="..\..\src\DualSensePrecision.Telemetry\DualSensePrecision.Telemetry.csproj" />
+    <ProjectReference Include="..\..\src\DualSensePrecision.Profiles\DualSensePrecision.Profiles.csproj" />
+    <ProjectReference Include="..\..\src\DualSensePrecision.Configuration\DualSensePrecision.Configuration.csproj" />
+    <ProjectReference Include="..\..\src\DualSensePrecision.VirtualController\DualSensePrecision.VirtualController.csproj" />
+  </ItemGroup>
+  <!-- Protocol parser lives in HID (Windows TFM). Link the pure parsing file so tests run cross-platform. -->
+  <ItemGroup>
+    <Compile Include="..\..\src\DualSensePrecision.HID\Protocol\*.cs" Link="Protocol\%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

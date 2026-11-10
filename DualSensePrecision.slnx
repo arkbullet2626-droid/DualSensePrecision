@@ -1,0 +1,24 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="ARM64" />
+  </Configurations>
+  <Folder Name="/src/">
+    <Project Path="src/DualSensePrecision.App/DualSensePrecision.App.csproj" />
+    <Project Path="src/DualSensePrecision.Core/DualSensePrecision.Core.csproj" />
+    <Project Path="src/DualSensePrecision.HID/DualSensePrecision.HID.csproj" />
+    <Project Path="src/DualSensePrecision.InputEngine/DualSensePrecision.InputEngine.csproj" />
+    <Project Path="src/DualSensePrecision.Telemetry/DualSensePrecision.Telemetry.csproj" />
+    <Project Path="src/DualSensePrecision.Configuration/DualSensePrecision.Configuration.csproj" />
+    <Project Path="src/DualSensePrecision.Profiles/DualSensePrecision.Profiles.csproj" />
+    <Project Path="src/DualSensePrecision.VirtualController/DualSensePrecision.VirtualController.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DualSensePrecision.Tests/DualSensePrecision.Tests.csproj" />
+  </Folder>
+  <Folder Name="/docs/">
+    <File Path="docs/ARCHITECTURE.md" />
+    <File Path="DEVELOPMENT_STATUS.md" />
+    <File Path="README.md" />
+  </Folder>
+</Solution>

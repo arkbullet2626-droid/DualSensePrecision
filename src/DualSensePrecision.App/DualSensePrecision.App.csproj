@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>DualSensePrecision.App</RootNamespace>
+    <AssemblyName>DualSensePrecision</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Platforms>x64;ARM64</Platforms>
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <!-- Unpackaged + self-contained Windows App SDK: installs per-user, no admin, no MSIX certificate. -->
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <SelfContained>true</SelfContained>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
+    <!-- CommunityToolkit.Mvvm partial-property generators -->
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Assets\AppIcon.ico" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DualSensePrecision.Core\DualSensePrecision.Core.csproj" />
+    <ProjectReference Include="..\DualSensePrecision.HID\DualSensePrecision.HID.csproj" />
+    <ProjectReference Include="..\DualSensePrecision.InputEngine\DualSensePrecision.InputEngine.csproj" />
+    <ProjectReference Include="..\DualSensePrecision.Telemetry\DualSensePrecision.Telemetry.csproj" />
+    <ProjectReference Include="..\DualSensePrecision.Configuration\DualSensePrecision.Configuration.csproj" />
+    <ProjectReference Include="..\DualSensePrecision.Profiles\DualSensePrecision.Profiles.csproj" />
+    <ProjectReference Include="..\DualSensePrecision.VirtualController\DualSensePrecision.VirtualController.csproj" />
+  </ItemGroup>
+</Project>

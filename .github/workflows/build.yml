@@ -1,0 +1,59 @@
+# Builds DualSense Precision on GitHub's Windows machines and publishes the Setup.exe.
+# Every push to main: run tests -> publish (Release, self-contained) -> Inno Setup -> GitHub Release "v<version>".
+# The version comes from Directory.Build.props; pushing again with the same version replaces that release's exe.
+name: Build Setup.exe
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Make sure Inno Setup 6 is available
+        shell: pwsh
+        run: |
+          $iscc = @("${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe", "$env:ProgramFiles\Inno Setup 6\ISCC.exe") | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $iscc) { choco install innosetup -y --no-progress }
+
+      - name: Test, publish and build the installer
+        shell: pwsh
+        run: ./build-installer.ps1 -NoExplorer
+
+      - name: Keep the Setup.exe as a build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DualSensePrecision-setup
+          path: installer/Output/*.exe
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $exe = Get-Item installer/Output/*.exe | Select-Object -First 1
+          $version = $exe.Name -replace '^DualSensePrecision-(.+)-setup\.exe$', '$1'
+          $tag = "v$version"
+          gh release view $tag *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $tag $exe.FullName --clobber
+            gh release edit $tag --notes-file START_HERE.md
+          } else {
+            gh release create $tag $exe.FullName --title "DualSense Precision $version" --notes-file START_HERE.md --target $env:GITHUB_SHA --latest
+          }

@@ -1,0 +1,29 @@
+<UserControl
+    x:Class="DualSensePrecision.App.Controls.StickVisualizer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 240 × 240 drawing; centre (120,120), full deflection radius 104. Y up. -->
+    <Canvas Width="240" Height="240">
+        <Ellipse x:Name="BoundCircle" Width="208" Height="208" Canvas.Left="16" Canvas.Top="16"
+                 Fill="{StaticResource DsSurfaceRaisedBrush}" Stroke="{StaticResource DsStrokeBrush}" StrokeThickness="1.5" />
+        <Rectangle x:Name="BoundSquare" Width="208" Height="208" Canvas.Left="16" Canvas.Top="16" Visibility="Collapsed"
+                   Stroke="{StaticResource DsStrokeBrush}" StrokeThickness="1" StrokeDashArray="3,3" />
+
+        <Line X1="16" Y1="120" X2="224" Y2="120" Stroke="{StaticResource DsStrokeBrush}" StrokeThickness="1" />
+        <Line X1="120" Y1="16" X2="120" Y2="224" Stroke="{StaticResource DsStrokeBrush}" StrokeThickness="1" />
+
+        <!-- Outer deadzone: past this the output is already 100 % -->
+        <Ellipse x:Name="OuterRing" Stroke="{StaticResource DsAccentBrush}" StrokeThickness="1" StrokeDashArray="4,3" Opacity="0.7" />
+        <Rectangle x:Name="OuterSquare" Stroke="{StaticResource DsAccentBrush}" StrokeThickness="1" StrokeDashArray="4,3" Opacity="0.7" Visibility="Collapsed" />
+
+        <!-- Inner deadzone: ignored region -->
+        <Ellipse x:Name="InnerZone" Fill="#33FF5C6C" Stroke="#99FF5C6C" StrokeThickness="1" />
+        <Rectangle x:Name="InnerBandV" Fill="#26FF5C6C" Visibility="Collapsed" />
+        <Rectangle x:Name="InnerBandH" Fill="#26FF5C6C" Visibility="Collapsed" />
+
+        <Line x:Name="Link" Stroke="{StaticResource DsTextTertiaryBrush}" StrokeThickness="1" StrokeDashArray="2,2" />
+        <Ellipse x:Name="RawDot" Width="10" Height="10" Fill="{StaticResource DsTextSecondaryBrush}" />
+        <Ellipse x:Name="ProcessedDot" Width="14" Height="14" Fill="{StaticResource DsAccentBrush}" Stroke="{StaticResource DsTextPrimaryBrush}" StrokeThickness="1.5" />
+    </Canvas>
+</UserControl>

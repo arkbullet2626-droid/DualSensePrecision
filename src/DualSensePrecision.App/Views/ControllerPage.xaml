@@ -1,0 +1,84 @@
+<Page
+    x:Class="DualSensePrecision.App.Views.ControllerPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:DualSensePrecision.App.ViewModels"
+    xmlns:app="using:DualSensePrecision.App"
+    Background="Transparent">
+
+    <ScrollViewer>
+        <StackPanel Padding="{StaticResource DsPagePadding}" Spacing="20" MaxWidth="1200" HorizontalAlignment="Left">
+            <StackPanel>
+                <TextBlock Text="Controller" Style="{StaticResource DsPageTitle}" />
+                <TextBlock Text="{x:Bind ViewModel.Headline, Mode=OneWay}" Style="{StaticResource DsPageSubtitle}" />
+            </StackPanel>
+
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5*" />
+                    <ColumnDefinition Width="6*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Identity -->
+                <Border Style="{StaticResource DsCard}" VerticalAlignment="Top">
+                    <StackPanel Spacing="14">
+                        <Grid>
+                            <TextBlock Text="Device" Style="{StaticResource DsSectionTitle}" />
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="6">
+                                <FontIcon Glyph="&#xE83F;" FontSize="14" Foreground="{StaticResource DsTextSecondaryBrush}" />
+                                <TextBlock Text="{x:Bind ViewModel.Battery, Mode=OneWay}" Style="{StaticResource DsMono}" />
+                            </StackPanel>
+                        </Grid>
+                        <ItemsControl ItemsSource="{x:Bind ViewModel.Rows, Mode=OneWay}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:InfoRow">
+                                    <Grid Padding="0,7" BorderBrush="{StaticResource DsStrokeBrush}" BorderThickness="0,0,0,1" ColumnSpacing="12">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="140" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{x:Bind Label}" Style="{StaticResource DsBody}" />
+                                        <TextBlock Grid.Column="1" Text="{x:Bind Value}" FontSize="13" Foreground="{StaticResource DsTextPrimaryBrush}"
+                                                   TextWrapping="Wrap" IsTextSelectionEnabled="True" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Style="{StaticResource DsBody}" Visibility="{x:Bind app:Converters.CollapsedWhen(ViewModel.IsConnected), Mode=OneWay}"
+                                   Text="Plug your DualSense into a USB port with a data-capable USB-C cable. It's detected automatically — no restart needed. If it doesn't appear, try another cable (some are charge-only) or close apps that take exclusive control of controllers." />
+                    </StackPanel>
+                </Border>
+
+                <!-- Live inputs -->
+                <StackPanel Grid.Column="1" Spacing="16">
+                    <Border Style="{StaticResource DsCard}">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="Live inputs (raw)" Style="{StaticResource DsSectionTitle}" />
+                            <TextBlock Text="STICKS (0–255, 128 = centre)" Style="{StaticResource DsLabel}" />
+                            <TextBlock Text="{x:Bind ViewModel.Sticks, Mode=OneWay}" Style="{StaticResource DsMono}" />
+                            <TextBlock Text="TRIGGERS" Style="{StaticResource DsLabel}" />
+                            <TextBlock Text="{x:Bind ViewModel.Triggers, Mode=OneWay}" Style="{StaticResource DsMono}" />
+                            <TextBlock Text="BUTTONS HELD" Style="{StaticResource DsLabel}" />
+                            <TextBlock Text="{x:Bind ViewModel.Buttons, Mode=OneWay}" Style="{StaticResource DsMono}" TextWrapping="Wrap" />
+                            <TextBlock Text="MOTION" Style="{StaticResource DsLabel}" />
+                            <TextBlock Text="{x:Bind ViewModel.Motion, Mode=OneWay}" Style="{StaticResource DsMono}" />
+                            <TextBlock Text="TOUCHPAD (1920 × 1080)" Style="{StaticResource DsLabel}" />
+                            <TextBlock Text="{x:Bind ViewModel.Touch, Mode=OneWay}" Style="{StaticResource DsMono}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource DsCard}">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="Raw HID input report" Style="{StaticResource DsSectionTitle}" />
+                            <TextBlock Text="Exact bytes from the latest report (report ID 0x01 at offset 00)." Style="{StaticResource DsBody}" />
+                            <Border Style="{StaticResource DsInsetCard}">
+                                <ScrollViewer HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto" VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
+                                    <TextBlock Text="{x:Bind ViewModel.RawHex, Mode=OneWay}" Style="{StaticResource DsMono}" Padding="0,0,0,8" />
+                                </ScrollViewer>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

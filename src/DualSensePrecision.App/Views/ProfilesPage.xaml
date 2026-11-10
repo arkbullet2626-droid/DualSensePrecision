@@ -1,0 +1,80 @@
+<Page
+    x:Class="DualSensePrecision.App.Views.ProfilesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="Transparent">
+
+    <ScrollViewer>
+        <StackPanel Padding="{StaticResource DsPagePadding}" Spacing="20" MaxWidth="1240" HorizontalAlignment="Left">
+
+            <Grid>
+                <StackPanel>
+                    <TextBlock Text="Profiles" Style="{StaticResource DsPageTitle}" />
+                    <TextBlock Style="{StaticResource DsPageSubtitle}"
+                               Text="Each profile keeps its own sticks, triggers, button mappings, macros, lights and virtual controller setting. Switching is instant." />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                    <DropDownButton x:Name="NewButton" Content="New profile" Style="{StaticResource AccentButtonStyle}">
+                        <DropDownButton.Flyout>
+                            <MenuFlyout x:Name="TemplateMenu" Placement="BottomEdgeAlignedRight" />
+                        </DropDownButton.Flyout>
+                    </DropDownButton>
+                    <Button Content="Import…" Click="OnImport" />
+                </StackPanel>
+            </Grid>
+
+            <InfoBar x:Name="MessageBar" IsOpen="False" IsClosable="True" />
+
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5*" />
+                    <ColumnDefinition Width="6*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- List -->
+                <Border Style="{StaticResource DsCard}" Padding="8" VerticalAlignment="Top">
+                    <ListView x:Name="ProfileList" SelectionMode="Single" SelectionChanged="OnSelected" MaxHeight="560" />
+                </Border>
+
+                <!-- Details -->
+                <Border Grid.Column="1" Style="{StaticResource DsCard}" VerticalAlignment="Top">
+                    <StackPanel Spacing="16">
+                        <Grid ColumnSpacing="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="NameBox" Header="Name" MaxLength="64" KeyDown="OnNameKeyDown" />
+                            <Button x:Name="RenameButton" Grid.Column="1" Content="Rename" Click="OnRename" VerticalAlignment="Bottom" />
+                        </Grid>
+
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <Button x:Name="SwitchButton" Click="OnSwitch" Style="{StaticResource AccentButtonStyle}" />
+                            <TextBlock x:Name="ActiveNote" Style="{StaticResource DsBody}" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <ToggleSwitch x:Name="StartupSwitch" Header="Always start the app with this profile" Toggled="OnStartupToggled" />
+                        <TextBlock Style="{StaticResource DsBody}" FontSize="12" Margin="0,-10,0,0"
+                                   Text="If no profile is chosen, the app reopens whichever profile you used last." />
+
+                        <Border Style="{StaticResource DsInsetCard}">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="WHAT'S IN IT" Style="{StaticResource DsLabel}" />
+                                <TextBlock x:Name="SummaryText" Style="{StaticResource DsMono}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button Content="Duplicate" Click="OnDuplicate" />
+                            <Button Content="Export…" Click="OnExport" />
+                            <Button Content="Restore defaults…" Click="OnRestore" />
+                            <Button Content="Delete…" Click="OnDelete" />
+                        </StackPanel>
+                        <TextBlock Style="{StaticResource DsBody}" FontSize="12"
+                                   Text="Exported profiles are plain .json files you can share. Importing never overwrites anything without asking." />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

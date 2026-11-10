@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>DualSensePrecision.Profiles</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DualSensePrecision.Core\DualSensePrecision.Core.csproj" /><ProjectReference Include="..\DualSensePrecision.InputEngine\DualSensePrecision.InputEngine.csproj" />
+    <ProjectReference Include="..\DualSensePrecision.Configuration\DualSensePrecision.Configuration.csproj" />
+  </ItemGroup>
+</Project>

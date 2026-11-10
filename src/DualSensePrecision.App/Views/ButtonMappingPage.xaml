@@ -1,0 +1,122 @@
+<Page
+    x:Class="DualSensePrecision.App.Views.ButtonMappingPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="Transparent"
+    PreviewKeyDown="OnPreviewKeyDown">
+
+    <ScrollViewer>
+        <StackPanel Padding="{StaticResource DsPagePadding}" Spacing="20" MaxWidth="1280" HorizontalAlignment="Left">
+
+            <Grid>
+                <StackPanel>
+                    <TextBlock Text="Button Mapping" Style="{StaticResource DsPageTitle}" />
+                    <TextBlock x:Name="SubtitleText" Style="{StaticResource DsPageSubtitle}" />
+                </StackPanel>
+                <SelectorBar x:Name="LayerSelector" HorizontalAlignment="Right" VerticalAlignment="Bottom" SelectionChanged="OnLayerSelected">
+                    <SelectorBarItem Text="Normal layer" IsSelected="True" />
+                    <SelectorBarItem Text="Shift layer" />
+                </SelectorBar>
+            </Grid>
+
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="2*" MinWidth="320" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Controller drawing -->
+                <Border Style="{StaticResource DsCard}" VerticalAlignment="Top">
+                    <StackPanel Spacing="10">
+                        <Grid>
+                            <TextBlock Text="Click a button to change it" Style="{StaticResource DsSectionTitle}" />
+                            <TextBlock Text="…or just press it on your controller" Style="{StaticResource DsBody}" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                        </Grid>
+                        <Viewbox Stretch="Uniform" MaxWidth="620" HorizontalAlignment="Center">
+                        <Canvas x:Name="Pad" Width="620" Height="390">
+                            <Path x:Name="Body" Stroke="{StaticResource DsStrokeBrush}" StrokeThickness="1.5" Fill="{StaticResource DsSurfaceRaisedBrush}"
+                                  Data="M 120,92 C 120,62 160,54 210,56 L 410,56 C 460,54 500,62 500,92 C 552,150 586,296 560,344 C 540,378 498,374 478,348 L 440,300 C 420,284 200,284 180,300 L 142,348 C 122,374 80,378 60,344 C 34,296 68,150 120,92 Z" />
+                        </Canvas>
+                        </Viewbox>
+                        <StackPanel Orientation="Horizontal" Spacing="18">
+                            <TextBlock Style="{StaticResource DsBody}" FontSize="12"><Run Text="■" Foreground="{StaticResource DsAccentBrush}" /> Pressed now</TextBlock>
+                            <TextBlock Style="{StaticResource DsBody}" FontSize="12"><Run Text="▢" Foreground="{StaticResource DsTextPrimaryBrush}" /> Selected</TextBlock>
+                            <TextBlock Style="{StaticResource DsBody}" FontSize="12"><Run Text="Text" Foreground="{StaticResource DsWarningBrush}" /> = changed from default · ⟳ = toggle</TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Editor -->
+                <StackPanel Grid.Column="1" Spacing="16">
+                    <Border Style="{StaticResource DsCard}">
+                        <StackPanel Spacing="14">
+                            <StackPanel>
+                                <TextBlock x:Name="SelectedTitle" Style="{StaticResource DsSectionTitle}" FontSize="18" />
+                                <TextBlock x:Name="SelectedDefault" Style="{StaticResource DsBody}" FontSize="12" />
+                            </StackPanel>
+
+                            <ComboBox x:Name="KindBox" Header="Action" HorizontalAlignment="Stretch" SelectionChanged="OnEditorChanged">
+                                <ComboBoxItem Content="Default" />
+                                <ComboBoxItem Content="Disabled" />
+                                <ComboBoxItem Content="Another controller button" />
+                                <ComboBoxItem Content="Keyboard key" />
+                                <ComboBoxItem Content="Mouse button" />
+                                <ComboBoxItem Content="Run a macro" />
+                            </ComboBox>
+
+                            <ComboBox x:Name="MacroBox" Header="Macro" HorizontalAlignment="Stretch" SelectionChanged="OnEditorChanged" Visibility="Collapsed" />
+
+                            <ComboBox x:Name="TargetBox" Header="Acts as" HorizontalAlignment="Stretch" SelectionChanged="OnEditorChanged" Visibility="Collapsed" />
+
+                            <StackPanel x:Name="KeyPanel" Spacing="10" Visibility="Collapsed">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <Button x:Name="CaptureButton" Click="OnCaptureClick" MinWidth="170" />
+                                    <TextBlock x:Name="KeyHint" Style="{StaticResource DsBody}" FontSize="12" VerticalAlignment="Center" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <CheckBox x:Name="ModCtrl" Content="Ctrl" MinWidth="70" Click="OnEditorClick" />
+                                    <CheckBox x:Name="ModShift" Content="Shift" MinWidth="70" Click="OnEditorClick" />
+                                    <CheckBox x:Name="ModAlt" Content="Alt" MinWidth="70" Click="OnEditorClick" />
+                                    <CheckBox x:Name="ModWin" Content="Win" MinWidth="70" Click="OnEditorClick" />
+                                </StackPanel>
+                            </StackPanel>
+
+                            <ComboBox x:Name="MouseBox" Header="Mouse button" HorizontalAlignment="Stretch" SelectionChanged="OnEditorChanged" Visibility="Collapsed">
+                                <ComboBoxItem Content="Left click" />
+                                <ComboBoxItem Content="Right click" />
+                                <ComboBoxItem Content="Middle click" />
+                                <ComboBoxItem Content="Back (X1)" />
+                                <ComboBoxItem Content="Forward (X2)" />
+                            </ComboBox>
+
+                            <ToggleSwitch x:Name="ToggleSwitchBehavior" Header="Toggle (press once to hold, press again to release)" Toggled="OnEditorToggled" />
+
+                            <TextBlock x:Name="EffectNote" Style="{StaticResource DsBody}" FontSize="12" />
+
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <Button Content="Reset this button" Click="OnResetButton" />
+                                <Button Content="Reset all (this layer)" Click="OnResetLayer" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource DsCard}">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="Shift layer" Style="{StaticResource DsSectionTitle}" />
+                            <TextBlock Style="{StaticResource DsBody}" FontSize="12"
+                                       Text="While you hold the shift button, the Shift layer's mappings are used instead. The shift button itself does nothing else while held." />
+                            <ComboBox x:Name="ShiftBox" Header="Hold this button for the shift layer" HorizontalAlignment="Stretch" SelectionChanged="OnShiftChanged" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource DsCard}">
+                        <StackPanel Spacing="8">
+                            <TextBlock x:Name="SummaryTitle" Style="{StaticResource DsSectionTitle}" />
+                            <TextBlock x:Name="SummaryText" Style="{StaticResource DsMono}" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

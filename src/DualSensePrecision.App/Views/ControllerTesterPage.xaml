@@ -1,0 +1,176 @@
+<Page
+    x:Class="DualSensePrecision.App.Views.ControllerTesterPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="Transparent">
+
+    <ScrollViewer>
+        <StackPanel Padding="{StaticResource DsPagePadding}" Spacing="20" MaxWidth="1240" HorizontalAlignment="Left">
+
+            <StackPanel>
+                <TextBlock Text="Controller Tester" Style="{StaticResource DsPageTitle}" />
+                <TextBlock Style="{StaticResource DsPageSubtitle}"
+                           Text="Checks your DualSense's raw hardware — before any of your profile's deadzones, curves or remaps." />
+            </StackPanel>
+
+            <InfoBar x:Name="NoControllerBar" IsOpen="False" IsClosable="False" Severity="Warning" Title="No controller connected"
+                     Message="Plug in your DualSense to run the tests." />
+
+            <!-- Full diagnostic -->
+            <Border Style="{StaticResource DsCard}">
+                <StackPanel Spacing="14">
+                    <Grid>
+                        <StackPanel>
+                            <TextBlock Text="Full diagnostic" Style="{StaticResource DsSectionTitle}" FontSize="17" />
+                            <TextBlock Style="{StaticResource DsBody}" FontSize="12" Text="About a minute. Guides you through buttons, stick drift, stick range, triggers and touchpad, then writes a report." />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <Button x:Name="WizardSkip" Content="Skip step" Click="OnWizardSkip" Visibility="Collapsed" />
+                            <Button x:Name="WizardButton" Content="Start full diagnostic" Click="OnWizardStart" Style="{StaticResource AccentButtonStyle}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <StackPanel x:Name="WizardPanel" Spacing="10" Visibility="Collapsed">
+                        <ProgressBar x:Name="WizardProgress" Maximum="5" />
+                        <TextBlock x:Name="WizardStepTitle" Style="{StaticResource DsSectionTitle}" />
+                        <TextBlock x:Name="WizardStepText" Style="{StaticResource DsBody}" FontSize="14" Foreground="{StaticResource DsTextPrimaryBrush}" />
+                        <TextBlock x:Name="WizardStepStatus" Style="{StaticResource DsMono}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel x:Name="ReportPanel" Spacing="10" Visibility="Collapsed">
+                        <TextBox x:Name="ReportBox" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                                 FontFamily="Cascadia Mono, Consolas" FontSize="12" MinHeight="220" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button Content="Copy report" Click="OnCopyReport" />
+                            <Button Content="Save report…" Click="OnSaveReport" />
+                            <Button x:Name="ApplyDeadzonesButton" Content="Apply suggested deadzones" Click="OnApplyDeadzones" />
+                        </StackPanel>
+                        <TextBlock x:Name="ReportStatus" Style="{StaticResource DsBody}" FontSize="12" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Buttons -->
+            <Border Style="{StaticResource DsCard}">
+                <StackPanel Spacing="12">
+                    <Grid>
+                        <TextBlock Text="Buttons" Style="{StaticResource DsSectionTitle}" />
+                        <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+                            <TextBlock x:Name="ButtonsCount" Style="{StaticResource DsMono}" VerticalAlignment="Center" />
+                            <Button Content="Reset" Click="OnResetButtons" />
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock Style="{StaticResource DsBody}" FontSize="12" Text="Blue = pressed now. Green outline = has worked at least once." />
+                    <VariableSizedWrapGrid x:Name="ButtonGrid" Orientation="Horizontal" ItemWidth="118" ItemHeight="44" />
+                </StackPanel>
+            </Border>
+
+            <!-- Sticks -->
+            <Border Style="{StaticResource DsCard}">
+                <StackPanel Spacing="12">
+                    <Grid>
+                        <TextBlock Text="Sticks" Style="{StaticResource DsSectionTitle}" />
+                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                            <Button x:Name="DriftButton" Content="Drift test (5 s)" Click="OnDriftTest" />
+                            <Button Content="Reset range" Click="OnResetRange" />
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock Style="{StaticResource DsBody}" FontSize="12"
+                               Text="Rotate each stick slowly around its edge to map its range (blue outline). For the drift test, let go of both sticks." />
+                    <Grid ColumnSpacing="24">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Canvas x:Name="LeftCanvas" Width="180" Height="180" />
+                        <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Center">
+                            <TextBlock Text="LEFT STICK" Style="{StaticResource DsLabel}" />
+                            <TextBlock x:Name="LeftLive" Style="{StaticResource DsMono}" />
+                            <TextBlock x:Name="LeftDrift" Style="{StaticResource DsBody}" FontSize="12" TextWrapping="Wrap" />
+                            <TextBlock x:Name="LeftRange" Style="{StaticResource DsBody}" FontSize="12" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <Canvas x:Name="RightCanvas" Grid.Column="2" Width="180" Height="180" />
+                        <StackPanel Grid.Column="3" Spacing="6" VerticalAlignment="Center">
+                            <TextBlock Text="RIGHT STICK" Style="{StaticResource DsLabel}" />
+                            <TextBlock x:Name="RightLive" Style="{StaticResource DsMono}" />
+                            <TextBlock x:Name="RightDrift" Style="{StaticResource DsBody}" FontSize="12" TextWrapping="Wrap" />
+                            <TextBlock x:Name="RightRange" Style="{StaticResource DsBody}" FontSize="12" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Grid ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Triggers -->
+                <Border Style="{StaticResource DsCard}" VerticalAlignment="Top">
+                    <StackPanel Spacing="12">
+                        <Grid>
+                            <TextBlock Text="Trigger pressure" Style="{StaticResource DsSectionTitle}" />
+                            <Button Content="Reset" Click="OnResetTriggers" HorizontalAlignment="Right" />
+                        </Grid>
+                        <TextBlock Text="L2" Style="{StaticResource DsLabel}" />
+                        <Grid x:Name="L2Track" Height="16" Background="{StaticResource DsSurfaceRaisedBrush}" CornerRadius="4">
+                            <Border x:Name="L2Fill" HorizontalAlignment="Left" Width="0" Background="{StaticResource DsAccentBrush}" CornerRadius="4" />
+                        </Grid>
+                        <TextBlock x:Name="L2Text" Style="{StaticResource DsMono}" />
+                        <TextBlock Text="R2" Style="{StaticResource DsLabel}" />
+                        <Grid x:Name="R2Track" Height="16" Background="{StaticResource DsSurfaceRaisedBrush}" CornerRadius="4">
+                            <Border x:Name="R2Fill" HorizontalAlignment="Left" Width="0" Background="{StaticResource DsAccentBrush}" CornerRadius="4" />
+                        </Grid>
+                        <TextBlock x:Name="R2Text" Style="{StaticResource DsMono}" />
+                        <TextBlock Style="{StaticResource DsBody}" FontSize="12" Text="A healthy trigger rests at 0 and reaches 255 when fully pulled." />
+                    </StackPanel>
+                </Border>
+
+                <!-- Touchpad -->
+                <Border Grid.Column="1" Style="{StaticResource DsCard}" VerticalAlignment="Top">
+                    <StackPanel Spacing="12">
+                        <Grid>
+                            <TextBlock Text="Touchpad" Style="{StaticResource DsSectionTitle}" />
+                            <TextBlock x:Name="TouchClick" Style="{StaticResource DsMono}" HorizontalAlignment="Right" />
+                        </Grid>
+                        <Border Width="320" Height="180" CornerRadius="10" Background="{StaticResource DsSurfaceRaisedBrush}"
+                                BorderBrush="{StaticResource DsStrokeBrush}" BorderThickness="1" HorizontalAlignment="Left">
+                            <Canvas x:Name="TouchCanvas" Width="320" Height="180" />
+                        </Border>
+                        <TextBlock x:Name="TouchText" Style="{StaticResource DsMono}" />
+                        <TextBlock Style="{StaticResource DsBody}" FontSize="12" Text="Draw with one or two fingers. Both touch points are tracked (1920 × 1080)." />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Motion -->
+            <Border Style="{StaticResource DsCard}">
+                <StackPanel Spacing="12">
+                    <Grid>
+                        <TextBlock Text="Gyroscope &amp; accelerometer" Style="{StaticResource DsSectionTitle}" />
+                        <Button x:Name="MotionButton" Content="Check at rest (3 s)" Click="OnMotionTest" HorizontalAlignment="Right" />
+                    </Grid>
+                    <TextBlock x:Name="GyroText" Style="{StaticResource DsMono}" />
+                    <TextBlock x:Name="AccelText" Style="{StaticResource DsMono}" />
+                    <TextBlock x:Name="MotionResultText" Style="{StaticResource DsBody}" FontSize="12" TextWrapping="Wrap" />
+                    <TextBlock Style="{StaticResource DsBody}" FontSize="12"
+                               Text="Tilt and turn the controller to see the values move. For the rest check, put it down on a flat surface first." />
+                </StackPanel>
+            </Border>
+
+            <!-- Links -->
+            <Border Style="{StaticResource DsCard}">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="More diagnostics" Style="{StaticResource DsSectionTitle}" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Content="USB report monitor (Controller page)" Click="OnOpenController" />
+                        <Button Content="Report timing (Performance page)" Click="OnOpenPerformance" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
