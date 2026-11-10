@@ -10,6 +10,10 @@ Wired DualSense (PS5) tuning for Windows 10/11: real report-timing telemetry, st
 
 ## Install (for users)
 
+**Just download and run the latest `DualSensePrecision-<version>-setup.exe` from the repo's Releases page.** Nothing else is needed: no .NET, no build tools. Everything below is for developers.
+
+### Building the installer yourself
+
 Double-click `build-installer.cmd` (needs Inno Setup 6: `winget install JRSoftware.InnoSetup`). It runs the tests,
 publishes a self-contained Release build and writes `installer\Output\DualSensePrecision-<version>-setup.exe`.
 The installer is per-user: no admin rights, no drivers. Profiles live in `%LOCALAPPDATA%\DualSensePrecision` and survive

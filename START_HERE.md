@@ -2,7 +2,7 @@
 
 Setup is now **one file** that installs everything: the app (with .NET and the Windows App SDK built in) and, if you leave the box ticked, **VIIPER** for the virtual Xbox controller, downloaded from its official GitHub release and checked before it runs.
 
-You build that file once per version on your PC (this workspace can't compile Windows apps). After that, the Setup.exe is all anyone needs.
+**Most people don't need this zip at all:** download the ready-made Setup.exe from the GitHub Releases page and run it. The steps below are for building it yourself, which needs the .NET 10 SDK.
 
 ## 1. Extract
 

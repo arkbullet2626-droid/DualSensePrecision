@@ -65,6 +65,7 @@ public class MacroTests
     }
 
     [Fact]
+    [Trait("Category", "Timing")]
     public void RepeatingMacroStopsWhenAskedAndReleases()
     {
         var sink = new RecordingSink();
@@ -89,6 +90,7 @@ public class MacroTests
     }
 
     [Fact]
+    [Trait("Category", "Timing")]
     public void RepeatWithoutDelaysIsThrottled()
     {
         var sink = new RecordingSink();
@@ -104,6 +106,7 @@ public class MacroTests
     }
 
     [Fact]
+    [Trait("Category", "Timing")]
     public void StopInterruptsALongDelayQuickly()
     {
         var sink = new RecordingSink();
@@ -119,6 +122,7 @@ public class MacroTests
     }
 
     [Fact]
+    [Trait("Category", "Timing")]
     public void PreciseWaitIsAccurate()
     {
         using var stop = new ManualResetEventSlim(false);

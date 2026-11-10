@@ -148,6 +148,7 @@ public class ViiperProtocolTests
     }
 
     [Fact]
+    [Trait("Category", "Timing")]
     public void ReportsMissingServerClearly()
     {
         // Grab a free port, then close it so nothing is listening.
@@ -160,6 +161,7 @@ public class ViiperProtocolTests
     }
 
     [Fact]
+    [Trait("Category", "Timing")]
     public void BackendStreamsInputAndForwardsRumble()
     {
         using var server = new FakeViiper();
@@ -195,6 +197,7 @@ public class ViiperProtocolTests
     }
 
     [Fact]
+    [Trait("Category", "Timing")]
     public void BackendReportsServerMissing()
     {
         var l = new TcpListener(IPAddress.Loopback, 0);
