@@ -20,7 +20,7 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <controls:MetricTile Label="REPORT RATE" Value="{x:Bind ViewModel.MeasuredRate, Mode=OneWay}" Unit="Hz" Hint="Physical rate, measured" />
+                <controls:MetricTile Label="{x:Bind ViewModel.RateLabel, Mode=OneWay}" Value="{x:Bind ViewModel.MeasuredRate, Mode=OneWay}" Unit="Hz" Hint="{x:Bind ViewModel.RateHint, Mode=OneWay}" />
                 <controls:MetricTile Grid.Column="1" Label="AVERAGE INTERVAL" Value="{x:Bind ViewModel.AvgInterval, Mode=OneWay}" Unit="ms" Hint="Time between reports" />
                 <controls:MetricTile Grid.Column="2" Label="PROCESSING TIME" Value="{x:Bind ViewModel.ProcessingAvg, Mode=OneWay}" Unit="µs" Hint="Input → processed output, average" />
                 <controls:MetricTile Grid.Column="3" Label="APP CPU" Value="{x:Bind ViewModel.Cpu, Mode=OneWay}" Unit="%" Hint="Share of total CPU" />
@@ -30,7 +30,7 @@
             <Border Style="{StaticResource DsCard}">
                 <StackPanel Spacing="12">
                     <Grid>
-                        <TextBlock Text="Report interval — live" Style="{StaticResource DsSectionTitle}" />
+                        <TextBlock Text="{x:Bind ViewModel.GraphTitle, Mode=OneWay}" Style="{StaticResource DsSectionTitle}" />
                         <TextBlock x:Name="GraphScale" HorizontalAlignment="Right" Style="{StaticResource DsMono}" />
                     </Grid>
                     <Grid x:Name="GraphHost" Height="200" Background="{StaticResource DsSurfaceRaisedBrush}" CornerRadius="6" SizeChanged="OnGraphSizeChanged">
@@ -57,8 +57,8 @@
                 <controls:MetricTile Grid.Column="1" Label="P95 INTERVAL" Value="{x:Bind ViewModel.P95, Mode=OneWay}" Unit="ms" />
                 <controls:MetricTile Grid.Column="2" Label="P99 INTERVAL" Value="{x:Bind ViewModel.P99, Mode=OneWay}" Unit="ms" />
                 <controls:MetricTile Grid.Column="3" Label="MAX INTERVAL" Value="{x:Bind ViewModel.MaxInterval, Mode=OneWay}" Unit="ms" Hint="Worst gap in window" />
-                <controls:MetricTile Grid.Row="1" Label="DROPPED REPORTS" Value="{x:Bind ViewModel.Dropped, Mode=OneWay}" Hint="Gaps in controller sequence counter" />
-                <controls:MetricTile Grid.Row="1" Grid.Column="1" Label="STALLS" Value="{x:Bind ViewModel.Stalls, Mode=OneWay}" Hint="Interval &gt; 4× median" />
+                <controls:MetricTile Grid.Row="1" Label="DROPPED REPORTS" Value="{x:Bind ViewModel.Dropped, Mode=OneWay}" Hint="{x:Bind ViewModel.DroppedHint, Mode=OneWay}" />
+                <controls:MetricTile Grid.Row="1" Grid.Column="1" Label="STALLS" Value="{x:Bind ViewModel.Stalls, Mode=OneWay}" Hint="{x:Bind ViewModel.StallsHint, Mode=OneWay}" />
                 <controls:MetricTile Grid.Row="1" Grid.Column="2" Label="PROCESSING P99" Value="{x:Bind ViewModel.ProcessingP99, Mode=OneWay}" Unit="µs" />
                 <controls:MetricTile Grid.Row="1" Grid.Column="3" Label="VIRTUAL OUTPUT" Value="{x:Bind ViewModel.VirtualRate, Mode=OneWay}" Unit="Hz" Hint="Packets sent to the virtual controller" />
             </Grid>
@@ -68,7 +68,7 @@
                 <StackPanel Spacing="10">
                     <TextBlock Text="Virtual output rate" Style="{StaticResource DsSectionTitle}" />
                     <TextBlock Style="{StaticResource DsBody}"
-                               Text="This sets how often processed input is forwarded to a virtual controller. It cannot make the DualSense send reports faster — the controller's own USB report rate is fixed in hardware and is measured above." />
+                               Text="This sets how often processed input is forwarded to a virtual controller. It cannot make the controller send reports faster — the controller's own report rate is fixed in hardware." />
                     <ComboBox Width="300" ItemsSource="{x:Bind ViewModel.OutputRateLabels}"
                               SelectedIndex="{x:Bind ViewModel.SelectedOutputRateIndex, Mode=TwoWay}" />
                     <TextBlock Text="{x:Bind ViewModel.OutputNote, Mode=OneWay}" Style="{StaticResource DsBody}" Foreground="{StaticResource DsTextPrimaryBrush}" />

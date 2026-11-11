@@ -17,6 +17,9 @@
 
             <InfoBar x:Name="OutputError" IsOpen="False" Severity="Warning" Title="Controller output" />
 
+            <InfoBar x:Name="XboxBar" IsOpen="False" IsClosable="False" Severity="Informational" Title="Xbox controller"
+                     Message="Only vibration applies to Xbox controllers. The lightbar, player lights, mute light and adaptive triggers are DualSense hardware, so they're hidden here and kept in the profile for when you use a DualSense." />
+
             <Grid ColumnSpacing="16">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -24,7 +27,7 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Lightbar -->
-                <Border Style="{StaticResource DsCard}" VerticalAlignment="Top">
+                <Border x:Name="LightbarCard" Style="{StaticResource DsCard}" VerticalAlignment="Top">
                     <StackPanel Spacing="16">
                         <TextBlock Text="Lightbar" Style="{StaticResource DsSectionTitle}" />
 
@@ -57,7 +60,7 @@
 
                 <StackPanel Grid.Column="1" Spacing="16">
                     <!-- Player LEDs -->
-                    <Border Style="{StaticResource DsCard}">
+                    <Border x:Name="PlayerCard" Style="{StaticResource DsCard}">
                         <StackPanel Spacing="14">
                             <Grid>
                                 <TextBlock Text="Player indicator" Style="{StaticResource DsSectionTitle}" VerticalAlignment="Center" />
@@ -73,7 +76,7 @@
                     </Border>
 
                     <!-- Mute LED -->
-                    <Border Style="{StaticResource DsCard}">
+                    <Border x:Name="MuteCard" Style="{StaticResource DsCard}">
                         <Grid>
                             <StackPanel>
                                 <TextBlock Text="Mute button light" Style="{StaticResource DsSectionTitle}" />
@@ -94,7 +97,7 @@
                             <controls:SliderRow Label="Vibration strength" Minimum="0" Maximum="1" Step="0.125" Format="Percent"
                                                 Value="{x:Bind ViewModel.RumbleIntensity, Mode=TwoWay}"
                                                 Description="Caps rumble from games and the test below. The controller supports 8 levels." />
-                            <controls:SliderRow Label="Adaptive trigger strength" Minimum="0" Maximum="1" Step="0.125" Format="Percent"
+                            <controls:SliderRow x:Name="TriggerStrengthRow" Label="Adaptive trigger strength" Minimum="0" Maximum="1" Step="0.125" Format="Percent"
                                                 Value="{x:Bind ViewModel.TriggerIntensity, Mode=TwoWay}"
                                                 Description="Caps how hard trigger resistance can push back. Lowest setting still gives light resistance." />
                             <Button Content="Test vibration" Click="OnTestRumble" />

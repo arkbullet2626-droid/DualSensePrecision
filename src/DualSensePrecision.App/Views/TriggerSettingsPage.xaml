@@ -17,13 +17,16 @@
                     </TextBlock>
                 </StackPanel>
                 <SelectorBar HorizontalAlignment="Right" VerticalAlignment="Bottom" SelectionChanged="OnTriggerSelected">
-                    <SelectorBarItem Text="L2 (left)" IsSelected="True" />
-                    <SelectorBarItem Text="R2 (right)" />
+                    <SelectorBarItem x:Name="LeftTab" Text="L2 (left)" IsSelected="True" />
+                    <SelectorBarItem x:Name="RightTab" Text="R2 (right)" />
                 </SelectorBar>
             </Grid>
 
+            <InfoBar x:Name="XboxBar" IsOpen="False" IsClosable="False" Severity="Informational" Title="Xbox controller"
+                     Message="Adaptive triggers are DualSense hardware, so that section is hidden. Deadzone, curve, sensitivity and the rest below work the same on LT and RT." />
+
             <!-- Adaptive effect: real hardware output, so it goes first -->
-            <Border Style="{StaticResource DsCard}">
+            <Border x:Name="AdaptiveCard" Style="{StaticResource DsCard}">
                 <StackPanel Spacing="14">
                     <Grid>
                         <StackPanel>

@@ -48,6 +48,12 @@ public sealed class ReportTelemetry
 
     /// <summary>An interval longer than this many times the running average counts as a stall.</summary>
     public double StallFactor { get; set; } = 4.0;
+
+    /// <summary>
+    /// Off for sources that only report when the input changes (XInput): a pause in their updates means the
+    /// controller is idle, not that anything stalled.
+    /// </summary>
+    public bool DetectStalls { get; set; } = true;
     private double _ewmaUs;   // running average interval, updated per report on the reader thread
 
     public void Reset()
@@ -83,7 +89,7 @@ public sealed class ReportTelemetry
         // Stalls are excluded from the average so one long gap doesn't hide the next.
         if (i < 64)
             _ewmaUs = i == 0 ? intervalUs : _ewmaUs + (intervalUs - _ewmaUs) / (i + 1);
-        else if (intervalUs > _ewmaUs * StallFactor)
+        else if (DetectStalls && intervalUs > _ewmaUs * StallFactor)
             Interlocked.Increment(ref _stalls);
         else
             _ewmaUs += (intervalUs - _ewmaUs) / 64;

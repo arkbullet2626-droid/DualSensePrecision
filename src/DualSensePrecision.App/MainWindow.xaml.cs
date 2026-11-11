@@ -25,7 +25,7 @@ public sealed partial class MainWindow : Window
         if (File.Exists(icon)) AppWindow.SetIcon(icon); // taskbar + Alt-Tab icon
         if (AppWindow.Presenter is OverlappedPresenter p) { p.PreferredMinimumWidth = 1024; p.PreferredMinimumHeight = 680; }
 
-        AppServices.Controller.StatusChanged += _ => DispatcherQueue.TryEnqueue(UpdateStatus);
+        AppServices.Controller.StatusChanged += _ => DispatcherQueue.TryEnqueue(() => { UpdateStatus(); CheckFamilyChange(); });
         UpdateStatus();
 
         foreach (var w in AppServices.StartupWarnings) ShowError(w, InfoBarSeverity.Warning);
@@ -101,6 +101,21 @@ public sealed partial class MainWindow : Window
         _fillingSwitcher = false;
     }
 
+    private ControllerFamily _shownFamily = ControllerFamily.DualSense;
+
+    /// <summary>
+    /// When a different kind of controller takes over (DualSense ↔ Xbox), re-open pages whose layout depends on
+    /// the hardware (button labels, hidden DualSense-only sections).
+    /// </summary>
+    private void CheckFamilyChange()
+    {
+        var c = AppServices.Controller;
+        if (c.Status != ConnectionStatus.Connected || c.Family == _shownFamily) return;
+        _shownFamily = c.Family;
+        if (ContentFrame.Content is ButtonMappingPage or AppearancePage or TriggerSettingsPage or ControllerTesterPage)
+            ContentFrame.Navigate(ContentFrame.Content.GetType(), null, new SuppressNavigationTransitionInfo());
+    }
+
     private void OnProfilesChanged()
     {
         FillProfileSwitcher();
@@ -129,10 +144,10 @@ public sealed partial class MainWindow : Window
 
         (string text, string detail, string brush) = c.Status switch
         {
-            ConnectionStatus.Connected => (c.Info?.Name ?? "DualSense", c.IsMock ? "Simulated input — not real hardware" : "USB · wired", "DsSuccessBrush"),
+            ConnectionStatus.Connected => (c.Info?.Name ?? "Controller", c.IsMock ? "Simulated input — not real hardware" : c.Info?.ConnectionLabel ?? "Connected", "DsSuccessBrush"),
             ConnectionStatus.Connecting => ("Connecting…", "Reading controller information", "DsWarningBrush"),
             ConnectionStatus.Error => ("Connection problem", c.LastError ?? "Unknown error", "DsDangerBrush"),
-            _ => ("No controller", "Connect a DualSense with a USB-C cable", "DsTextTertiaryBrush"),
+            _ => ("No controller", "Connect a DualSense (USB-C) or an Xbox controller", "DsTextTertiaryBrush"),
         };
         StatusText.Text = text;
         StatusDetail.Text = detail;

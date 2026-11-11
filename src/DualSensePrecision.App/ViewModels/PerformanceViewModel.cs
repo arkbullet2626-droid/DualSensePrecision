@@ -28,6 +28,11 @@ public sealed partial class PerformanceViewModel : ObservableObject
     [ObservableProperty] public partial string OutputNote { get; set; } = "";
     [ObservableProperty] public partial string Verdict { get; set; } = "";
     [ObservableProperty] public partial string VirtualRate { get; set; } = "—";
+    [ObservableProperty] public partial string RateLabel { get; set; } = "REPORT RATE";
+    [ObservableProperty] public partial string RateHint { get; set; } = "Physical rate, measured";
+    [ObservableProperty] public partial string GraphTitle { get; set; } = "Report interval — live";
+    [ObservableProperty] public partial string DroppedHint { get; set; } = "Gaps in controller sequence counter";
+    [ObservableProperty] public partial string StallsHint { get; set; } = "Interval > 4× median";
 
     public IReadOnlyList<string> OutputRateLabels { get; } =
         OutputRateLimiter.Choices.Select(r => r == 0 ? "Event-driven (match controller)" : $"{r} Hz cap").ToList();
@@ -53,9 +58,18 @@ public sealed partial class PerformanceViewModel : ObservableObject
         var t = c.Telemetry;
         bool connected = c.Status == ConnectionStatus.Connected;
 
+        bool xbox = connected && c.Family == ControllerFamily.Xbox;
         SourceLabel = !connected ? "No controller connected — nothing to measure."
             : c.IsMock ? "SIMULATED — these numbers come from the mock controller and Windows scheduling, not hardware."
+            : xbox ? "Xbox controller, read through Windows' XInput. XInput doesn't expose the controller's USB/Bluetooth report stream, " +
+                     "so this measures how often the input changed (checked every ~1 ms). While you move a stick it approaches the controller's " +
+                     "own rate; at rest it falls towards zero. It is not a hardware report rate."
             : "Measured live from your DualSense over USB. Rolling window of the last 4,096 reports.";
+        RateLabel = xbox ? "UPDATE RATE (XINPUT)" : "REPORT RATE";
+        RateHint = xbox ? "Input changes seen per second" : "Physical rate, measured";
+        GraphTitle = xbox ? "Time between input changes — live" : "Report interval — live";
+        DroppedHint = xbox ? "Not measurable through XInput" : "Gaps in controller sequence counter";
+        StallsHint = xbox ? "Not meaningful: Xbox pads go quiet at rest" : "Interval > 4× median";
 
         Cpu = $"{_cpu.Sample():0.0}";
 
@@ -85,13 +99,21 @@ public sealed partial class PerformanceViewModel : ObservableObject
         P95 = Ms(s.P95IntervalUs);
         P99 = Ms(s.P99IntervalUs);
         MaxInterval = Ms(s.MaxIntervalUs);
-        Dropped = s.DroppedReports.ToString("N0");
-        Stalls = s.Stalls.ToString("N0");
+        Dropped = xbox ? "n/a" : s.DroppedReports.ToString("N0");
+        Stalls = xbox ? "n/a" : s.Stalls.ToString("N0");
         ProcessingAvg = $"{s.AverageProcessingUs:0.0}";
         ProcessingP99 = $"{s.P99ProcessingUs:0.0}";
         TotalReports = s.TotalReports.ToString("N0");
 
         int cap = c.OutputLimiter.RateHz;
+        if (xbox)
+        {
+            OutputNote = cap == 0
+                ? "Every change is forwarded the moment it's seen (and the current state is re-sent at least 250 times a second). This is the lowest-latency setting."
+                : $"Output is limited to {cap} Hz.";
+            Verdict = "Move both sticks continuously for a few seconds to see the controller's real update rhythm. Wired is usually steadier than Bluetooth.";
+            return;
+        }
         OutputNote = cap == 0
             ? $"Every report is forwarded the moment it arrives (~{s.MeasuredRateHz:0} Hz). This is the lowest-latency setting."
             : cap >= s.MeasuredRateHz * 0.95

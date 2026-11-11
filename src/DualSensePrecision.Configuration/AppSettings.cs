@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using DualSensePrecision.Core;
 
 namespace DualSensePrecision.Configuration;
 
@@ -25,6 +26,9 @@ public sealed record AppSettings
 
     /// <summary>Virtual output rate cap in Hz. 0 = event-driven (one output per input report, no added latency).</summary>
     public int OutputRateHz { get; init; }
+
+    /// <summary>Which controller to use when a DualSense and an Xbox controller are both connected.</summary>
+    public ControllerFamily PreferredController { get; init; } = ControllerFamily.DualSense;
 }
 
 public static class AppPaths

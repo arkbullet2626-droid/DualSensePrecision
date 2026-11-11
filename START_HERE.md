@@ -1,71 +1,81 @@
-# DualSense Precision v0.12.1: build the single Setup.exe and test it
+# DualSense Precision v0.13.0: Xbox controller support
 
-Setup is now **one file** that installs everything: the app (with .NET and the Windows App SDK built in) and, if you leave the box ticked, **VIIPER** for the virtual Xbox controller, downloaded from its official GitHub release and checked before it runs.
+New in this version: **Xbox controllers work too** (Xbox Series X|S, Xbox One, Xbox Elite and Xbox 360; by USB cable, Bluetooth or the Xbox Wireless Adapter). Plug one in and the app picks it up automatically, just like the DualSense.
 
-**Most people don't need this zip at all:** download the ready-made Setup.exe from the GitHub Releases page and run it. The steps below are for building it yourself, which needs the .NET 10 SDK.
+## Install
 
-## 1. Extract
+1. Close DualSense Precision if it's open (right-click its tray/taskbar icon → Close, or just close the window).
+2. Run **`DualSensePrecision-0.13.0-setup.exe`**. If SmartScreen appears, click **More info → Run anyway**.
+3. Click through and finish. VIIPER is already on your PC, so there's no VIIPER checkbox. Your profiles are kept.
+4. The app opens. **Settings** shows **0.13.0**.
 
-1. Close DualSense Precision if it's open.
-2. Right-click `DualSensePrecision-0.12.1.zip` in Downloads → **Extract All…** → **Extract**.
+(Building it yourself instead: double-click `build-installer` (the Command Script). Tests should end with **all succeeded**; File Explorer then opens on the new Setup.exe.)
 
-## 2. Build the Setup.exe
+## What works on an Xbox controller
 
-1. Open the extracted `DualSensePrecision-0.12.1` folder.
-2. **Double-click `build-installer`, the one whose Type is *Windows Command Script*** (gear icon). Not the PowerShell one.
-   - **First time only:** if Inno Setup (the tool that makes Setup.exe files) isn't installed, it installs it for you automatically. If Windows asks for permission, click **Yes**.
-   - Then it runs the tests (**129 succeeded**), builds the release app, and makes the installer.
-3. File Explorer opens with **`DualSensePrecision-0.12.1-setup.exe`** selected (in `installer\Output`). That's the single file to keep or share.
+- Stick curves, deadzones, sensitivity (at the Xbox pad's full 16-bit precision), trigger shaping, button mapping, macros, profiles.
+- Controller Tester: buttons, drift, stick range, triggers, full diagnostic.
+- Vibration (test button and game rumble through the virtual pad), scaled by **Vibration strength**.
+- Battery as a level (Full / Medium / Low / Empty) on wireless pads; "Wired" on a cable.
 
-If the window shows red text, copy all of it and send it to Claude.
+**Not available on Xbox controllers** (the hardware doesn't have it): lightbar, player lights, mute light, adaptive triggers, touchpad, motion sensors. Those sections are hidden while an Xbox pad is connected and come back with a DualSense.
 
-## What changed in 0.12.1
-
-- `build-installer` now **installs Inno Setup automatically** the first time, so there's no manual step.
-
-## What's new in 0.12
-
-- **Setup downloads and installs VIIPER for you** (optional, ticked by default when VIIPER isn't installed):
-  - downloads VIIPER 0.9.0 (~13 MB) from github.com/Alia5/VIIPER;
-  - verifies the file's SHA-256 fingerprint and refuses anything that doesn't match;
-  - runs VIIPER's own unattended installer, which installs the signed **usbip-win2** driver. Windows asks for **administrator permission** for that driver, and that prompt is your OK;
-  - offers a **restart** at the end, because the driver may need one.
-- If VIIPER is already installed, the option doesn't appear.
-- If the download fails, Setup asks whether to carry on without it.
-- The Virtual Controller page's setup help now points to this option.
-- Everything from 0.11.0: per-user install with no admin needed for the app itself, Start menu and desktop shortcuts, the uninstaller asks whether to keep your profiles, and the app icon.
+**Honest limits:** Windows doesn't let apps time an Xbox controller's reports the way it does a DualSense's. The app reads Xbox pads through Windows' **XInput**, checks about 1,000 times a second, and counts how often the input *changed*. That's labelled **Update rate (XInput)**; it is not a hardware report rate. Also, until hiding the real controller (HidHide, the next update) is in, games with the Virtual Controller on will see **two** Xbox controllers.
 
 ## Tests for this version
 
-**The build (new in 0.12.1)**
-A. Double-click `build-installer` (Command Script). If Inno Setup was missing, you see "Inno Setup isn't installed - installing it now", then possibly a Windows permission prompt (click **Yes**), and then the build carries on by itself.
-B. File Explorer opens with `DualSensePrecision-0.12.1-setup.exe` selected.
+**A. DualSense still works (quick check)**
+1. Plug in your DualSense. The sidebar shows it, Home shows **REPORT RATE ~250 Hz**, and Appearance shows the lightbar as before.
+2. Unplug the DualSense before the Xbox tests.
 
-**Normal install (VIIPER already on your PC)**
-1. Run `DualSensePrecision-0.12.1-setup.exe`. If SmartScreen appears, click **More info → Run anyway**.
-2. On the options page there's **no** VIIPER checkbox, because you already have it. Finish the install.
-3. The app opens. **Settings** shows **0.12.1**, your profiles are all there, and **Virtual Controller** goes green when switched on.
+**B. Xbox controller detected**
+3. Connect your Xbox controller (cable, Bluetooth, or wireless adapter). Within about a second the sidebar bottom shows its name (e.g. *Xbox Series X|S Controller*) and **USB · wired** or **Wireless**.
+4. **Home:** the two stick dots move with your sticks. The first tile reads **UPDATE RATE** ("Input changes via XInput"). **Battery** shows *Wired* on a cable, or *Full / Medium / Low* wireless.
 
-**VIIPER download path (optional, to prove the one-file setup works on a fresh PC)**
+**C. Controller page**
+5. **Device** lists Type *Xbox controller (read through XInput)*, Connection, Vendor/product ID, XInput slot.
+6. **Live inputs:** sticks show values from −1 to +1 with four decimals; triggers say **LT / RT** 0–255; **Buttons held** shows Xbox names (press A, B, LB, View, Menu…). Motion and touchpad say *Not on this controller*.
+7. **Raw XInput state** bytes change as you move things.
 
-4. Uninstall VIIPER: **Windows Settings → Apps → Installed apps → VIIPER → Uninstall**. Restart if asked.
-5. Run the setup again. The options page now shows **"Download and install VIIPER 0.9.0…"**, ticked.
-6. Click **Install**. A "Downloading VIIPER" page shows progress. Then, while installing, Windows asks for **administrator permission** (that's for the usbip-win2 driver); click **Yes**.
-7. The finish page offers **Restart now / Restart later**. Choose **Restart now**.
-8. After restarting, the VIIPER icon is in the system tray. Open DualSense Precision → **Virtual Controller** → switch on. It goes green and **What Windows sees** shows the Xbox controller.
+**D. Performance**
+8. The page explains it's an XInput update rate. Move both sticks continuously for a few seconds: **UPDATE RATE (XINPUT)** shows a steady number. Let go: it drops. **Dropped reports** and **Stalls** show *n/a*.
 
-**Untick test**
+**E. Sticks and triggers**
+9. **Stick Settings:** raise the inner deadzone; the blue dot stays centred longer. Change the curve; the blue dot follows it.
+10. **Trigger Settings:** tabs say **LT (left) / RT (right)**, an info bar explains adaptive triggers are hidden, and the live meter follows the trigger. Change the deadzone and see the processed bar respond.
 
-9. Uninstall VIIPER again, run the setup, and **untick** the VIIPER box. It installs the app only: no download, no administrator prompt, no restart offer. The Virtual Controller page then shows the setup help. Reinstall afterwards with the box ticked.
+**F. Button Mapping**
+11. The drawing shows **A B X Y, LB RB, LT RT, LS RS, View, Menu, Xbox**, with no touchpad or mute. Pressing a button lights it up and selects it.
+12. Map **A → Keyboard Space**. Open Notepad and press A: it types a space. Set A back to **Default**.
 
-**Re-check**
+**G. Macros**
+13. Record a short macro using Xbox buttons, assign it to a button, and play it. Steps show Xbox names.
 
-10. Uninstall DualSense Precision and choose **No** to keep your profiles. Reinstall: your profiles are still there.
-11. Controller Tester, Stick Settings, Button Mapping, Macros and Appearance all work in the installed app.
+**H. Appearance**
+14. Only **Vibration & trigger strength** shows (without the adaptive slider), plus an info bar. **Test vibration** rumbles the Xbox controller.
+15. Set **Vibration strength** to 0 % and test: no rumble. 50 %: weaker. Put it back.
+
+**I. Controller Tester**
+16. An info bar says touchpad and motion tests are hidden. Button chips use Xbox names (17 of them).
+17. **Run full diagnostic**: 4 steps (Buttons, Stick drift, Stick range, Triggers), then a report saying *Update rate (XInput…)* and *Touchpad and motion sensors — not on Xbox controllers*.
+
+**J. Virtual Controller with an Xbox pad**
+18. Switch the Virtual Controller **on**. **What Windows sees** lists two controllers: one labelled *your real Xbox controller (input to the app)* and one *the virtual pad (what games should use)*.
+19. Move the sticks: both entries move, and the virtual pad shows your processed values (e.g. deadzone applied). Nothing freezes or drifts on its own.
+20. Switch the Virtual Controller off: the virtual entry disappears and the app keeps reading your real controller.
+
+**K. Plugging and switching**
+21. Unplug (or switch off) the Xbox controller: the sidebar says **No controller**. Reconnect: it comes back by itself.
+22. With the Xbox controller connected, plug in the DualSense: the app switches to the DualSense (pages relabel to Cross/Circle/L2…).
+23. **Settings → "When a DualSense and an Xbox controller are both connected, use" → The Xbox controller**: it switches to the Xbox pad straight away. Set it back if you prefer.
+24. Switch profiles from the sidebar while using the Xbox pad: settings change instantly, as with the DualSense.
+
+## Good to know
+
+- The **Xbox button** may also open the Windows Game Bar; that's Windows, not the app (Game Bar settings can turn it off).
+- The **Share** button on Series pads isn't visible to apps through XInput.
+- If an Xbox controller doesn't appear, check it shows in Windows' **Set up USB game controllers** (press Win+R, type `joy.cpl`).
 
 ## If something doesn't work
 
-- **The build window says winget isn't available:** install Inno Setup from https://jrsoftware.org/isdl.php, then run `build-installer` again.
-- **"VIIPER could not be downloaded":** check your internet connection. You can click **Yes** to continue without it and install it later with `winget install Alia5.VIIPER`.
-- **A hash or "file is corrupt" error:** the downloaded file didn't match the one this version was tested with, so Setup refused it (on purpose). Tell Claude, because the pinned version may need updating.
-- **Virtual Controller stays red after install:** restart Windows (the driver may need it), then check the VIIPER icon is in the tray.
+Copy any red text or error and send it to Claude, along with the test number.

@@ -86,6 +86,7 @@ public sealed partial class ButtonMappingPage : Page
             _spots[b].Visibility = edge ? Visibility.Visible : Visibility.Collapsed;
             _labels[b].Visibility = edge ? Visibility.Visible : Visibility.Collapsed;
         }
+        ApplyFamilyLabels();
 
         _loading = true;
         ShiftBox.SelectedIndex = _shiftButton == DsButtons.None ? 0 : Array.IndexOf(Targets, _shiftButton) + 1;
@@ -104,6 +105,41 @@ public sealed partial class ButtonMappingPage : Page
         _sampler?.Stop();
         _sampler = null;
         AppServices.FlushProfileSave();
+    }
+
+    /// <summary>Same drawing, Xbox labels when an Xbox controller is connected (it has no touchpad or mute button).</summary>
+    private void ApplyFamilyLabels()
+    {
+        bool xbox = ButtonNames.IsXbox;
+        foreach (var s in Spots)
+        {
+            var spot = _spots[s.Button];
+            ((TextBlock)spot.Child).Text = !xbox ? s.Text : s.Button switch
+            {
+                DsButtons.L2 => "LT", DsButtons.R2 => "RT", DsButtons.L1 => "LB", DsButtons.R1 => "RB",
+                DsButtons.Triangle => "Y", DsButtons.Cross => "A", DsButtons.Square => "X", DsButtons.Circle => "B",
+                DsButtons.PS => "Xbox", DsButtons.L3 => "LS", DsButtons.R3 => "RS",
+                _ => s.Text,
+            };
+            ToolTipService.SetToolTip(spot, ButtonNames.Name(s.Button));
+            if (s.Button is DsButtons.Touchpad or DsButtons.Mute)
+            {
+                spot.Visibility = xbox ? Visibility.Collapsed : Visibility.Visible;
+                _labels[s.Button].Visibility = spot.Visibility;
+            }
+        }
+        if (xbox && _selected is DsButtons.Touchpad or DsButtons.Mute) _selected = DsButtons.Cross;
+
+        _loading = true;
+        int ti = TargetBox.SelectedIndex, si = ShiftBox.SelectedIndex;
+        for (int i = 0; i < Targets.Length; i++)
+        {
+            TargetBox.Items[i] = ButtonNames.Name(Targets[i]);
+            ShiftBox.Items[i + 1] = ButtonNames.Name(Targets[i]);
+        }
+        TargetBox.SelectedIndex = ti;
+        ShiftBox.SelectedIndex = si;
+        _loading = false;
     }
 
     private Dictionary<DsButtons, ButtonMapping> Layer => _shiftLayer ? _shift : _base;
@@ -230,7 +266,9 @@ public sealed partial class ButtonMappingPage : Page
         _loading = true;
         var m = MappingOf(_selected);
         SelectedTitle.Text = ButtonNames.Name(_selected) + (_shiftLayer ? " — shift layer" : "");
-        SelectedDefault.Text = $"Default: Xbox {ButtonNames.XboxEquivalent(_selected)} · Now: {ButtonNames.Describe(_selected, m)}";
+        SelectedDefault.Text = ButtonNames.IsXbox
+            ? $"Default: {ButtonNames.Name(_selected)} · Now: {ButtonNames.Describe(_selected, m)}"
+            : $"Default: Xbox {ButtonNames.XboxEquivalent(_selected)} · Now: {ButtonNames.Describe(_selected, m)}";
 
         bool isShiftKey = _selected == _shiftButton && _shiftButton != DsButtons.None;
         KindBox.IsEnabled = !isShiftKey;

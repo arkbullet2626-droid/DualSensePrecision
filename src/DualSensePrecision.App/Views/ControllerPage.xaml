@@ -45,7 +45,7 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                         <TextBlock Style="{StaticResource DsBody}" Visibility="{x:Bind app:Converters.CollapsedWhen(ViewModel.IsConnected), Mode=OneWay}"
-                                   Text="Plug your DualSense into a USB port with a data-capable USB-C cable. It's detected automatically — no restart needed. If it doesn't appear, try another cable (some are charge-only) or close apps that take exclusive control of controllers." />
+                                   Text="Plug your DualSense into a USB port with a data-capable USB-C cable, or connect an Xbox controller by USB, Bluetooth or the Xbox Wireless Adapter. Both are detected automatically — no restart needed. If a DualSense doesn't appear, try another cable (some are charge-only) or close apps that take exclusive control of controllers." />
                     </StackPanel>
                 </Border>
 
@@ -54,7 +54,7 @@
                     <Border Style="{StaticResource DsCard}">
                         <StackPanel Spacing="10">
                             <TextBlock Text="Live inputs (raw)" Style="{StaticResource DsSectionTitle}" />
-                            <TextBlock Text="STICKS (0–255, 128 = centre)" Style="{StaticResource DsLabel}" />
+                            <TextBlock Text="{x:Bind ViewModel.SticksLabel, Mode=OneWay}" Style="{StaticResource DsLabel}" />
                             <TextBlock Text="{x:Bind ViewModel.Sticks, Mode=OneWay}" Style="{StaticResource DsMono}" />
                             <TextBlock Text="TRIGGERS" Style="{StaticResource DsLabel}" />
                             <TextBlock Text="{x:Bind ViewModel.Triggers, Mode=OneWay}" Style="{StaticResource DsMono}" />
@@ -68,8 +68,8 @@
                     </Border>
                     <Border Style="{StaticResource DsCard}">
                         <StackPanel Spacing="10">
-                            <TextBlock Text="Raw HID input report" Style="{StaticResource DsSectionTitle}" />
-                            <TextBlock Text="Exact bytes from the latest report (report ID 0x01 at offset 00)." Style="{StaticResource DsBody}" />
+                            <TextBlock Text="{x:Bind ViewModel.RawTitle, Mode=OneWay}" Style="{StaticResource DsSectionTitle}" />
+                            <TextBlock Text="{x:Bind ViewModel.RawHint, Mode=OneWay}" Style="{StaticResource DsBody}" TextWrapping="Wrap" />
                             <Border Style="{StaticResource DsInsetCard}">
                                 <ScrollViewer HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto" VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
                                     <TextBlock Text="{x:Bind ViewModel.RawHex, Mode=OneWay}" Style="{StaticResource DsMono}" Padding="0,0,0,8" />

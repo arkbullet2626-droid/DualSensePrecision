@@ -157,7 +157,10 @@ public sealed class ButtonCoverage
     }
 
     public IReadOnlyList<DsButtons> Missing(bool edge) =>
-        Standard.Concat(edge ? EdgeExtras : Array.Empty<DsButtons>()).Where(b => (Seen & b) == 0).ToList();
+        Missing(Standard.Concat(edge ? EdgeExtras : Array.Empty<DsButtons>()));
+
+    /// <summary>Which of <paramref name="expected"/> haven't been pressed yet (e.g. the Xbox button set).</summary>
+    public IReadOnlyList<DsButtons> Missing(IEnumerable<DsButtons> expected) => expected.Where(b => (Seen & b) == 0).ToList();
 
     public void Reset() => Volatile.Write(ref _seen, 0);
 }
@@ -221,14 +224,16 @@ public static class DiagnosticReport
         DriftResult leftDrift, DriftResult rightDrift,
         RangeResult leftRange, RangeResult rightRange,
         TriggerResult l2, TriggerResult r2,
-        bool touchSeen, MotionResult motion, DateTime when)
+        bool touchSeen, MotionResult motion, DateTime when, bool xbox = false)
     {
         var sb = new StringBuilder();
         sb.AppendLine("DualSense Precision — controller diagnostic");
         sb.AppendLine($"{when:yyyy-MM-dd HH:mm}");
         sb.AppendLine($"Controller: {controller}");
         sb.AppendLine($"Firmware:   {firmware}");
-        sb.AppendLine($"Report rate (measured): {(reportRateHz > 0 ? $"{reportRateHz:0} Hz" : "n/a")}");
+        sb.AppendLine(xbox
+            ? $"Update rate (XInput, changes seen — not a hardware report rate): {(reportRateHz > 0 ? $"{reportRateHz:0} Hz" : "n/a")}"
+            : $"Report rate (measured): {(reportRateHz > 0 ? $"{reportRateHz:0} Hz" : "n/a")}");
         sb.AppendLine();
 
         var buttonsVerdict = missingButtons.Count == 0 ? Verdict.Good : Verdict.Warning;
@@ -258,9 +263,14 @@ public static class DiagnosticReport
             if (t.Verdict == Verdict.NotTested) { sb.AppendLine($"[{Mark(t.Verdict)}] {name} — not fully pulled"); return; }
             sb.AppendLine($"[{Mark(t.Verdict)}] {name} — rests at {t.Min}, full pull reaches {t.Max} of 255.");
         }
-        AddTrig("L2", l2);
-        AddTrig("R2", r2);
+        AddTrig(xbox ? "LT" : "L2", l2);
+        AddTrig(xbox ? "RT" : "R2", r2);
 
+        if (xbox)
+        {
+            sb.AppendLine("Touchpad and motion sensors — not on Xbox controllers.");
+            return sb.ToString();
+        }
         sb.AppendLine($"[{Mark(touchSeen ? Verdict.Good : Verdict.NotTested)}] Touchpad — {(touchSeen ? "touch registered" : "not touched")}");
         if (motion.Verdict == Verdict.NotTested) sb.AppendLine($"[{Mark(motion.Verdict)}] Motion sensors");
         else sb.AppendLine($"[{Mark(motion.Verdict)}] Motion sensors — gyro at rest {motion.GyroBias:0.00}°/s (noise {motion.GyroNoise:0.00}), gravity {motion.Gravity:0.00} g.");

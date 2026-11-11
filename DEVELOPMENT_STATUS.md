@@ -1,6 +1,6 @@
 # DualSense Precision — Development Status
 
-Last update: 2026-11-09 · Version 0.12.1 · M1–4 verified on hardware; Stick, Trigger and Appearance verified; virtual Xbox 360 controller verified end to end; Button Mapping verified; Macros built.
+Last update: 2026-11-10 · Version 0.13.0 · M1–4 verified on hardware; Stick, Trigger and Appearance verified; virtual Xbox 360 controller verified end to end; Button Mapping verified; Macros built; Xbox controller input built (not yet hardware-tested).
 
 ## Verification log
 
@@ -14,6 +14,7 @@ Last update: 2026-11-09 · Version 0.12.1 · M1–4 verified on hardware; Stick,
 - v0.7.0 built on Windows: 112/113 — PreciseWait returned up to 1 ms early (integer ms rounding). Fixed in v0.7.1 (tick-based deadline).
 - v0.7.1 (Macros) — user moved on to requesting stick recording before reporting the full macro test list.
 - v0.10.0 failed to build: XAML x:Name "MotionResult" clashed with the MotionResult type (CS0236/CS1061, followed by a cascading WMC9999). Renamed to MotionResultText in v0.10.1; also fixed CS0108 (MainWindow.Current → `new`) and CS0252 (ReferenceEquals). Scanned all XAML for other name/type clashes: none.
+- v0.13.0: Xbox controller support (Series / One / 360; USB, Bluetooth, Xbox Wireless Adapter) through XInput. Auto-detects alongside the DualSense; positional mapping so profiles/mappings/macros carry over; 16-bit sticks; rumble via XInputSetState scaled by the profile's vibration strength; battery shown as a level; app's own VIIPER pad and Steam virtual pads excluded from input; DualSense-only sections hidden on Xbox; Performance labels the number "update rate (XInput)". Not yet tested on hardware.
 - v0.12.1: build-installer installs Inno Setup via winget automatically if missing (user hit the manual step).
 - v0.12.0: single Setup.exe also downloads + installs VIIPER 0.9.0 (optional task, shown only when VIIPER is missing; SHA-256 pinned 142c144f…23e6 from the official release asset since upstream publishes no checksums; `viiper install --quiet --no-update`; UAC for usbip-win2 = explicit consent; offers restart). Not yet built on Windows.
 - v0.11.0 (installer: build-installer.cmd → Inno Setup per-user Setup.exe, self-contained publish, app icon, version in Settings) not yet built on Windows.
@@ -70,7 +71,9 @@ Last update: 2026-11-09 · Version 0.12.1 · M1–4 verified on hardware; Stick,
 | Settings persistence (atomic writes, corrupt-file recovery) | Complete | |
 | Mock controller (clearly labelled) | Complete | Settings → "Use simulated controller" |
 | Installer (single Setup.exe, optional VIIPER download + install) | Complete (unverified build) | `build-installer.cmd` runs tests → `dotnet publish` (Release, self-contained, win-x64) → Inno Setup. Per-user, no admin; Start menu + desktop shortcuts; AppMutex closes running copy; uninstall asks to keep/delete data; unsigned (SmartScreen 'More info → Run anyway') |
-| Bluetooth | Out of scope | Spec is USB-only |
+| Xbox controllers (Series / One / 360, USB / Bluetooth / Wireless Adapter) | Complete (unverified on hardware) | XInput 1.4, ~1 ms polling, change-driven telemetry labelled as an update rate (not a hardware rate). Sticks, triggers, buttons, mapping, macros, profiles, tester, rumble, battery level. Own virtual pad excluded via `XboxSlotFilter`. Preference setting when both controller types are connected |
+| Hide physical Xbox controller from games (HidHide) | Planned (next) | Needed for Xbox users: the real pad and the virtual pad are both XInput devices, so most games see both |
+| DualSense over Bluetooth | Out of scope | Spec is USB-only |
 
 ## Known limitations (see ARCHITECTURE §4)
 

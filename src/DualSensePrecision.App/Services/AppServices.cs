@@ -35,6 +35,12 @@ public static class AppServices
                      ?? all.FirstOrDefault();
         if (ActiveProfile != null) Controller.Pipeline.Settings = ActiveProfile.ToPipelineSettings();
 
+        Controller.VirtualPhase = () => Viiper?.State switch
+        {
+            VirtualState.Connecting => DualSensePrecision.HID.Protocol.VirtualPadPhase.Connecting,
+            VirtualState.Connected => DualSensePrecision.HID.Protocol.VirtualPadPhase.Connected,
+            _ => DualSensePrecision.HID.Protocol.VirtualPadPhase.Off,
+        };
         Output = new OutputManager(Controller);
         Macros = new MacroEngine(Controller);
         if (Settings.AutomaticControllerDetection || Settings.UseMockController)

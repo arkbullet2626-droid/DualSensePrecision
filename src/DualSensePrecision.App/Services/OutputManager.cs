@@ -7,7 +7,8 @@ namespace DualSensePrecision.App.Services;
 
 /// <summary>
 /// Owns everything the app writes TO the controller: lightbar, player LEDs, mute LED, motor strength,
-/// adaptive trigger effects and test rumble.
+/// adaptive trigger effects and test rumble. On an Xbox controller only rumble applies (through XInput),
+/// scaled by the profile's vibration strength.
 ///
 /// One background thread sends the latest state (latest-wins, at most ~60 reports/s), so dragging a colour
 /// picker never blocks the UI and never floods USB. State is re-sent automatically after every reconnect,
@@ -77,9 +78,15 @@ public sealed class OutputManager : IDisposable
 
     private void OnStatus(ConnectionStatus s)
     {
-        if (s != ConnectionStatus.Connected) return;
+        if (s != ConnectionStatus.Connected)
+        {
+            // Switching away from an Xbox pad that's still plugged in: don't leave it buzzing.
+            _controller.Xbox?.SetVibration(0, 0);
+            return;
+        }
         _needsLightbarRelease = true;
         _dirty = true;
+        lock (_rumbleLock) _rumbleDirty = true; // the newly connected controller gets the current rumble
         _signal.Set();
     }
 
@@ -90,6 +97,9 @@ public sealed class OutputManager : IDisposable
             _signal.WaitOne(50); // the timeout is only so test rumble can switch itself off
             if (_stop) break;
             if (_controller.Status != ConnectionStatus.Connected) continue;
+
+            bool xbox = _controller.IsXbox;
+            if (xbox) { _needsLightbarRelease = false; _dirty = false; } // no lights or adaptive triggers on Xbox pads
 
             if (_needsLightbarRelease)
             {
@@ -148,6 +158,13 @@ public sealed class OutputManager : IDisposable
     private void SendRumble(byte left, byte right)
     {
         var p = AppServices.ActiveProfile;
+        if (_controller.IsXbox)
+        {
+            if (!_controller.SetXboxVibration(left, right, p?.Appearance.RumbleIntensity ?? 100))
+                LastError = "The Xbox controller didn't accept a vibration command.";
+            else LastError = null;
+            return;
+        }
         bool improved = _controller.Firmware?.SupportsImprovedRumble ?? false;
         var b = new OutputReportBuilder().Rumble(left, right, improved);
         if (p != null) b.MotorPowerReduction(Reduction(p.Appearance.RumbleIntensity), Reduction(p.Appearance.TriggerIntensity));
@@ -184,7 +201,8 @@ public sealed class OutputManager : IDisposable
         _signal.Set();
         _thread.Join(500);
         _controller.StatusChanged -= OnStatus;
-        if (_controller.Status == ConnectionStatus.Connected)
+        _controller.Xbox?.SetVibration(0, 0);
+        if (_controller.Status == ConnectionStatus.Connected && !_controller.IsXbox)
         {
             _controller.Send(new OutputReportBuilder()
                 .Rumble(0, 0, improvedEmulation: false)

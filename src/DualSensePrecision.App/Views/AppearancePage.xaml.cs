@@ -30,6 +30,10 @@ public sealed partial class AppearancePage : Page
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
         ViewModel.Load();
+        bool xbox = DualSensePrecision.App.ViewModels.ButtonNames.IsXbox;
+        XboxBar.IsOpen = xbox;
+        var dsOnly = xbox ? Visibility.Collapsed : Visibility.Visible;
+        LightbarCard.Visibility = PlayerCard.Visibility = MuteCard.Visibility = TriggerStrengthRow.Visibility = dsOnly;
         SyncLeds();
         SyncPicker();
         UpdatePreview();

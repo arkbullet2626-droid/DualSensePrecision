@@ -1,6 +1,6 @@
 # DualSense Precision
 
-Wired DualSense (PS5) tuning for Windows 10/11: real report-timing telemetry, stick and trigger shaping, button mapping, adaptive triggers and profiles. By Opifex Studios.
+Wired DualSense (PS5) and Xbox controller tuning for Windows 10/11: real report-timing telemetry, stick and trigger shaping, button mapping, macros, adaptive triggers (DualSense) and profiles. By Opifex Studios.
 
 ## Requirements (development)
 
@@ -36,12 +36,12 @@ No controller handy? Settings → **Use simulated controller**. Everything it sh
 src/
   DualSensePrecision.App              WinUI 3 shell, design system (Themes/Tokens.xaml), pages
   DualSensePrecision.Core             Controller state model
-  DualSensePrecision.HID              Win32 HID, DualSense protocol, hot-plug, mock source
+  DualSensePrecision.HID              Win32 HID, DualSense protocol, Xbox (XInput) reader, hot-plug, mock source
   DualSensePrecision.InputEngine      Sticks, curves, triggers, mapping, pipeline
   DualSensePrecision.Telemetry        Report timing statistics
   DualSensePrecision.Configuration    App settings
   DualSensePrecision.Profiles         Portable JSON profiles
-  DualSensePrecision.VirtualController Backend abstraction (no driver yet)
+  DualSensePrecision.VirtualController Virtual Xbox 360 pad via VIIPER
 tests/DualSensePrecision.Tests        xUnit
 docs/ARCHITECTURE.md                  Protocol notes, decisions, limitations
 DEVELOPMENT_STATUS.md                 What works, what doesn't, what's next
@@ -50,4 +50,5 @@ DEVELOPMENT_STATUS.md                 What works, what doesn't, what's next
 ## Troubleshooting
 
 - **Not detected:** use a data-capable USB-C cable (many are charge-only), plug directly into the PC rather than a hub, and close apps that take exclusive controller access.
+- **Xbox controller not detected:** it must show in Windows' Game Controllers (joy.cpl). Bluetooth Xbox pads need Windows 10 1903+ and recent controller firmware (update it in the Xbox Accessories app).
 - **Report rate lower than expected:** that's the controller's hardware rate, measured honestly. USB hubs and front-panel ports can add jitter.

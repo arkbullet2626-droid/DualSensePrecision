@@ -69,8 +69,8 @@ public sealed partial class StickSettingsPage : Page
 
         c.Pipeline.Sample(out var raw, out var proc);
         bool left = ViewModel.IsLeft;
-        float rx = ControllerState.NormalizeAxis(left ? raw.LeftX : raw.RightX);
-        float ry = -ControllerState.NormalizeAxis(left ? raw.LeftY : raw.RightY);
+        float rx = left ? raw.LX : raw.RX;
+        float ry = left ? raw.LY : raw.RY;
         float px = left ? proc.LeftX : proc.RightX;
         float py = left ? proc.LeftY : proc.RightY;
 

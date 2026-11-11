@@ -3,6 +3,7 @@ using DualSensePrecision.Configuration;
 using DualSensePrecision.Core;
 using DualSensePrecision.HID;
 using DualSensePrecision.HID.Protocol;
+using DualSensePrecision.HID.Xbox;
 using DualSensePrecision.InputEngine;
 using DualSensePrecision.Profiles;
 using DualSensePrecision.Telemetry;
@@ -60,15 +61,43 @@ public sealed class ControllerService : IDisposable
     public void SetBackend(IVirtualControllerBackend backend) => Backend = backend;
 
     public IControllerSource? Source => _source;
+
+    /// <summary>The physical source delivering input right now (DualSense, Xbox or mock), or null.</summary>
+    public IControllerSource? ActiveSource => _source is AutoControllerSource a ? a.Active : _source;
+
+    /// <summary>The Xbox reader (exists whenever real hardware detection is on), for the virtual-pad filter and rumble.</summary>
+    public XboxControllerSource? Xbox => (_source as AutoControllerSource)?.Xbox;
+
     public bool IsMock => _source is MockControllerSource;
-    public ReportTelemetry? Telemetry => _source switch
+    public ControllerFamily Family => Info?.Family ?? ControllerFamily.DualSense;
+    public bool IsXbox => Status == ConnectionStatus.Connected && Family == ControllerFamily.Xbox;
+
+    public ReportTelemetry? Telemetry => ActiveSource switch
     {
         DualSenseUsbController u => u.Telemetry,
+        XboxControllerSource x => x.Telemetry,
         MockControllerSource m => m.Telemetry,
         _ => null,
     };
-    public ImuCalibration Calibration => (_source as DualSenseUsbController)?.Calibration ?? ImuCalibration.Default();
-    public FirmwareInfo? Firmware => (_source as DualSenseUsbController)?.Firmware;
+    public ImuCalibration Calibration => (ActiveSource as DualSenseUsbController)?.Calibration ?? ImuCalibration.Default();
+    public FirmwareInfo? Firmware => (ActiveSource as DualSenseUsbController)?.Firmware;
+
+    /// <summary>Tells the Xbox reader whether the app's virtual pad is starting/running (so it's never read back as input).</summary>
+    public Func<VirtualPadPhase> VirtualPhase { get; set; } = () => VirtualPadPhase.Off;
+
+    /// <summary>Xbox rumble (0–255 per motor, already scaled). Returns false if no Xbox controller is active.</summary>
+    public bool SetXboxVibration(byte left, byte right, int strengthPercent)
+    {
+        if (ActiveSource is not XboxControllerSource x) return false;
+        var (l, r) = XboxProtocol.Vibration(left, right, strengthPercent);
+        return x.SetVibration(l, r);
+    }
+
+    /// <summary>Applies the "which controller wins" setting without restarting anything.</summary>
+    public void SetPreferred(ControllerFamily family)
+    {
+        if (_source is AutoControllerSource a) a.Preferred = family;
+    }
 
     public ConnectionStatus Status => _source?.Status ?? ConnectionStatus.Disconnected;
     public ControllerInfo? Info => _source?.Info;
@@ -81,11 +110,17 @@ public sealed class ControllerService : IDisposable
     {
         Stop();
         OutputLimiter.RateHz = settings.OutputRateHz;
-        _source = settings.UseMockController ? new MockControllerSource() : new DualSenseUsbController();
+        if (settings.UseMockController)
+            _source = new MockControllerSource();
+        else
+        {
+            var xbox = new XboxControllerSource { VirtualPhase = () => VirtualPhase() };
+            _source = new AutoControllerSource(new DualSenseUsbController(), xbox, settings.PreferredController);
+        }
         _source.ReportReceived += OnReport;
         _source.StatusChanged += s =>
         {
-            // Unplugged DualSense → centre the virtual pad so a game doesn't see a stuck stick or held button.
+            // Unplugged (or switched) controller → centre the virtual pad so a game doesn't see a stuck stick or held button.
             if (s != ConnectionStatus.Connected)
             {
                 Backend.Submit(default);

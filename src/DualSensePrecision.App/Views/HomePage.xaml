@@ -60,7 +60,7 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <controls:MetricTile Label="REPORT RATE" Value="{x:Bind Rate, Mode=OneWay}" Unit="Hz" Hint="Measured from the controller" />
+                <controls:MetricTile Label="{x:Bind RateLabel, Mode=OneWay}" Value="{x:Bind Rate, Mode=OneWay}" Unit="Hz" Hint="{x:Bind RateHint, Mode=OneWay}" />
                 <controls:MetricTile Grid.Column="1" Label="BATTERY" Value="{x:Bind Battery, Mode=OneWay}" Hint="{x:Bind Charging, Mode=OneWay}" />
                 <controls:MetricTile Grid.Column="2" ValueFontSize="20" Label="ACTIVE PROFILE" Value="{x:Bind ProfileName, Mode=OneWay}" Hint="Applied to processed input" />
                 <controls:MetricTile Grid.Column="3" Label="VIRTUAL CONTROLLER" ValueFontSize="20" Value="{x:Bind VirtualStatus, Mode=OneWay}" Hint="{x:Bind VirtualHint, Mode=OneWay}" />
@@ -68,7 +68,7 @@
 
             <Border Style="{StaticResource DsCard}" Visibility="{x:Bind app:Converters.VisibleWhen(IsMock), Mode=OneWay}">
                 <TextBlock Style="{StaticResource DsBody}" Foreground="{StaticResource DsWarningBrush}"
-                           Text="Development mode: input is simulated. Turn off 'Use simulated controller' in Settings to use your real DualSense." />
+                           Text="Development mode: input is simulated. Turn off 'Use simulated controller' in Settings to use your real controller." />
             </Border>
         </StackPanel>
     </ScrollViewer>

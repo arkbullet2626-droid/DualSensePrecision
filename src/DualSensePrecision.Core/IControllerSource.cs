@@ -14,10 +14,17 @@ public sealed record ControllerInfo(
     string? FirmwareBuildDate,
     int InputReportLength,
     int OutputReportLength,
-    bool IsMock);
+    bool IsMock)
+{
+    /// <summary>DualSense or Xbox. Pages hide hardware the family doesn't have (lightbar, touchpad, gyro…).</summary>
+    public ControllerFamily Family { get; init; } = ControllerFamily.DualSense;
+
+    /// <summary>Short connection description for the status bar, e.g. "USB · wired".</summary>
+    public string ConnectionLabel { get; init; } = "USB · wired";
+}
 
 /// <summary>
-/// Anything that delivers controller reports: the real USB DualSense or the clearly-labelled mock.
+/// Anything that delivers controller reports: the real USB DualSense, an Xbox controller (via XInput) or the clearly-labelled mock.
 /// Events fire on the reader thread — handlers must be fast and must not touch UI.
 /// </summary>
 public interface IControllerSource : IDisposable

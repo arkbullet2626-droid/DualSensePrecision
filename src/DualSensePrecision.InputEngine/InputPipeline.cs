@@ -42,8 +42,8 @@ public sealed class InputPipeline
     public ProcessedState Process(in ControllerState s)
     {
         var cfg = Volatile.Read(ref _settings);
-        var (lx, ly) = StickProcessor.Process(ControllerState.NormalizeAxis(s.LeftX), -ControllerState.NormalizeAxis(s.LeftY), cfg.LeftStick);
-        var (rx, ry) = StickProcessor.Process(ControllerState.NormalizeAxis(s.RightX), -ControllerState.NormalizeAxis(s.RightY), cfg.RightStick);
+        var (lx, ly) = StickProcessor.Process(s.LX, s.LY, cfg.LeftStick);
+        var (rx, ry) = StickProcessor.Process(s.RX, s.RY, cfg.RightStick);
         var l2 = TriggerProcessor.Process(s.L2, cfg.LeftTrigger);
         var r2 = TriggerProcessor.Process(s.R2, cfg.RightTrigger);
 

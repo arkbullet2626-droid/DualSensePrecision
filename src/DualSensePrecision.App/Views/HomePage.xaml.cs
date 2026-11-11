@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DualSensePrecision.App.Services;
+using DualSensePrecision.App.ViewModels;
 using DualSensePrecision.Core;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -16,7 +17,7 @@ public sealed partial class HomePage : Page
 
     [ObservableProperty] public partial string StatusLabel { get; set; } = "NOT CONNECTED";
     [ObservableProperty] public partial Brush StatusBrush { get; set; }
-    [ObservableProperty] public partial string Headline { get; set; } = "Connect your DualSense";
+    [ObservableProperty] public partial string Headline { get; set; } = "Connect your controller";
     [ObservableProperty] public partial string Detail { get; set; } = "";
     [ObservableProperty] public partial string Rate { get; set; } = "—";
     [ObservableProperty] public partial string Battery { get; set; } = "—";
@@ -24,7 +25,9 @@ public sealed partial class HomePage : Page
     [ObservableProperty] public partial string ProfileName { get; set; } = "—";
     [ObservableProperty] public partial bool IsMock { get; set; }
     [ObservableProperty] public partial string VirtualStatus { get; set; } = "Off";
-    [ObservableProperty] public partial string VirtualHint { get; set; } = "Games read the DualSense directly";
+    [ObservableProperty] public partial string VirtualHint { get; set; } = "Games read the controller directly";
+    [ObservableProperty] public partial string RateLabel { get; set; } = "REPORT RATE";
+    [ObservableProperty] public partial string RateHint { get; set; } = "Measured from the controller";
 
     public HomePage()
     {
@@ -56,13 +59,17 @@ public sealed partial class HomePage : Page
         IsMock = c.IsMock;
         RefreshVirtual();
         ProfileName = AppServices.ActiveProfile?.Name ?? "None";
+        bool xbox = c.Status == ConnectionStatus.Connected && c.Family == ControllerFamily.Xbox;
+        RateLabel = xbox ? "UPDATE RATE" : "REPORT RATE";
+        RateHint = xbox ? "Input changes via XInput" : "Measured from the controller";
         switch (c.Status)
         {
             case ConnectionStatus.Connected:
-                StatusLabel = c.IsMock ? "SIMULATED" : "CONNECTED · USB";
+                StatusLabel = c.IsMock ? "SIMULATED" : "CONNECTED · " + (c.Info?.ConnectionLabel ?? "USB").ToUpperInvariant();
                 StatusBrush = GetBrush(c.IsMock ? "DsWarningBrush" : "DsSuccessBrush");
-                Headline = c.Info?.Name ?? "DualSense";
-                Detail = c.Info?.FirmwareVersion is { } fw ? $"Firmware {fw}" : "Reading input";
+                Headline = c.Info?.Name ?? "Controller";
+                Detail = xbox ? "Read through Windows' XInput"
+                       : c.Info?.FirmwareVersion is { } fw ? $"Firmware {fw}" : "Reading input";
                 break;
             case ConnectionStatus.Connecting:
                 StatusLabel = "CONNECTING";
@@ -79,8 +86,8 @@ public sealed partial class HomePage : Page
             default:
                 StatusLabel = "NOT CONNECTED";
                 StatusBrush = GetBrush("DsTextTertiaryBrush");
-                Headline = "Connect your DualSense";
-                Detail = "Plug it in with a USB-C data cable. It's detected automatically.";
+                Headline = "Connect your controller";
+                Detail = "Plug in a DualSense with a USB-C data cable, or connect an Xbox controller (USB, Bluetooth or Xbox Wireless Adapter). It's detected automatically.";
                 Rate = Battery = "—";
                 Charging = "";
                 break;
@@ -100,14 +107,7 @@ public sealed partial class HomePage : Page
         RefreshVirtual();
         var stats = c.Telemetry?.Snapshot();
         Rate = stats is { HasData: true } s ? $"{s.MeasuredRateHz:0}" : "—";
-        Battery = $"{raw.BatteryPercent}%";
-        Charging = raw.Charging switch
-        {
-            ChargingState.Charging => "Charging",
-            ChargingState.Full => "Fully charged",
-            ChargingState.Error => "Battery error",
-            _ => "On battery",
-        };
+        (Battery, Charging) = ControllerText.Battery(raw);
     }
 
     private void RefreshVirtual()
@@ -115,7 +115,7 @@ public sealed partial class HomePage : Page
         var v = AppServices.Viiper;
         (VirtualStatus, VirtualHint) = v?.State switch
         {
-            null or DualSensePrecision.VirtualController.VirtualState.Off => ("Off", "Games read the DualSense directly"),
+            null or DualSensePrecision.VirtualController.VirtualState.Off => ("Off", "Games read the controller directly"),
             DualSensePrecision.VirtualController.VirtualState.Connected => ("Xbox 360", "Games get your tuned settings"),
             DualSensePrecision.VirtualController.VirtualState.Connecting => ("Starting", "Connecting to VIIPER"),
             _ => ("Problem", "Open Virtual Controller for details"),

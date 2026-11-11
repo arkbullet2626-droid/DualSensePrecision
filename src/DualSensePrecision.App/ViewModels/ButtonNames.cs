@@ -6,7 +6,36 @@ namespace DualSensePrecision.App.ViewModels;
 /// <summary>Human-readable names for buttons, keys and mappings.</summary>
 public static class ButtonNames
 {
-    public static string Name(DsButtons b) => b switch
+    /// <summary>The connected controller's family (DualSense when nothing is connected), so names match the buttons in your hands.</summary>
+    public static ControllerFamily CurrentFamily =>
+        Services.AppServices.Controller.Status == ConnectionStatus.Connected ? Services.AppServices.Controller.Family : ControllerFamily.DualSense;
+
+    public static bool IsXbox => CurrentFamily == ControllerFamily.Xbox;
+
+    public static string Name(DsButtons b) => Name(b, CurrentFamily);
+
+    public static string Name(DsButtons b, ControllerFamily family) => family == ControllerFamily.Xbox ? XboxName(b) : DualSenseName(b);
+
+    /// <summary>Xbox labels for the same physical positions (A = Cross's spot, View = Create, …).</summary>
+    public static string XboxName(DsButtons b) => b switch
+    {
+        DsButtons.Cross => "A",
+        DsButtons.Circle => "B",
+        DsButtons.Square => "X",
+        DsButtons.Triangle => "Y",
+        DsButtons.L1 => "LB",
+        DsButtons.R1 => "RB",
+        DsButtons.L2 => "LT",
+        DsButtons.R2 => "RT",
+        DsButtons.L3 => "Left stick click",
+        DsButtons.R3 => "Right stick click",
+        DsButtons.Create => "View",
+        DsButtons.Options => "Menu",
+        DsButtons.PS => "Xbox button",
+        _ => DualSenseName(b),
+    };
+
+    public static string DualSenseName(DsButtons b) => b switch
     {
         DsButtons.Cross => "Cross ✕",
         DsButtons.Circle => "Circle ○",
@@ -65,11 +94,12 @@ public static class ButtonNames
 
     public static string Describe(DsButtons source, ButtonMapping m)
     {
+        bool xbox = IsXbox;
         string what = m.Kind switch
         {
-            MappingKind.Default => $"Default (Xbox {XboxEquivalent(source)})",
+            MappingKind.Default => xbox ? "Default" : $"Default (Xbox {XboxEquivalent(source)})",
             MappingKind.Disabled => "Disabled",
-            MappingKind.Controller => $"{Name(m.ControllerTarget)} (Xbox {XboxEquivalent(m.ControllerTarget)})",
+            MappingKind.Controller => xbox ? Name(m.ControllerTarget) : $"{Name(m.ControllerTarget)} (Xbox {XboxEquivalent(m.ControllerTarget)})",
             MappingKind.Keyboard => "Key " + KeyCombo(m),
             MappingKind.Mouse => "Mouse " + m.MouseButton + " button",
             MappingKind.Macro => "Macro: " + MacroName(m.MacroId),
@@ -81,7 +111,7 @@ public static class ButtonNames
     public static string MacroName(string? id) =>
         Services.AppServices.ActiveProfile?.Macros.FirstOrDefault(x => x.Id == id)?.Name ?? "(deleted macro)";
 
-    public static string ShortName(DsButtons b) => b switch
+    public static string ShortName(DsButtons b) => IsXbox ? XboxShortName(b) : b switch
     {
         DsButtons.Cross => "✕",
         DsButtons.Circle => "○",
@@ -94,6 +124,20 @@ public static class ButtonNames
         DsButtons.Touchpad => "Pad",
         DsButtons.Options => "Opt",
         _ => b.ToString(),
+    };
+
+    private static string XboxShortName(DsButtons b) => b switch
+    {
+        DsButtons.L3 => "LS",
+        DsButtons.R3 => "RS",
+        DsButtons.Create => "View",
+        DsButtons.Options => "Menu",
+        DsButtons.PS => "Xbox",
+        DsButtons.DpadUp => "↑",
+        DsButtons.DpadDown => "↓",
+        DsButtons.DpadLeft => "←",
+        DsButtons.DpadRight => "→",
+        _ => XboxName(b),
     };
 
     public static string KeyCombo(ButtonMapping m)

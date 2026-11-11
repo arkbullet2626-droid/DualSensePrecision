@@ -10,7 +10,7 @@
             <StackPanel>
                 <TextBlock Text="Virtual Controller" Style="{StaticResource DsPageTitle}" />
                 <TextBlock Style="{StaticResource DsPageSubtitle}"
-                           Text="Presents your tuned DualSense to games as an Xbox 360 controller, so stick curves, deadzones, trigger settings and remaps take effect in-game." />
+                           Text="Presents your tuned controller (DualSense or Xbox) to games as an Xbox 360 controller, so stick curves, deadzones, trigger settings and remaps take effect in-game." />
             </StackPanel>
 
             <!-- Main switch + status -->
@@ -81,7 +81,7 @@
 
             <!-- Double input -->
             <InfoBar IsOpen="True" IsClosable="False" Severity="Warning" Title="Games may see two controllers"
-                     Message="Windows still shows your real DualSense too, so games that read both can get doubled input. For Steam games, set the game's Properties → Controller to 'Disable Steam Input' so Steam doesn't also translate the DualSense. Hiding the DualSense from games entirely (HidHide) is optional and will come in a later update — only with your permission." />
+                     Message="Windows still shows your real controller too, so games that read both can get doubled input. With an Xbox controller this happens in almost every game, because the real pad and the virtual pad are the same kind of device. For Steam games, set the game's Properties → Controller to 'Disable Steam Input'. Hiding the real controller from games (HidHide) is optional and comes in the next update — only with your permission." />
         </StackPanel>
     </ScrollViewer>
 </Page>

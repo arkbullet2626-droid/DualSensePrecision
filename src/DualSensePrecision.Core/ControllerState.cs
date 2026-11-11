@@ -35,6 +35,12 @@ public enum DsButtons : uint
 
 public enum DualSenseModel { Unknown, DualSense, DualSenseEdge }
 
+/// <summary>Which kind of physical controller is delivering input.</summary>
+public enum ControllerFamily { DualSense, Xbox }
+
+/// <summary>How precise the battery reading is. DualSense reports a percentage; XInput only reports a coarse level.</summary>
+public enum BatteryKind : byte { Percent, Level, Wired, Unknown }
+
 public enum ChargingState : byte { Discharging, Charging, Full, Error, Unknown }
 
 [StructLayout(LayoutKind.Sequential)]
@@ -64,13 +70,27 @@ public struct ControllerState
 
     public TouchPoint Touch0, Touch1;
 
-    public byte BatteryPercent;      // 0..100
+    public byte BatteryPercent;      // 0..100 (for BatteryKind.Level an approximate midpoint of the level)
     public ChargingState Charging;
+    public BatteryKind BatteryKind;  // Percent for DualSense
+
+    /// <summary>
+    /// Set by sources whose sticks have more than 8 bits of resolution (Xbox: 16-bit). The byte fields above are
+    /// still filled (rounded) so byte-based views keep working; processing uses the precise values.
+    /// </summary>
+    public bool HasPreciseSticks;
+    public float PreciseLeftX, PreciseLeftY, PreciseRightX, PreciseRightY; // [-1, 1], Y up positive
 
     /// <summary>QueryPerformanceCounter ticks (Stopwatch.GetTimestamp) taken when the report arrived.</summary>
     public long ArrivalTimestamp;
 
     public readonly bool IsPressed(DsButtons b) => (Buttons & b) == b;
+
+    /// <summary>Left/right stick normalised to [-1, 1], Y up positive, at the controller's full resolution.</summary>
+    public readonly float LX => HasPreciseSticks ? PreciseLeftX : NormalizeAxis(LeftX);
+    public readonly float LY => HasPreciseSticks ? PreciseLeftY : -NormalizeAxis(LeftY);
+    public readonly float RX => HasPreciseSticks ? PreciseRightX : NormalizeAxis(RightX);
+    public readonly float RY => HasPreciseSticks ? PreciseRightY : -NormalizeAxis(RightY);
 
     /// <summary>Stick value normalised to [-1, 1], Y up positive.</summary>
     public static float NormalizeAxis(byte raw) => Math.Clamp((raw - 127.5f) / 127.5f, -1f, 1f);

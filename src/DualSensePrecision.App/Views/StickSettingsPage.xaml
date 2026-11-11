@@ -23,7 +23,7 @@
 
             <InfoBar IsOpen="True" IsClosable="True" Severity="Informational"
                      Title="Where these settings take effect"
-                     Message="The processed output (blue dot) is what a virtual controller will send to games. Until a virtual controller is set up, games still read your DualSense directly, so these settings preview here but don't change in-game aim yet." />
+                     Message="The processed output (blue dot) is what a virtual controller will send to games. Until a virtual controller is set up, games still read your controller directly, so these settings preview here but don't change in-game aim yet." />
 
             <!-- Live view + curve -->
             <Grid ColumnSpacing="16">

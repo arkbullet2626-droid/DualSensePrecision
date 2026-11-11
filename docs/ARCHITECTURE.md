@@ -57,6 +57,15 @@ Sources: Linux kernel `hid-playstation.c` (Sony-contributed driver), SDL `SDL_hi
 
 Variation across revisions: firmware ≥ 2.24 supports "improved rumble emulation" (flag2 bit2). Edge has extra buttons and a different feature set (profiles on-device). The parser takes a `DualSenseModel` so behaviour can branch per model and firmware.
 
+## 3a. Xbox controllers (since 0.13)
+
+- Read through **XInput 1.4** (built into Windows 8+; no driver, no admin). `XboxControllerSource` polls the chosen slot every ~1 ms on a high-resolution waitable timer and emits a report when XInput's packet number changes, plus a ≥250/s re-send of the unchanged state so rate-capped output never holds a stale value.
+- Undocumented-but-stable exports are used when present: `XInputGetStateEx` (ordinal 100, adds the Xbox button) and `XInputGetCapabilitiesEx` (ordinal 108, vendor/product ID). Both fall back cleanly.
+- Mapping is positional (A=Cross, B=Circle, X=Square, Y=Triangle, LB/RB=L1/R1, LT/RT=L2/R2, View=Create, Menu=Options, Xbox=PS), so profiles, mappings and macros are shared between controllers. Sticks keep XInput's 16-bit resolution (`ControllerState.HasPreciseSticks`).
+- **Limits:** XInput exposes no report stream, so the app measures *changes seen*, not a hardware report rate, and says so. Battery is a four-step level. No trigger rumble, no Share button, no firmware info.
+- **Own virtual pad:** VIIPER's pad is also an XInput 045E:028E device. `XboxSlotFilter` identifies it by timing (slots present while the virtual pad is off are real; a new 360-type slot after it starts is the virtual one; ambiguous new 360-type slots are ignored) and always ignores Steam's virtual pads (VID 28DE). This prevents the app reading its own output.
+- `AutoControllerSource` runs the DualSense and Xbox readers side by side and forwards the connected one (preference in Settings when both are present). A switch is signalled as disconnect + connect so the virtual pad is centred and keys released.
+
 ## 4. Technical limitations identified up front
 
 1. **Physical report rate is fixed by the controller's USB endpoint interval.** The app cannot raise it from user mode. Community measurements put the stock wired DualSense well below 8000 Hz; we do not quote a number — the Performance page **measures** it. Raising it requires a third-party filter driver (e.g. `hidusbf`) that modifies USB endpoint intervals; that is a system-level, unsigned-driver change. We will not do it, and will at most link to it with warnings, only if the user asks.

@@ -70,7 +70,7 @@ public sealed partial class VirtualControllerPage : Page
         // Status
         (string title, string detail, string brush, bool showSetup) = v?.State switch
         {
-            null or VirtualState.Off => ("Off", "Games read your DualSense directly. Turn on to send them your tuned settings.", "DsTextTertiaryBrush", false),
+            null or VirtualState.Off => ("Off", "Games read your controller directly. Turn on to send them your tuned settings.", "DsTextTertiaryBrush", false),
             VirtualState.Connecting => ("Connecting…", v.StatusMessage ?? "", "DsWarningBrush", false),
             VirtualState.Connected => ("Active — games see an Xbox 360 controller", v.StatusMessage ?? "", "DsSuccessBrush", false),
             VirtualState.ServerMissing => ("VIIPER isn't running", (v.StatusMessage ?? "") + " Follow the setup below, or start VIIPER if it's already installed. Retrying every 2 seconds.", "DsDangerBrush", true),
@@ -106,8 +106,14 @@ public sealed partial class VirtualControllerPage : Page
         }
         else
         {
+            var xbox = AppServices.Controller.Xbox;
+            int virtualSlot = xbox?.VirtualSlot ?? -1;
+            int readSlot = AppServices.Controller.IsXbox ? xbox?.ActiveSlot ?? -1 : -1;
             XInputText.Text = string.Join("\n\n", pads.Select(p =>
-                $"Xbox controller #{p.Slot + 1}\n" +
+                $"Xbox controller #{p.Slot + 1}" +
+                (p.Slot == virtualSlot ? "  ·  the virtual pad (what games should use)"
+                 : p.Slot == readSlot ? "  ·  your real Xbox controller (input to the app)"
+                 : "") + "\n" +
                 $"  Left stick   X {p.Pad.ThumbLX,6}   Y {p.Pad.ThumbLY,6}\n" +
                 $"  Right stick  X {p.Pad.ThumbRX,6}   Y {p.Pad.ThumbRY,6}\n" +
                 $"  Triggers     LT {p.Pad.LeftTrigger,3}   RT {p.Pad.RightTrigger,3}\n" +

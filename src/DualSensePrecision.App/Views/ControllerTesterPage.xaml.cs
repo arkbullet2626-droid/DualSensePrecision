@@ -2,6 +2,7 @@ using System.Diagnostics;
 using DualSensePrecision.App.Services;
 using DualSensePrecision.App.ViewModels;
 using DualSensePrecision.Core;
+using DualSensePrecision.HID.Protocol;
 using DualSensePrecision.InputEngine;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -40,6 +41,7 @@ public sealed partial class ControllerTesterPage : Page
     private long _stepStarted;
     private DriftResult _lastLeftDrift = DriftResult.Empty, _lastRightDrift = DriftResult.Empty;
     private MotionResult _lastMotion = MotionResult.Empty;
+    private bool _xbox; // labels and test set currently shown for an Xbox controller
 
     public ControllerTesterPage()
     {
@@ -52,6 +54,7 @@ public sealed partial class ControllerTesterPage : Page
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
+        ApplyFamily(ButtonNames.IsXbox);
         AppServices.Controller.RawObserved += OnRaw;
         _sampler = new UiSampler(DispatcherQueue, TimeSpan.FromMilliseconds(33));
         _sampler.Tick += OnTick;
@@ -78,8 +81,8 @@ public sealed partial class ControllerTesterPage : Page
         if (s.R2 > 200) buttons |= DsButtons.R2;
         _buttons.Add(buttons);
 
-        float lx = ControllerState.NormalizeAxis(s.LeftX), ly = -ControllerState.NormalizeAxis(s.LeftY);
-        float rx = ControllerState.NormalizeAxis(s.RightX), ry = -ControllerState.NormalizeAxis(s.RightY);
+        float lx = s.LX, ly = s.LY;
+        float rx = s.RX, ry = s.RY;
         _leftRange.Add(lx, ly);
         _rightRange.Add(rx, ry);
         _l2.Add(s.L2);
@@ -109,6 +112,7 @@ public sealed partial class ControllerTesterPage : Page
         bool connected = c.Status == ConnectionStatus.Connected;
         NoControllerBar.IsOpen = !connected;
         if (!connected) return;
+        if (ButtonNames.IsXbox != _xbox) ApplyFamily(ButtonNames.IsXbox);
 
         c.Pipeline.Sample(out var s, out _);
 
@@ -120,13 +124,12 @@ public sealed partial class ControllerTesterPage : Page
             chip.Background = (now & b) != 0 ? Res("DsAccentBrush") : Res("DsSurfaceRaisedBrush");
             chip.BorderBrush = (seen & b) != 0 ? Res("DsSuccessBrush") : Res("DsStrokeBrush");
         }
-        bool edge = c.Info?.Model == DualSenseModel.DualSenseEdge;
-        int total = ButtonCoverage.Standard.Length + (edge ? ButtonCoverage.EdgeExtras.Length : 0);
-        ButtonsCount.Text = $"{total - _buttons.Missing(edge).Count} / {total} working";
+        var expected = ExpectedButtons();
+        ButtonsCount.Text = $"{expected.Count - _buttons.Missing(expected).Count} / {expected.Count} working";
 
         // Sticks
-        float lx = ControllerState.NormalizeAxis(s.LeftX), ly = -ControllerState.NormalizeAxis(s.LeftY);
-        float rx = ControllerState.NormalizeAxis(s.RightX), ry = -ControllerState.NormalizeAxis(s.RightY);
+        float lx = s.LX, ly = s.LY;
+        float rx = s.RX, ry = s.RY;
         _leftView.Update(lx, ly, _leftRange.Maxima());
         _rightView.Update(rx, ry, _rightRange.Maxima());
         LeftLive.Text = $"X {lx,7:+0.000;-0.000; 0.000}  Y {ly,7:+0.000;-0.000; 0.000}  ({Math.Sqrt(lx * lx + ly * ly) * 100,3:0}%)";
@@ -161,6 +164,12 @@ public sealed partial class ControllerTesterPage : Page
         SetBar(R2Track, R2Fill, s.R2);
         L2Text.Text = TriggerText(s.L2, _l2.Result());
         R2Text.Text = TriggerText(s.R2, _r2.Result());
+
+        if (_xbox)
+        {
+            if (_step is not (Step.None or Step.Done)) AdvanceWizard(s);
+            return; // no touchpad or motion sensors
+        }
 
         // Touchpad
         UpdateTouch(s);
@@ -254,6 +263,29 @@ public sealed partial class ControllerTesterPage : Page
     }
 
     private void OnResetButtons(object sender, RoutedEventArgs e) => _buttons.Reset();
+
+    /// <summary>The buttons the connected controller actually has.</summary>
+    private List<DsButtons> ExpectedButtons()
+    {
+        if (_xbox) return XboxProtocol.Buttons.ToList();
+        bool edge = AppServices.Controller.Info?.Model == DualSenseModel.DualSenseEdge;
+        return ButtonCoverage.Standard.Concat(edge ? ButtonCoverage.EdgeExtras : Array.Empty<DsButtons>()).ToList();
+    }
+
+    /// <summary>Switches labels, button chips and visible tests between DualSense and Xbox.</summary>
+    private void ApplyFamily(bool xbox)
+    {
+        _xbox = xbox;
+        XboxBar.IsOpen = xbox;
+        TouchCard.Visibility = MotionCard.Visibility = xbox ? Visibility.Collapsed : Visibility.Visible;
+        L2Label.Text = xbox ? "LT" : "L2";
+        R2Label.Text = xbox ? "RT" : "R2";
+        foreach (var (b, chip) in _chips)
+        {
+            ((TextBlock)chip.Child).Text = ButtonNames.Name(b, xbox ? ControllerFamily.Xbox : ControllerFamily.DualSense);
+            chip.Visibility = !xbox || XboxProtocol.Buttons.Contains(b) ? Visibility.Visible : Visibility.Collapsed;
+        }
+    }
 
     // ---------------- sticks ----------------
 
@@ -413,11 +445,19 @@ public sealed partial class ControllerTesterPage : Page
             DriftButton.IsEnabled = MotionButton.IsEnabled = true;
         }
 
+        if (_xbox && step == Step.Touch) step = Step.Done; // no touchpad on Xbox pads
         _step = step;
         _stepStarted = Now;
-        WizardProgress.Value = Math.Min((int)step - 1, 5);
-
-        (string title, string text) = step switch
+        WizardProgress.Maximum = _xbox ? 4 : 5;
+        WizardProgress.Value = Math.Min((int)step - 1, _xbox ? 4 : 5);
+        (string title, string text) = _xbox ? step switch
+        {
+            Step.Buttons => ("1 of 4 · Buttons", "Press every button once: A, B, X, Y, D-pad, LB/RB, LT/RT fully, both stick clicks, View, Menu and the Xbox button."),
+            Step.Rest => ("2 of 4 · Stick drift", "Put the controller down on a flat surface and let go completely. Measuring for 5 seconds…"),
+            Step.Circles => ("3 of 4 · Stick range", "Rotate both sticks slowly around their outer edge — two or three full circles each."),
+            Step.Triggers => ("4 of 4 · Triggers", "Pull LT and RT all the way down, then let go."),
+            _ => ("Done", ""),
+        } : step switch
         {
             Step.Buttons => ("1 of 5 · Buttons", "Press every button once: face buttons, D-pad, L1/R1, L2/R2 fully, L3/R3 (click the sticks), Create, Options, PS, Mute and the touchpad click."),
             Step.Rest => ("2 of 5 · Stick drift and motion sensors", "Put the controller down on a flat surface and let go completely. Measuring for 5 seconds…"),
@@ -443,13 +483,12 @@ public sealed partial class ControllerTesterPage : Page
     private void AdvanceWizard(ControllerState s)
     {
         double elapsed = (Now - _stepStarted) / (double)Stopwatch.Frequency;
-        bool edge = AppServices.Controller.Info?.Model == DualSenseModel.DualSenseEdge;
         switch (_step)
         {
             case Step.Buttons:
             {
-                var missing = _buttons.Missing(edge);
-                WizardStepStatus.Text = missing.Count == 0 ? "All buttons registered ✓" : "Still to press: " + string.Join(", ", missing.Select(ButtonNames.Name));
+                var missing = _buttons.Missing(ExpectedButtons());
+                WizardStepStatus.Text = missing.Count == 0 ? "All buttons registered ✓" : "Still to press: " + string.Join(", ", missing.Select(b => ButtonNames.Name(b)));
                 if (missing.Count == 0) GoTo(Step.Rest);
                 break;
             }
@@ -485,7 +524,7 @@ public sealed partial class ControllerTesterPage : Page
             {
                 var l2 = _l2.Result();
                 var r2 = _r2.Result();
-                WizardStepStatus.Text = $"L2 max {l2.Max} · R2 max {r2.Max}";
+                WizardStepStatus.Text = _xbox ? $"LT max {l2.Max} · RT max {r2.Max}" : $"L2 max {l2.Max} · R2 max {r2.Max}";
                 if ((l2.Max >= 250 && r2.Max >= 250 && s.L2 < 10 && s.R2 < 10) || elapsed > 20) GoTo(Step.Touch);
                 break;
             }
@@ -502,16 +541,15 @@ public sealed partial class ControllerTesterPage : Page
         WizardSkip.Visibility = Visibility.Collapsed;
         WizardButton.Content = "Run again";
         var c = AppServices.Controller;
-        bool edge = c.Info?.Model == DualSenseModel.DualSenseEdge;
         var stats = c.Telemetry?.Snapshot();
         ReportBox.Text = DiagnosticReport.Build(
-            c.Info?.Name ?? "DualSense", c.Info?.FirmwareVersion ?? "not reported",
+            c.Info?.Name ?? "Controller", c.Info?.FirmwareVersion ?? (_xbox ? "not available through XInput" : "not reported"),
             stats is { HasData: true } st ? st.MeasuredRateHz : 0,
-            _buttons.Missing(edge), ButtonNames.Name,
+            _buttons.Missing(ExpectedButtons()), ButtonNames.Name,
             _lastLeftDrift, _lastRightDrift,
             _leftRange.Result(), _rightRange.Result(),
             _l2.Result(), _r2.Result(),
-            _touchSeen, _lastMotion, DateTime.Now);
+            _touchSeen, _lastMotion, DateTime.Now, _xbox);
         ApplyDeadzonesButton.IsEnabled = _lastLeftDrift.Verdict != Verdict.NotTested;
         ReportStatus.Text = "";
         ReportPanel.Visibility = Visibility.Visible;
@@ -532,7 +570,7 @@ public sealed partial class ControllerTesterPage : Page
             var picker = new Windows.Storage.Pickers.FileSavePicker();
             WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(MainWindow.Current!));
             picker.FileTypeChoices.Add("Text file", new List<string> { ".txt" });
-            picker.SuggestedFileName = $"DualSense diagnostic {DateTime.Now:yyyy-MM-dd HHmm}";
+            picker.SuggestedFileName = $"{(_xbox ? "Xbox controller" : "DualSense")} diagnostic {DateTime.Now:yyyy-MM-dd HHmm}";
             var file = await picker.PickSaveFileAsync();
             if (file == null) return;
             await Windows.Storage.FileIO.WriteTextAsync(file, ReportBox.Text);

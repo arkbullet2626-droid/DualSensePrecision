@@ -25,6 +25,11 @@ public sealed partial class TriggerSettingsPage : Page
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
         ViewModel.Load(left: true);
+        bool xbox = DualSensePrecision.App.ViewModels.ButtonNames.IsXbox;
+        XboxBar.IsOpen = xbox;
+        AdaptiveCard.Visibility = xbox ? Microsoft.UI.Xaml.Visibility.Collapsed : Microsoft.UI.Xaml.Visibility.Visible;
+        LeftTab.Text = xbox ? "LT (left)" : "L2 (left)";
+        RightTab.Text = xbox ? "RT (right)" : "R2 (right)";
         AppServices.ProfileSaveFailed += OnSaveFailed;
         _sampler = new UiSampler(DispatcherQueue, TimeSpan.FromMilliseconds(16));
         _sampler.Tick += OnTick;

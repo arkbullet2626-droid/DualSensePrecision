@@ -15,6 +15,10 @@
                 <StackPanel Spacing="16">
                     <TextBlock Text="Controller" Style="{StaticResource DsSectionTitle}" />
                     <ToggleSwitch x:Name="AutoDetect" Header="Automatic controller detection" Toggled="OnChanged" />
+                    <ComboBox x:Name="Preferred" Header="When a DualSense and an Xbox controller are both connected, use" SelectionChanged="OnPreferredChanged" MinWidth="260">
+                        <ComboBoxItem Content="The DualSense" />
+                        <ComboBoxItem Content="The Xbox controller" />
+                    </ComboBox>
                     <ToggleSwitch x:Name="Mock" Header="Use simulated controller (development)" Toggled="OnChanged" />
                     <TextBlock Style="{StaticResource DsBody}" Text="The simulated controller exists for UI development. Every screen marks its data as simulated, and none of it is a hardware measurement." />
                 </StackPanel>

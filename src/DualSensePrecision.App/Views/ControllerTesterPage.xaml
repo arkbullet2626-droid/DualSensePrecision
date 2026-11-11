@@ -10,11 +10,14 @@
             <StackPanel>
                 <TextBlock Text="Controller Tester" Style="{StaticResource DsPageTitle}" />
                 <TextBlock Style="{StaticResource DsPageSubtitle}"
-                           Text="Checks your DualSense's raw hardware — before any of your profile's deadzones, curves or remaps." />
+                           Text="Checks your controller's raw hardware — before any of your profile's deadzones, curves or remaps." />
             </StackPanel>
 
             <InfoBar x:Name="NoControllerBar" IsOpen="False" IsClosable="False" Severity="Warning" Title="No controller connected"
-                     Message="Plug in your DualSense to run the tests." />
+                     Message="Plug in your DualSense or Xbox controller to run the tests." />
+
+            <InfoBar x:Name="XboxBar" IsOpen="False" IsClosable="False" Severity="Informational" Title="Xbox controller"
+                     Message="Buttons, sticks, drift, range and triggers are tested. The touchpad and motion-sensor tests are hidden because only a DualSense has them." />
 
             <!-- Full diagnostic -->
             <Border Style="{StaticResource DsCard}">
@@ -115,12 +118,12 @@
                             <TextBlock Text="Trigger pressure" Style="{StaticResource DsSectionTitle}" />
                             <Button Content="Reset" Click="OnResetTriggers" HorizontalAlignment="Right" />
                         </Grid>
-                        <TextBlock Text="L2" Style="{StaticResource DsLabel}" />
+                        <TextBlock x:Name="L2Label" Text="L2" Style="{StaticResource DsLabel}" />
                         <Grid x:Name="L2Track" Height="16" Background="{StaticResource DsSurfaceRaisedBrush}" CornerRadius="4">
                             <Border x:Name="L2Fill" HorizontalAlignment="Left" Width="0" Background="{StaticResource DsAccentBrush}" CornerRadius="4" />
                         </Grid>
                         <TextBlock x:Name="L2Text" Style="{StaticResource DsMono}" />
-                        <TextBlock Text="R2" Style="{StaticResource DsLabel}" />
+                        <TextBlock x:Name="R2Label" Text="R2" Style="{StaticResource DsLabel}" />
                         <Grid x:Name="R2Track" Height="16" Background="{StaticResource DsSurfaceRaisedBrush}" CornerRadius="4">
                             <Border x:Name="R2Fill" HorizontalAlignment="Left" Width="0" Background="{StaticResource DsAccentBrush}" CornerRadius="4" />
                         </Grid>
@@ -130,7 +133,7 @@
                 </Border>
 
                 <!-- Touchpad -->
-                <Border Grid.Column="1" Style="{StaticResource DsCard}" VerticalAlignment="Top">
+                <Border x:Name="TouchCard" Grid.Column="1" Style="{StaticResource DsCard}" VerticalAlignment="Top">
                     <StackPanel Spacing="12">
                         <Grid>
                             <TextBlock Text="Touchpad" Style="{StaticResource DsSectionTitle}" />
@@ -147,7 +150,7 @@
             </Grid>
 
             <!-- Motion -->
-            <Border Style="{StaticResource DsCard}">
+            <Border x:Name="MotionCard" Style="{StaticResource DsCard}">
                 <StackPanel Spacing="12">
                     <Grid>
                         <TextBlock Text="Gyroscope &amp; accelerometer" Style="{StaticResource DsSectionTitle}" />
@@ -166,7 +169,7 @@
                 <StackPanel Spacing="8">
                     <TextBlock Text="More diagnostics" Style="{StaticResource DsSectionTitle}" />
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Button Content="USB report monitor (Controller page)" Click="OnOpenController" />
+                        <Button Content="Raw input monitor (Controller page)" Click="OnOpenController" />
                         <Button Content="Report timing (Performance page)" Click="OnOpenPerformance" />
                     </StackPanel>
                 </StackPanel>
