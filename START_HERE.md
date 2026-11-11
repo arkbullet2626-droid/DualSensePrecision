@@ -1,81 +1,57 @@
-# DualSense Precision v0.13.0: Xbox controller support
+# DualSense Precision v0.14.0: hide your real controller from games
 
-New in this version: **Xbox controllers work too** (Xbox Series X|S, Xbox One, Xbox Elite and Xbox 360; by USB cable, Bluetooth or the Xbox Wireless Adapter). Plug one in and the app picks it up automatically, just like the DualSense.
+New in this version: games can be made to see **only the tuned virtual controller**, so Rocket League (and others) stop picking up your real controller as a second player. It uses **HidHide**, a free, signed driver by Nefarius that Setup can download and install for you. Hiding is **off until you switch it on** in the app.
 
 ## Install
 
-1. Close DualSense Precision if it's open (right-click its tray/taskbar icon → Close, or just close the window).
-2. Run **`DualSensePrecision-0.13.0-setup.exe`**. If SmartScreen appears, click **More info → Run anyway**.
-3. Click through and finish. VIIPER is already on your PC, so there's no VIIPER checkbox. Your profiles are kept.
-4. The app opens. **Settings** shows **0.13.0**.
+1. Close DualSense Precision.
+2. Run **`DualSensePrecision-0.14.0-setup.exe`**. If SmartScreen appears: **More info → Run anyway**.
+3. On the options page, leave **"Download and install HidHide 1.5.230…"** ticked. (It only appears if HidHide isn't installed yet.)
+4. Click **Install**. A download page appears briefly. Windows then asks for **administrator permission** for the HidHide driver: click **Yes**.
+5. At the end choose **Restart now**. The restart is needed so HidHide can attach to your controllers.
 
-(Building it yourself instead: double-click `build-installer` (the Command Script). Tests should end with **all succeeded**; File Explorer then opens on the new Setup.exe.)
+## Switch hiding on
 
-## What works on an Xbox controller
-
-- Stick curves, deadzones, sensitivity (at the Xbox pad's full 16-bit precision), trigger shaping, button mapping, macros, profiles.
-- Controller Tester: buttons, drift, stick range, triggers, full diagnostic.
-- Vibration (test button and game rumble through the virtual pad), scaled by **Vibration strength**.
-- Battery as a level (Full / Medium / Low / Empty) on wireless pads; "Wired" on a cable.
-
-**Not available on Xbox controllers** (the hardware doesn't have it): lightbar, player lights, mute light, adaptive triggers, touchpad, motion sensors. Those sections are hidden while an Xbox pad is connected and come back with a DualSense.
-
-**Honest limits:** Windows doesn't let apps time an Xbox controller's reports the way it does a DualSense's. The app reads Xbox pads through Windows' **XInput**, checks about 1,000 times a second, and counts how often the input *changed*. That's labelled **Update rate (XInput)**; it is not a hardware report rate. Also, until hiding the real controller (HidHide, the next update) is in, games with the Virtual Controller on will see **two** Xbox controllers.
+1. Open DualSense Precision, connect your controller, go to **Virtual Controller** and switch the virtual controller **on**.
+2. In the new card **"Hide your real controller from games"**, switch it **On**. Read the explanation and click **Hide it** (asked once).
+3. The status line says *Hiding your Xbox controller from games (N device entries)…*.
+4. **Start (or restart) your game afterwards.** A game that was already open keeps seeing the controller it had.
 
 ## Tests for this version
 
-**A. DualSense still works (quick check)**
-1. Plug in your DualSense. The sidebar shows it, Home shows **REPORT RATE ~250 Hz**, and Appearance shows the lightbar as before.
-2. Unplug the DualSense before the Xbox tests.
+**A. Install**
+1. Setup shows the HidHide option, downloads it, Windows asks for permission, and the finish page offers a restart. After restarting, **Settings** shows **0.14.0**.
 
-**B. Xbox controller detected**
-3. Connect your Xbox controller (cable, Bluetooth, or wireless adapter). Within about a second the sidebar bottom shows its name (e.g. *Xbox Series X|S Controller*) and **USB · wired** or **Wireless**.
-4. **Home:** the two stick dots move with your sticks. The first tile reads **UPDATE RATE** ("Input changes via XInput"). **Battery** shows *Wired* on a cable, or *Full / Medium / Low* wireless.
+**B. Before switching hiding on**
+2. With the virtual controller on and hiding off, click **Check what games see**. It reports *Games see 2 Xbox-style controllers; this app sees 2.*
 
-**C. Controller page**
-5. **Device** lists Type *Xbox controller (read through XInput)*, Connection, Vendor/product ID, XInput slot.
-6. **Live inputs:** sticks show values from −1 to +1 with four decimals; triggers say **LT / RT** 0–255; **Buttons held** shows Xbox names (press A, B, LB, View, Menu…). Motion and touchpad say *Not on this controller*.
-7. **Raw XInput state** bytes change as you move things.
+**C. Switch hiding on**
+3. Switch **Hide your real controller from games** on: the explanation dialog appears. **Cancel** leaves it off; switch it on again and click **Hide it**.
+4. The status says it's hiding your controller, and the yellow *Games may see two controllers* warning disappears.
+5. Click **Check what games see**: after a second or two it says *✓ Games see exactly one Xbox controller: the virtual pad.*
+   - If it still says 2: unplug the controller and plug it back in (or switch a wireless pad off and on), then check again.
+6. The app still reads your controller: the Home stick dots move, and **What Windows sees** still lists both pads (the app is allowed to see hidden ones).
 
-**D. Performance**
-8. The page explains it's an XInput update rate. Move both sticks continuously for a few seconds: **UPDATE RATE (XINPUT)** shows a steady number. Let go: it drops. **Dropped reports** and **Stalls** show *n/a*.
+**D. Rocket League (the original problem)**
+7. Start Rocket League **after** step 5. Press **Menu/Start**: only one player joins, and your tuned settings apply (try a big inner deadzone and see the car ignore small stick movement).
 
-**E. Sticks and triggers**
-9. **Stick Settings:** raise the inner deadzone; the blue dot stays centred longer. Change the curve; the blue dot follows it.
-10. **Trigger Settings:** tabs say **LT (left) / RT (right)**, an info bar explains adaptive triggers are hidden, and the live meter follows the trigger. Change the deadzone and see the processed bar respond.
+**E. Undo**
+8. Switch hiding **off**: status says *Off…*, and **Check what games see** shows 2 again.
+9. Switch hiding back on, then turn the **virtual controller off**: hiding is undone straight away (games see your real controller again, so it still works in games).
+10. With hiding on, **close the app**. Open the Windows Game Controllers panel (Win+R, type `joy.cpl`): your controller is listed again.
 
-**F. Button Mapping**
-11. The drawing shows **A B X Y, LB RB, LT RT, LS RS, View, Menu, Xbox**, with no touchpad or mute. Pressing a button lights it up and selects it.
-12. Map **A → Keyboard Space**. Open Notepad and press A: it types a space. Set A back to **Default**.
+**F. DualSense too (optional)**
+11. Connect your DualSense instead, with the virtual controller and hiding on: status says *Hiding your DualSense…*. In a game that supports PlayStation controllers natively, only the virtual Xbox pad shows up.
 
-**G. Macros**
-13. Record a short macro using Xbox buttons, assign it to a button, and play it. Steps show Xbox names.
-
-**H. Appearance**
-14. Only **Vibration & trigger strength** shows (without the adaptive slider), plus an info bar. **Test vibration** rumbles the Xbox controller.
-15. Set **Vibration strength** to 0 % and test: no rumble. 50 %: weaker. Put it back.
-
-**I. Controller Tester**
-16. An info bar says touchpad and motion tests are hidden. Button chips use Xbox names (17 of them).
-17. **Run full diagnostic**: 4 steps (Buttons, Stick drift, Stick range, Triggers), then a report saying *Update rate (XInput…)* and *Touchpad and motion sensors — not on Xbox controllers*.
-
-**J. Virtual Controller with an Xbox pad**
-18. Switch the Virtual Controller **on**. **What Windows sees** lists two controllers: one labelled *your real Xbox controller (input to the app)* and one *the virtual pad (what games should use)*.
-19. Move the sticks: both entries move, and the virtual pad shows your processed values (e.g. deadzone applied). Nothing freezes or drifts on its own.
-20. Switch the Virtual Controller off: the virtual entry disappears and the app keeps reading your real controller.
-
-**K. Plugging and switching**
-21. Unplug (or switch off) the Xbox controller: the sidebar says **No controller**. Reconnect: it comes back by itself.
-22. With the Xbox controller connected, plug in the DualSense: the app switches to the DualSense (pages relabel to Cross/Circle/L2…).
-23. **Settings → "When a DualSense and an Xbox controller are both connected, use" → The Xbox controller**: it switches to the Xbox pad straight away. Set it back if you prefer.
-24. Switch profiles from the sidebar while using the Xbox pad: settings change instantly, as with the DualSense.
+**G. Everything from 0.13.0 still works**
+12. Quick spot-check: stick settings, button mapping and the Controller Tester work with the Xbox pad while hiding is on.
 
 ## Good to know
 
-- The **Xbox button** may also open the Windows Game Bar; that's Windows, not the app (Game Bar settings can turn it off).
-- The **Share** button on Series pads isn't visible to apps through XInput.
-- If an Xbox controller doesn't appear, check it shows in Windows' **Set up USB game controllers** (press Win+R, type `joy.cpl`).
+- Only DualSense Precision is allowed to see the hidden controller. Steam, browsers and other controller apps won't see it while hiding is on.
+- If the app ever closes unexpectedly, the next start un-hides your controller. You can also open **HidHide Configuration Client** (Start menu) and untick the device.
+- Uninstalling: HidHide is a separate program (*Windows Settings → Apps → HidHide*).
 
 ## If something doesn't work
 
-Copy any red text or error and send it to Claude, along with the test number.
+Send Claude the test number, plus the text of the status line and the **Check what games see** result.

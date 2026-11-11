@@ -22,7 +22,10 @@ public sealed partial class VirtualControllerPage : Page
     {
         _loading = true;
         EnableSwitch.IsOn = AppServices.ActiveProfile?.VirtualController.Target == VirtualTarget.Xbox360;
+        HideSwitch.IsOn = AppServices.Settings.HideRealController;
         _loading = false;
+        AppServices.Hide.Changed += OnHideChanged;
+        RefreshHide();
 
         _lastPackets = AppServices.Viiper?.PacketsSent ?? 0;
         _lastSample = DateTime.UtcNow;
@@ -34,6 +37,7 @@ public sealed partial class VirtualControllerPage : Page
 
     protected override void OnNavigatedFrom(NavigationEventArgs e)
     {
+        AppServices.Hide.Changed -= OnHideChanged;
         _sampler?.Stop();
         _sampler = null;
         AppServices.FlushProfileSave();
@@ -46,6 +50,68 @@ public sealed partial class VirtualControllerPage : Page
         AppServices.UpdateActiveProfile(p => p with { VirtualController = p.VirtualController with { Target = target } });
         _lastPackets = AppServices.Viiper?.PacketsSent ?? 0;
         _lastSample = DateTime.UtcNow;
+    }
+
+    // ---------------- hiding the real controller ----------------
+
+    private void OnHideChanged() => DispatcherQueue.TryEnqueue(RefreshHide);
+
+    private void RefreshHide()
+    {
+        var h = AppServices.Hide;
+        HideStatus.Text = h.Status;
+        HideInstallHelp.Visibility = h.IsInstalled ? Visibility.Collapsed : Visibility.Visible;
+        DoubleInputBar.IsOpen = !h.IsHiding;
+    }
+
+    private async void OnHideToggled(object sender, RoutedEventArgs e)
+    {
+        if (_loading) return;
+        bool on = HideSwitch.IsOn;
+        if (on && !AppServices.Settings.HidHideConsent)
+        {
+            var dialog = new ContentDialog
+            {
+                XamlRoot = XamlRoot,
+                Title = "Hide your real controller from games?",
+                Content = new TextBlock
+                {
+                    TextWrapping = TextWrapping.Wrap,
+                    Text = "While the virtual controller is on, DualSense Precision will ask the HidHide driver to hide your real controller " +
+                           "from every other program — games, Steam, browsers and controller apps — so they only see the tuned virtual pad.\n\n" +
+                           "• DualSense Precision itself can still read it.\n" +
+                           "• It's undone automatically when you switch the virtual controller off, switch this off, or close the app.\n" +
+                           "• If the app ever closes unexpectedly, it's undone the next time the app starts. You can also undo it in HidHide's own Configuration Client.\n" +
+                           "• Start (or restart) your game after switching this on — games that are already running keep seeing the controller.",
+                },
+                PrimaryButtonText = "Hide it",
+                CloseButtonText = "Cancel",
+                DefaultButton = ContentDialogButton.Close,
+            };
+            if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+            {
+                _loading = true;
+                HideSwitch.IsOn = false;
+                _loading = false;
+                return;
+            }
+        }
+        try
+        {
+            AppServices.SaveSettings(AppServices.Settings with { HideRealController = on, HidHideConsent = AppServices.Settings.HidHideConsent || on });
+        }
+        catch (Exception ex) { HideStatus.Text = $"Couldn't save the setting: {ex.Message}"; return; }
+        AppServices.Hide.Reevaluate();
+    }
+
+    private async void OnCheckGames(object sender, RoutedEventArgs e)
+    {
+        CheckButton.IsEnabled = false;
+        CheckRing.IsActive = true;
+        CheckResult.Text = "Checking…";
+        CheckResult.Text = await HideService.CheckWhatGamesSeeAsync();
+        CheckRing.IsActive = false;
+        CheckButton.IsEnabled = true;
     }
 
     private static readonly (ushort Bit, string Name)[] XboxButtonNames =

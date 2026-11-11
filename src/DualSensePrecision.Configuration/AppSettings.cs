@@ -29,6 +29,18 @@ public sealed record AppSettings
 
     /// <summary>Which controller to use when a DualSense and an Xbox controller are both connected.</summary>
     public ControllerFamily PreferredController { get; init; } = ControllerFamily.DualSense;
+
+    /// <summary>Hide the real controller from games while the virtual pad runs (needs HidHide; off until the user agrees).</summary>
+    public bool HideRealController { get; init; }
+
+    /// <summary>The user has read and accepted what hiding does.</summary>
+    public bool HidHideConsent { get; init; }
+
+    /// <summary>Device instance IDs this app added to HidHide's list — only these are ever removed again.</summary>
+    public string[]? HiddenByApp { get; init; }
+
+    /// <summary>True if this app switched HidHide's hiding on (so it switches it back off afterwards).</summary>
+    public bool HidHideActivatedByApp { get; init; }
 }
 
 public static class AppPaths

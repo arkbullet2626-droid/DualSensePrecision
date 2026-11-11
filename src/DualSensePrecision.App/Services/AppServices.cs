@@ -16,6 +16,7 @@ public static class AppServices
     public static OutputManager Output { get; private set; } = null!;
     public static ViiperXbox360Backend? Viiper { get; private set; }
     public static MacroEngine Macros { get; private set; } = null!;
+    public static HideService Hide { get; private set; } = null!;
     public static List<string> StartupWarnings { get; } = new();
 
     public static void Initialize()
@@ -45,6 +46,7 @@ public static class AppServices
         Macros = new MacroEngine(Controller);
         if (Settings.AutomaticControllerDetection || Settings.UseMockController)
             Controller.Start(Settings);
+        Hide = new HideService();
         ApplyVirtualController();
     }
 
@@ -58,6 +60,7 @@ public static class AppServices
             {
                 Viiper = new ViiperXbox360Backend();
                 Viiper.RumbleRequested += (l, r) => Output.SetGameRumble(l, r);
+                Viiper.StateChanged += _ => Hide?.Reevaluate();
                 Controller.SetBackend(Viiper);
             }
             Viiper.Connect();
@@ -68,14 +71,20 @@ public static class AppServices
             Viiper = null;
             Controller.SetBackend(new NullBackend());
             Output.SetGameRumble(0, 0);
+            Hide?.Reevaluate(); // virtual pad gone → un-hide the real controller
             Task.Run(old.Dispose); // removing the device from VIIPER can take a moment; keep the UI responsive
         }
     }
 
+    private static readonly object SettingsLock = new();
+
     public static void SaveSettings(AppSettings s)
     {
-        Settings = s;
-        SettingsStore.Save(s);
+        lock (SettingsLock)
+        {
+            Settings = s;
+            SettingsStore.Save(s);
+        }
     }
 
     // ---------- Switching profiles ----------
@@ -171,6 +180,7 @@ public static class AppServices
         _saveTimer?.Dispose();
         Macros.Dispose();
         Output.Dispose();
+        Hide?.Dispose();   // un-hide the real controller before the virtual pad goes away
         Viiper?.Dispose(); // removes the virtual pad so games don't see a frozen controller
         Controller.Dispose();
     }

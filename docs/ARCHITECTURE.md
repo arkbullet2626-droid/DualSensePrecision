@@ -66,6 +66,13 @@ Variation across revisions: firmware ≥ 2.24 supports "improved rumble emulatio
 - **Own virtual pad:** VIIPER's pad is also an XInput 045E:028E device. `XboxSlotFilter` identifies it by timing (slots present while the virtual pad is off are real; a new 360-type slot after it starts is the virtual one; ambiguous new 360-type slots are ignored) and always ignores Steam's virtual pads (VID 28DE). This prevents the app reading its own output.
 - `AutoControllerSource` runs the DualSense and Xbox readers side by side and forwards the connected one (preference in Settings when both are present). A switch is signalled as disconnect + connect so the virtual pad is centred and keys released.
 
+## 3b. Hiding the real controller (since 0.14)
+
+- Optional **HidHide** (Nefarius, signed filter driver). Configured through its documented control device `\\.\HidHide` (no admin needed): blacklist = device instance IDs, whitelist = image paths in `\Device\HarddiskVolumeN\…` form, active flag.
+- Targets: Xbox = every present `GUID_DEVINTERFACE_XUSB` device not under `ROOT\USBIP_WIN2` (VIIPER's host), plus same-VID/PID USB parents (XInput can open the USB node) and same-VID/PID HID nodes. DualSense = its HID node + USB interface parent. Hubs, root-enumerated nodes and other VID/PIDs are never added.
+- The app only adds/removes its own entries and records them in settings, so other tools' HidHide settings survive and a crash is cleaned up next start. Hiding only takes effect for new opens: games must be (re)started afterwards.
+- Self-test: a PowerShell process (not on the allowed list, like a game) counts XInput controllers.
+
 ## 4. Technical limitations identified up front
 
 1. **Physical report rate is fixed by the controller's USB endpoint interval.** The app cannot raise it from user mode. Community measurements put the stock wired DualSense well below 8000 Hz; we do not quote a number — the Performance page **measures** it. Raising it requires a third-party filter driver (e.g. `hidusbf`) that modifies USB endpoint intervals; that is a system-level, unsigned-driver change. We will not do it, and will at most link to it with warnings, only if the user asks.

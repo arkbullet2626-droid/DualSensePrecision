@@ -1,6 +1,6 @@
 # DualSense Precision — Development Status
 
-Last update: 2026-11-10 · Version 0.13.0 · M1–4 verified on hardware; Stick, Trigger and Appearance verified; virtual Xbox 360 controller verified end to end; Button Mapping verified; Macros built; Xbox controller input built (not yet hardware-tested).
+Last update: 2026-11-10 · Version 0.14.0 · M1–4 verified on hardware; Stick, Trigger and Appearance verified; virtual Xbox 360 controller verified end to end; Button Mapping verified; Macros built; Xbox controller input built; optional HidHide hiding built (not yet hardware-tested).
 
 ## Verification log
 
@@ -14,6 +14,7 @@ Last update: 2026-11-10 · Version 0.13.0 · M1–4 verified on hardware; Stick,
 - v0.7.0 built on Windows: 112/113 — PreciseWait returned up to 1 ms early (integer ms rounding). Fixed in v0.7.1 (tick-based deadline).
 - v0.7.1 (Macros) — user moved on to requesting stick recording before reporting the full macro test list.
 - v0.10.0 failed to build: XAML x:Name "MotionResult" clashed with the MotionResult type (CS0236/CS1061, followed by a cascading WMC9999). Renamed to MotionResultText in v0.10.1; also fixed CS0108 (MainWindow.Current → `new`) and CS0252 (ReferenceEquals). Scanned all XAML for other name/type clashes: none.
+- v0.14.0: optional "Hide your real controller from games" via HidHide 1.5.230 (Nefarius, signed; setup can download it, SHA-256 pinned f4bbbcb8…05f6, runs its own installer with /quiet /norestart, UAC = consent, restart offered). In-app switch with a one-time consent dialog; hides only while the virtual pad is connected; app whitelisted; adds/removes only its own blacklist entries (remembered in settings so a crash is cleaned up on next start); never hides anything under ROOT\USBIP_WIN2 (VIIPER's pad), hubs or root devices. Xbox: XUSB device + same-VID/PID USB parents + matching HID nodes. DualSense: HID node + USB interface parent. "Check what games see" runs XInput from a separate, non-allowed process (PowerShell). Prompted by v0.13.0 hardware test: Rocket League added a second player from the doubled Xbox input.
 - v0.13.0: Xbox controller support (Series / One / 360; USB, Bluetooth, Xbox Wireless Adapter) through XInput. Auto-detects alongside the DualSense; positional mapping so profiles/mappings/macros carry over; 16-bit sticks; rumble via XInputSetState scaled by the profile's vibration strength; battery shown as a level; app's own VIIPER pad and Steam virtual pads excluded from input; DualSense-only sections hidden on Xbox; Performance labels the number "update rate (XInput)". Not yet tested on hardware.
 - v0.12.1: build-installer installs Inno Setup via winget automatically if missing (user hit the manual step).
 - v0.12.0: single Setup.exe also downloads + installs VIIPER 0.9.0 (optional task, shown only when VIIPER is missing; SHA-256 pinned 142c144f…23e6 from the official release asset since upstream publishes no checksums; `viiper install --quiet --no-update`; UAC for usbip-win2 = explicit consent; offers restart). Not yet built on Windows.
@@ -64,7 +65,7 @@ Last update: 2026-11-10 · Version 0.13.0 · M1–4 verified on hardware; Stick,
 | Haptics (voice-coil waveforms) | Planned | Needs USB audio path, not HID |
 | Virtual Xbox 360 controller via VIIPER | Complete (hardware-verified) | User installs VIIPER + usbip-win2 themselves (`winget install Alia5.VIIPER`). Direct TCP client, 20-byte packets sent on the reader thread, auto-reconnect, game rumble forwarded to DualSense, pad removed on exit, XInput read-back check, measured output Hz |
 | Stick + trigger input tracks (offline TAS test) | Removed | Built in 0.8.0–0.8.1 as a test, reverted in 0.8.2 at the user's request. Macros are back to buttons, keys and mouse buttons only (matches the original spec's no-gameplay-automation rule) |
-| Hide physical DualSense (HidHide) | Planned | Optional, consent required; until then games may see two controllers |
+| Hide the real controller (DualSense or Xbox) from games via HidHide | Complete (unverified on hardware) | Optional component in setup; in-app switch with consent; active only while the virtual pad runs; undone on switch-off/exit/next start; "Check what games see" self-test |
 | Virtual DualShock 4 target | Planned | VIIPER supports it; different packet format |
 | Profiles page: list with active/startup badges, instant switch + sidebar quick switcher, 9 templates (Blank, Competitive FPS, Precision Aiming, Fortnite, Call of Duty, Rust, ARC Raiders, Rocket League, Racing) or copy of active, rename/duplicate/export/import (Keep both / Replace / Cancel)/restore defaults/delete (confirmed; deleting active switches first), startup profile | Complete (hardware-verified) | Switching stops macros, releases held keys, re-applies lights/triggers/virtual pad; open pages refresh to the new profile |
 | Controller Tester: buttons, sticks (live + 36-direction range map), drift test with suggested deadzone, triggers, touchpad (2 fingers), gyro/accel at-rest check, guided full diagnostic, PASS/CHECK/FAIL report (copy/save), apply suggested deadzones | Complete (hardware-verified) | Raw hardware values; analyzers fed per report on the reader thread |
@@ -72,7 +73,6 @@ Last update: 2026-11-10 · Version 0.13.0 · M1–4 verified on hardware; Stick,
 | Mock controller (clearly labelled) | Complete | Settings → "Use simulated controller" |
 | Installer (single Setup.exe, optional VIIPER download + install) | Complete (unverified build) | `build-installer.cmd` runs tests → `dotnet publish` (Release, self-contained, win-x64) → Inno Setup. Per-user, no admin; Start menu + desktop shortcuts; AppMutex closes running copy; uninstall asks to keep/delete data; unsigned (SmartScreen 'More info → Run anyway') |
 | Xbox controllers (Series / One / 360, USB / Bluetooth / Wireless Adapter) | Complete (unverified on hardware) | XInput 1.4, ~1 ms polling, change-driven telemetry labelled as an update rate (not a hardware rate). Sticks, triggers, buttons, mapping, macros, profiles, tester, rumble, battery level. Own virtual pad excluded via `XboxSlotFilter`. Preference setting when both controller types are connected |
-| Hide physical Xbox controller from games (HidHide) | Planned (next) | Needed for Xbox users: the real pad and the virtual pad are both XInput devices, so most games see both |
 | DualSense over Bluetooth | Out of scope | Spec is USB-only |
 
 ## Known limitations (see ARCHITECTURE §4)
