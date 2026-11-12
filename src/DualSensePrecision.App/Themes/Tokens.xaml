@@ -25,6 +25,17 @@
             <Color x:Key="TextOnAccentFillColorDisabled">#75695A</Color>
             <SolidColorBrush x:Key="TextOnAccentFillColorPrimaryBrush" Color="#1A1408" />
             <SolidColorBrush x:Key="TextOnAccentFillColorSecondaryBrush" Color="#3A2C12" />
+            <!-- Accent fills used by toggles, sliders, accent buttons and selection indicators (owned here so
+                 Settings → Interface → Colours can recolour them live). -->
+            <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="#F2B544" />
+            <SolidColorBrush x:Key="AccentFillColorSecondaryBrush" Color="#E6F2B544" />
+            <SolidColorBrush x:Key="AccentFillColorTertiaryBrush" Color="#CCF2B544" />
+            <SolidColorBrush x:Key="AccentTextFillColorPrimaryBrush" Color="#F5C366" />
+            <SolidColorBrush x:Key="AccentTextFillColorSecondaryBrush" Color="#F2B544" />
+            <SolidColorBrush x:Key="AccentTextFillColorTertiaryBrush" Color="#D99A2B" />
+            <SolidColorBrush x:Key="SystemControlHighlightAccentBrush" Color="#F2B544" />
+            <SolidColorBrush x:Key="SystemControlForegroundAccentBrush" Color="#F2B544" />
+            <SolidColorBrush x:Key="FocusStrokeColorOuterBrush" Color="#F2EBDD" />
             <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="#0B0906" />
             <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground" Color="#0B0906" />
             <SolidColorBrush x:Key="NavigationViewTopPaneBackground" Color="#0B0906" />
@@ -83,6 +94,10 @@
     <SolidColorBrush x:Key="DsSuccessBrush" Color="{StaticResource DsSuccessColor}" />
     <SolidColorBrush x:Key="DsWarningBrush" Color="{StaticResource DsWarningColor}" />
     <SolidColorBrush x:Key="DsDangerBrush" Color="{StaticResource DsDangerColor}" />
+    <LinearGradientBrush x:Key="DsHeroGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#2A1D0B" Offset="0" />
+        <GradientStop Color="#15110B" Offset="0.65" />
+    </LinearGradientBrush>
     <LinearGradientBrush x:Key="DsVoltGradientBrush" StartPoint="0,0" EndPoint="1,0">
         <GradientStop Color="#F2B544" Offset="0" />
         <GradientStop Color="#E0782F" Offset="1" />

@@ -1,4 +1,23 @@
-# DualSense Precision 0.15.0 — release candidate for 1.0
+# DualSense Precision 0.16.0 — release candidate for 1.0
+
+## New in 0.16.0: your own colours and interface scale
+
+**Settings → Interface** now has:
+- **Interface scale** (75–150 %): makes everything in the window bigger or smaller, live.
+- **Colours**: six parts of the app you can recolour — Background, Panels and cards, Borders and lines, Main text, Main accent, Second accent. Click a swatch to drag the colour picker (spectrum + sliders), or type a hex code. Everything repaints straight away; lighter shades are worked out for you.
+- **Presets** (Opifex, Midnight, Forest, Crimson, Graphite), **Reset to Opifex colours**, and a readability check that warns if text and background are too close.
+
+### Tests for 0.16.0
+A1. Settings → Interface → drag **Interface scale** to 125 %: the whole window (sidebar and pages) grows, still fits the window, and clicks still land on the right things. **100 %** puts it back. Close and reopen the app: your scale is kept.
+A2. Pick the **Midnight** preset: the whole app turns blue-grey instantly (sidebar, cards, toggles, sliders, buttons). Pick **Opifex (default)** again.
+A3. Click the **Main accent** swatch, drag around the colour picker: toggles, sliders, the title-bar logo and accent buttons follow live.
+A4. Type `#00FF88` into **Main accent**'s hex box and press Enter: it applies. Type `hello`: it goes back to the previous colour.
+A5. Set **Main text** to a dark colour like `#202020`: the readability line warns it may be hard to read. Click **Reset to Opifex colours**.
+A6. Close and reopen the app: your custom colours are kept.
+
+---
+
+## From 0.15.0
 
 Everything planned for 1.0 is in this build. If the tests below pass, the next build is **1.0.0**.
 
@@ -16,7 +35,7 @@ Everything planned for 1.0 is in this build. If the tests below pass, the next b
 ## Install
 
 1. Close DualSense Precision completely (if it's in the tray: right-click the icon → **Exit**).
-2. Run **`DualSensePrecision-0.15.0-setup.exe`**. If SmartScreen appears: **More info → Run anyway**.
+2. Run **`DualSensePrecision-0.16.0-setup.exe`**. If SmartScreen appears: **More info → Run anyway**.
 3. VIIPER and HidHide are already installed, so their boxes don't appear. Leave **Start DualSense Precision with Windows** unticked for now (test 9 covers it).
 
 ## Tests
@@ -39,7 +58,7 @@ Everything planned for 1.0 is in this build. If the tests below pass, the next b
 9. Settings → turn on **Start with Windows**. Sign out and back in (or restart): the app starts in the tray without opening a window. Turn it off again if you don't want it.
 
 **E. Updates and About**
-10. **About** shows *Version 0.15.0*. **Check for updates** says it couldn't check (the repository is still private, so this is expected until release) or that you're up to date.
+10. **About** shows *Version 0.16.0*. **Check for updates** says it couldn't check (the repository is still private, so this is expected until release) or that you're up to date.
 11. The buttons on About open the right things: **Licence** and **Third-party notices** open text files; **Source code** / **Report a problem** / **Privacy policy** / **opifexstudios.ca** open the browser (GitHub pages need you signed in until the repo is public, and the privacy section is added to the website at release).
 
 **F. Troubleshooting**

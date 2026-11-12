@@ -34,6 +34,7 @@ public sealed partial class MainWindow : Window
         FillProfileSwitcher();
 
         Nav.SelectedItem = Nav.MenuItems[0];
+        Scaler.Scale = AppServices.Settings.UiScale;
 
         // Tray icon: always there while the app runs, so closing the window can keep the controller working.
         _tray = new TrayIcon("DualSense Precision", icon);
@@ -45,6 +46,9 @@ public sealed partial class MainWindow : Window
 
         Activated += OnFirstActivated;
     }
+
+    /// <summary>Settings → Interface → Interface scale (applied live).</summary>
+    public void SetUiScale(double scale) => Scaler.Scale = scale;
 
     private readonly TrayIcon _tray;
     private bool _exiting;

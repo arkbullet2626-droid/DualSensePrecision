@@ -10,13 +10,7 @@
         <StackPanel Padding="{StaticResource DsPagePadding}" Spacing="20" MaxWidth="1200" HorizontalAlignment="Left">
 
             <!-- Hero -->
-            <Border CornerRadius="6" Padding="28" BorderBrush="{StaticResource DsStrokeBrush}" BorderThickness="1">
-                <Border.Background>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Color="#2A1D0B" Offset="0" />
-                        <GradientStop Color="#15110B" Offset="0.65" />
-                    </LinearGradientBrush>
-                </Border.Background>
+            <Border CornerRadius="6" Padding="28" BorderBrush="{StaticResource DsStrokeBrush}" BorderThickness="1" Background="{StaticResource DsHeroGradientBrush}">
                 <Grid ColumnSpacing="24">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />

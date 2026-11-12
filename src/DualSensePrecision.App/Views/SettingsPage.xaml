@@ -45,6 +45,32 @@
                 <StackPanel Spacing="16">
                     <TextBlock Text="Interface" Style="{StaticResource DsSectionTitle}" />
                     <ToggleSwitch x:Name="Animations" Header="Page transitions and animations" Toggled="OnChanged" />
+
+                    <StackPanel Spacing="6">
+                        <Grid>
+                            <TextBlock Text="Interface scale" Foreground="{StaticResource DsTextPrimaryBrush}" />
+                            <TextBlock x:Name="ScaleValue" HorizontalAlignment="Right" FontFamily="{StaticResource DsMonoFont}" Foreground="{StaticResource DsTextPrimaryBrush}" />
+                        </Grid>
+                        <Slider x:Name="ScaleSlider" Minimum="75" Maximum="150" StepFrequency="5" TickFrequency="25" TickPlacement="Outside"
+                                ValueChanged="OnScaleChanged" MaxWidth="520" HorizontalAlignment="Left" Width="520" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button Content="100 %" Click="OnScaleReset" />
+                            <TextBlock Style="{StaticResource DsBody}" VerticalAlignment="Center"
+                                       Text="Makes everything in the window bigger or smaller. Pop-up dialogs follow Windows' own display scaling." />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Colours" Foreground="{StaticResource DsTextPrimaryBrush}" />
+                        <TextBlock Style="{StaticResource DsBody}"
+                                   Text="Pick any colour for each part of the app: click a swatch to drag the colour picker, or type a hex code like #F2B544. Changes show straight away. Lighter shades (secondary text, raised panels, text on buttons) are worked out from these." />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <ComboBox x:Name="PresetBox" Header="Start from a preset" MinWidth="220" SelectionChanged="OnPresetChanged" />
+                            <Button Content="Reset to Opifex colours" VerticalAlignment="Bottom" Click="OnColorsReset" />
+                        </StackPanel>
+                        <StackPanel x:Name="ColorRows" Spacing="8" />
+                        <TextBlock x:Name="ContrastText" Style="{StaticResource DsBody}" />
+                    </StackPanel>
                 </StackPanel>
             </Border>
 

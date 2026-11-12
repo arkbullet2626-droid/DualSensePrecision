@@ -1,5 +1,7 @@
 using DualSensePrecision.App.Services;
+using DualSensePrecision.Configuration;
 using DualSensePrecision.Core;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -19,6 +21,12 @@ public sealed partial class SettingsPage : Page
         CloseToTray.IsOn = s.MinimizeToTray;
         CheckUpdates.IsOn = s.CheckForUpdates;
         StartWithWindows.IsOn = StartupRegistration.IsEnabled;
+        ScaleSlider.Value = Math.Round(s.UiScale * 100);
+        ScaleValue.Text = $"{ScaleSlider.Value:0} %";
+        _palette = s.Palette ?? new ThemePalette();
+        foreach (var (name, _) in ThemePalette.Presets) PresetBox.Items.Add(name);
+        PresetBox.SelectedIndex = PresetIndex(_palette);
+        BuildColorRows();
         Preferred.SelectedIndex = s.PreferredController == ControllerFamily.Xbox ? 1 : 0;
         var v = typeof(SettingsPage).Assembly.GetName().Version;
         VersionText.Text = $"DualSense Precision {v?.Major}.{v?.Minor}.{v?.Build} · Opifex Studios · data in %LOCALAPPDATA%\\DualSensePrecision";
@@ -71,6 +79,198 @@ public sealed partial class SettingsPage : Page
             AppServices.Controller.Start(updated);
         else
             AppServices.Controller.Stop();
+    }
+
+    // ---------------- interface scale ----------------
+
+    private DispatcherQueueTimerHolder? _saveLater;
+
+    private void OnScaleChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    {
+        if (ScaleValue == null) return;
+        ScaleValue.Text = $"{e.NewValue:0} %";
+        if (_loading) return;
+        MainWindow.Current?.SetUiScale(e.NewValue / 100.0);
+        SaveSoon();
+    }
+
+    private void OnScaleReset(object sender, RoutedEventArgs e) => ScaleSlider.Value = 100;
+
+    // ---------------- colours ----------------
+
+    private ThemePalette _palette = new();
+    private readonly Dictionary<string, (Border Swatch, TextBox Hex, ColorPicker Picker)> _rows = new();
+    private bool _syncing;
+
+    private static readonly (string Slot, string Label, string Hint)[] Slots =
+    {
+        ("Background", "Background", "Behind everything"),
+        ("Panel", "Panels and cards", "Cards, the sidebar footer, inputs"),
+        ("Border", "Borders and lines", "Card edges, dividers"),
+        ("Text", "Main text", "Titles and body text"),
+        ("Accent", "Main accent", "Buttons, toggles, sliders, highlights"),
+        ("Accent2", "Second accent", "Gradients and warnings, used sparingly"),
+    };
+
+    private static string Get(ThemePalette p, string slot) => slot switch
+    {
+        "Background" => p.Background, "Panel" => p.Panel, "Border" => p.Border,
+        "Text" => p.Text, "Accent" => p.Accent, _ => p.Accent2,
+    };
+
+    private static ThemePalette With(ThemePalette p, string slot, string hex) => slot switch
+    {
+        "Background" => p with { Background = hex }, "Panel" => p with { Panel = hex }, "Border" => p with { Border = hex },
+        "Text" => p with { Text = hex }, "Accent" => p with { Accent = hex }, _ => p with { Accent2 = hex },
+    };
+
+    private static int PresetIndex(ThemePalette p)
+    {
+        for (int i = 0; i < ThemePalette.Presets.Count; i++)
+            if (ThemePalette.Presets[i].Palette == p) return i;
+        return -1; // custom
+    }
+
+    private void BuildColorRows()
+    {
+        ColorRows.Children.Clear();
+        _rows.Clear();
+        foreach (var (slot, label, hint) in Slots)
+        {
+            var c = ColorMath.Parse(Get(_palette, slot), Get(ThemePalette.Opifex, slot));
+
+            var picker = new ColorPicker
+            {
+                IsAlphaEnabled = false,
+                IsMoreButtonVisible = true,
+                IsColorChannelTextInputVisible = true,
+                IsHexInputVisible = true,
+                ColorSpectrumShape = ColorSpectrumShape.Box,
+                Color = ThemeService.W(c),
+            };
+            picker.ColorChanged += (_, e) =>
+            {
+                if (_syncing) return;
+                var hex = $"#{e.NewColor.R:X2}{e.NewColor.G:X2}{e.NewColor.B:X2}";
+                SetSlot(slot, hex, fromPicker: true);
+            };
+
+            var swatch = new Border
+            {
+                Width = 44, Height = 26, CornerRadius = new CornerRadius(3), BorderThickness = new Thickness(1),
+                BorderBrush = (Brush)Application.Current.Resources["DsStrokeBrush"],
+                Background = new SolidColorBrush(ThemeService.W(c)),
+            };
+            var swatchButton = new Button
+            {
+                Content = swatch, Padding = new Thickness(4),
+                Flyout = new Flyout { Content = picker, Placement = Microsoft.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.Bottom },
+            };
+            ToolTipService.SetToolTip(swatchButton, "Open the colour picker");
+
+            var hexBox = new TextBox { Text = c.Hex, Width = 110, FontFamily = (FontFamily)Application.Current.Resources["DsMonoFont"], MaxLength = 7 };
+            hexBox.KeyDown += (_, e) => { if (e.Key == global::Windows.System.VirtualKey.Enter) CommitHex(slot, hexBox); };
+            hexBox.LostFocus += (_, _) => CommitHex(slot, hexBox);
+
+            var labels = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
+            labels.Children.Add(new TextBlock { Text = label, Foreground = (Brush)Application.Current.Resources["DsTextPrimaryBrush"] });
+            labels.Children.Add(new TextBlock { Text = hint, FontSize = 12, Foreground = (Brush)Application.Current.Resources["DsTextTertiaryBrush"] });
+
+            var row = new Grid { ColumnSpacing = 12 };
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(260) });
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            Grid.SetColumn(swatchButton, 1);
+            Grid.SetColumn(hexBox, 2);
+            row.Children.Add(labels);
+            row.Children.Add(swatchButton);
+            row.Children.Add(hexBox);
+            ColorRows.Children.Add(row);
+            _rows[slot] = (swatch, hexBox, picker);
+        }
+        UpdateContrast();
+    }
+
+    private void CommitHex(string slot, TextBox box)
+    {
+        if (ColorMath.TryParse(box.Text, out var c)) SetSlot(slot, c.Hex, fromPicker: false);
+        else box.Text = Get(_palette, slot); // invalid → put the current colour back
+    }
+
+    private void SetSlot(string slot, string hex, bool fromPicker)
+    {
+        _palette = With(_palette, slot, hex);
+        if (_rows.TryGetValue(slot, out var r) && ColorMath.TryParse(hex, out var c))
+        {
+            _syncing = true;
+            ((SolidColorBrush)r.Swatch.Background).Color = ThemeService.W(c);
+            r.Hex.Text = c.Hex;
+            if (!fromPicker) r.Picker.Color = ThemeService.W(c);
+            _syncing = false;
+        }
+        ApplyPalette();
+    }
+
+    private void ApplyPalette()
+    {
+        ThemeService.Apply(_palette);
+        _loading = true;
+        PresetBox.SelectedIndex = PresetIndex(_palette);
+        _loading = false;
+        UpdateContrast();
+        SaveSoon();
+    }
+
+    private void UpdateContrast()
+    {
+        double ratio = ThemeService.TextContrast(_palette);
+        ContrastText.Text = ratio >= 7 ? $"Text contrast {ratio:0.0}:1 — easy to read."
+            : ratio >= 4.5 ? $"Text contrast {ratio:0.0}:1 — readable."
+            : $"Text contrast {ratio:0.0}:1 — this may be hard to read. Try a lighter text colour or a darker background.";
+        ContrastText.Foreground = (Brush)Application.Current.Resources[ratio >= 4.5 ? "DsTextSecondaryBrush" : "DsWarningBrush"];
+    }
+
+    private void OnPresetChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_loading || PresetBox.SelectedIndex < 0) return;
+        _palette = ThemePalette.Presets[PresetBox.SelectedIndex].Palette;
+        BuildColorRows();
+        ApplyPalette();
+    }
+
+    private void OnColorsReset(object sender, RoutedEventArgs e)
+    {
+        _palette = ThemePalette.Opifex;
+        BuildColorRows();
+        ApplyPalette();
+    }
+
+    /// <summary>Colour dragging and scaling fire many changes; save once things settle.</summary>
+    private void SaveSoon()
+    {
+        _saveLater ??= new DispatcherQueueTimerHolder(DispatcherQueue, () =>
+        {
+            try
+            {
+                AppServices.SaveSettings(AppServices.Settings with { Palette = _palette, UiScale = ScaleSlider.Value / 100.0 });
+                SavedText.Text = "Saved.";
+            }
+            catch (Exception ex) { SavedText.Text = $"Could not save settings: {ex.Message}"; }
+        });
+        _saveLater.Restart();
+    }
+
+    private sealed class DispatcherQueueTimerHolder
+    {
+        private readonly Microsoft.UI.Dispatching.DispatcherQueueTimer _timer;
+        public DispatcherQueueTimerHolder(Microsoft.UI.Dispatching.DispatcherQueue q, Action action)
+        {
+            _timer = q.CreateTimer();
+            _timer.Interval = TimeSpan.FromMilliseconds(500);
+            _timer.IsRepeating = false;
+            _timer.Tick += (_, _) => action();
+        }
+        public void Restart() { _timer.Stop(); _timer.Start(); }
     }
 
     private void OnStartupToggled(object sender, RoutedEventArgs e)

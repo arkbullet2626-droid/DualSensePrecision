@@ -35,6 +35,7 @@ public partial class App : Application
         AppLog.Prune();
         AppLog.Info($"DualSense Precision {UpdateChecker.Current} starting on {Environment.OSVersion.VersionString}");
         AppServices.Initialize();
+        ThemeService.Apply(AppServices.Settings.Palette ?? new());
         StartupRegistration.Refresh();
         _window = new MainWindow();
         _window.Closed += (_, _) => AppServices.Shutdown();

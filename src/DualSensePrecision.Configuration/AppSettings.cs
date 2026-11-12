@@ -42,6 +42,12 @@ public sealed record AppSettings
     /// <summary>True if this app switched HidHide's hiding on (so it switches it back off afterwards).</summary>
     public bool HidHideActivatedByApp { get; init; }
 
+    /// <summary>Interface colours (Settings → Interface). Defaults to the Opifex palette.</summary>
+    public ThemePalette Palette { get; init; } = new();
+
+    /// <summary>Interface scale, 0.75–1.5 (1 = 100 %).</summary>
+    public double UiScale { get; init; } = 1.0;
+
     /// <summary>The welcome guide has been shown once.</summary>
     public bool FirstRunDone { get; init; }
 
