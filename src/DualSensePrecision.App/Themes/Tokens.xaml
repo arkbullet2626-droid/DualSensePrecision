@@ -9,6 +9,40 @@
         Spacing scale: 4 / 8 / 12 / 16 / 24 / 32.  Radius: 3 (controls), 6 (cards) - sharp, like the site.
     -->
 
+    <!-- Stock WinUI controls (toggles, sliders, accent buttons, selection) follow the Opifex accent. -->
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Dark">
+            <Color x:Key="SystemAccentColor">#F2B544</Color>
+            <Color x:Key="SystemAccentColorLight1">#F5C366</Color>
+            <Color x:Key="SystemAccentColorLight2">#F2B544</Color>
+            <Color x:Key="SystemAccentColorLight3">#F8D58F</Color>
+            <Color x:Key="SystemAccentColorDark1">#D99A2B</Color>
+            <Color x:Key="SystemAccentColorDark2">#B37D1F</Color>
+            <Color x:Key="SystemAccentColorDark3">#8C6015</Color>
+            <!-- Dark text on amber, like the site's buttons (white on amber is hard to read). -->
+            <Color x:Key="TextOnAccentFillColorPrimary">#1A1408</Color>
+            <Color x:Key="TextOnAccentFillColorSecondary">#3A2C12</Color>
+            <Color x:Key="TextOnAccentFillColorDisabled">#75695A</Color>
+            <SolidColorBrush x:Key="TextOnAccentFillColorPrimaryBrush" Color="#1A1408" />
+            <SolidColorBrush x:Key="TextOnAccentFillColorSecondaryBrush" Color="#3A2C12" />
+            <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="#0B0906" />
+            <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground" Color="#0B0906" />
+            <SolidColorBrush x:Key="NavigationViewTopPaneBackground" Color="#0B0906" />
+            <SolidColorBrush x:Key="NavigationViewContentBackground" Color="#0E0B07" />
+            <SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="#2E2617" />
+            <SolidColorBrush x:Key="CardBackgroundFillColorDefaultBrush" Color="#15110B" />
+            <SolidColorBrush x:Key="ControlFillColorDefaultBrush" Color="#1C170F" />
+            <SolidColorBrush x:Key="ControlFillColorSecondaryBrush" Color="#241D12" />
+            <SolidColorBrush x:Key="ControlFillColorTertiaryBrush" Color="#15110B" />
+            <SolidColorBrush x:Key="ControlStrokeColorDefaultBrush" Color="#2E2617" />
+            <SolidColorBrush x:Key="SolidBackgroundFillColorBaseBrush" Color="#0B0906" />
+            <SolidColorBrush x:Key="LayerFillColorDefaultBrush" Color="#120E09" />
+            <SolidColorBrush x:Key="TextFillColorPrimaryBrush" Color="#F2EBDD" />
+            <SolidColorBrush x:Key="TextFillColorSecondaryBrush" Color="#A3967E" />
+            <SolidColorBrush x:Key="TextFillColorTertiaryBrush" Color="#75695A" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
     <!-- Fonts (bundled in Assets\Fonts) -->
     <FontFamily x:Key="DsDisplayFont">ms-appx:///Assets/Fonts/Oxanium.ttf#Oxanium</FontFamily>
     <FontFamily x:Key="DsBodyFont">ms-appx:///Assets/Fonts/Figtree.ttf#Figtree</FontFamily>
@@ -54,39 +88,6 @@
         <GradientStop Color="#E0782F" Offset="1" />
     </LinearGradientBrush>
 
-    <!-- Stock WinUI controls (toggles, sliders, accent buttons, selection) follow the Opifex accent. -->
-    <ResourceDictionary.ThemeDictionaries>
-        <ResourceDictionary x:Key="Dark">
-            <Color x:Key="SystemAccentColor">#F2B544</Color>
-            <Color x:Key="SystemAccentColorLight1">#F5C366</Color>
-            <Color x:Key="SystemAccentColorLight2">#F2B544</Color>
-            <Color x:Key="SystemAccentColorLight3">#F8D58F</Color>
-            <Color x:Key="SystemAccentColorDark1">#D99A2B</Color>
-            <Color x:Key="SystemAccentColorDark2">#B37D1F</Color>
-            <Color x:Key="SystemAccentColorDark3">#8C6015</Color>
-            <!-- Dark text on amber, like the site's buttons (white on amber is hard to read). -->
-            <Color x:Key="TextOnAccentFillColorPrimary">#1A1408</Color>
-            <Color x:Key="TextOnAccentFillColorSecondary">#3A2C12</Color>
-            <Color x:Key="TextOnAccentFillColorDisabled">#75695A</Color>
-            <SolidColorBrush x:Key="TextOnAccentFillColorPrimaryBrush" Color="#1A1408" />
-            <SolidColorBrush x:Key="TextOnAccentFillColorSecondaryBrush" Color="#3A2C12" />
-            <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="#0B0906" />
-            <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground" Color="#0B0906" />
-            <SolidColorBrush x:Key="NavigationViewTopPaneBackground" Color="#0B0906" />
-            <SolidColorBrush x:Key="NavigationViewContentBackground" Color="#0E0B07" />
-            <SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="#2E2617" />
-            <SolidColorBrush x:Key="CardBackgroundFillColorDefaultBrush" Color="#15110B" />
-            <SolidColorBrush x:Key="ControlFillColorDefaultBrush" Color="#1C170F" />
-            <SolidColorBrush x:Key="ControlFillColorSecondaryBrush" Color="#241D12" />
-            <SolidColorBrush x:Key="ControlFillColorTertiaryBrush" Color="#15110B" />
-            <SolidColorBrush x:Key="ControlStrokeColorDefaultBrush" Color="#2E2617" />
-            <SolidColorBrush x:Key="SolidBackgroundFillColorBaseBrush" Color="#0B0906" />
-            <SolidColorBrush x:Key="LayerFillColorDefaultBrush" Color="#120E09" />
-            <SolidColorBrush x:Key="TextFillColorPrimaryBrush" Color="#F2EBDD" />
-            <SolidColorBrush x:Key="TextFillColorSecondaryBrush" Color="#A3967E" />
-            <SolidColorBrush x:Key="TextFillColorTertiaryBrush" Color="#75695A" />
-        </ResourceDictionary>
-    </ResourceDictionary.ThemeDictionaries>
 
     <CornerRadius x:Key="DsCardRadius">6</CornerRadius>
     <CornerRadius x:Key="DsControlRadius">3</CornerRadius>
