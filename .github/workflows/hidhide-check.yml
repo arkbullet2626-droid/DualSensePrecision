@@ -26,11 +26,21 @@ jobs:
             }
           }
           "updater cmdline: " + (Get-CimInstance Win32_Process -Filter "Name='nefarius_HidHide_Updater.exe'" | Select-Object -Expand CommandLine)
-          "--- closing the updater window"
-          Get-Process nefarius_HidHide_Updater -ErrorAction SilentlyContinue | ForEach-Object { [void]$_.CloseMainWindow() }
+          "--- pressing the dialog's Close button"
+          foreach ($proc in Get-Process nefarius_HidHide_Updater -ErrorAction SilentlyContinue) {
+            $cond = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ProcessIdProperty, $proc.Id)
+            foreach ($w in [System.Windows.Automation.AutomationElement]::RootElement.FindAll([System.Windows.Automation.TreeScope]::Children, $cond)) {
+              foreach ($e in $w.FindAll([System.Windows.Automation.TreeScope]::Descendants, [System.Windows.Automation.Condition]::TrueCondition)) {
+                if ($e.Current.Name -eq 'Close') {
+                  $pat = $null
+                  if ($e.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern, [ref]$pat)) { $pat.Invoke(); "clicked Close" }
+                  else { "Close has no invoke pattern" }
+                }
+              }
+            }
+          }
           Start-Sleep 10
-          $still = Get-Process nefarius_HidHide_Updater -ErrorAction SilentlyContinue
-          "updater still running after close: $([bool]$still)"
+          "updater still running: $([bool](Get-Process nefarius_HidHide_Updater -ErrorAction SilentlyContinue))"
           if (-not $p.WaitForExit(120000)) { "SETUP STILL RUNNING" } else { "setup exit code: $($p.ExitCode)" }
           "service key: $(Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Services\HidHide')"
           "program files: $(Test-Path 'C:\Program Files\Nefarius Software Solutions\HidHide')"
