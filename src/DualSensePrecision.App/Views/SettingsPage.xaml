@@ -26,6 +26,23 @@
 
             <Border Style="{StaticResource DsCard}">
                 <StackPanel Spacing="16">
+                    <TextBlock Text="Startup and background" Style="{StaticResource DsSectionTitle}" />
+                    <ToggleSwitch x:Name="StartWithWindows" Header="Start with Windows (in the tray, so your controller settings are ready before you open a game)" Toggled="OnStartupToggled" />
+                    <ToggleSwitch x:Name="CloseToTray" Header="Closing the window keeps the app running in the tray" Toggled="OnChanged" />
+                    <TextBlock Style="{StaticResource DsBody}" Text="While it runs in the tray, your profile, remaps, the virtual controller and hiding keep working. To quit completely, right-click the tray icon and choose Exit." />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource DsCard}">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="Updates" Style="{StaticResource DsSectionTitle}" />
+                    <ToggleSwitch x:Name="CheckUpdates" Header="Check GitHub for a new version when the app starts" Toggled="OnChanged" />
+                    <TextBlock Style="{StaticResource DsBody}" Text="Only the newest version number is requested. Nothing about you or your PC is sent. You can also check from About." />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource DsCard}">
+                <StackPanel Spacing="16">
                     <TextBlock Text="Interface" Style="{StaticResource DsSectionTitle}" />
                     <ToggleSwitch x:Name="Animations" Header="Page transitions and animations" Toggled="OnChanged" />
                 </StackPanel>
@@ -33,15 +50,21 @@
 
             <Border Style="{StaticResource DsCard}">
                 <StackPanel Spacing="12">
-                    <TextBlock Text="Not yet available in this build" Style="{StaticResource DsSectionTitle}" />
-                    <TextBlock Style="{StaticResource DsBody}" Text="Launch on startup · Minimize to tray · Theme and accent colour · Performance and diagnostic logging · Update checking · Reset application · Export diagnostics — scheduled for Milestones 5–8. They are listed here rather than shown as switches that don't do anything." />
+                    <TextBlock Text="Troubleshooting" Style="{StaticResource DsSectionTitle}" />
+                    <TextBlock Style="{StaticResource DsBody}" Text="The app keeps a small log of what it did (controller connected, virtual controller on/off, errors), never your button or stick input. Logs stay on your PC for 7 days." />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Content="Open logs folder" Click="OnOpenLogs" />
+                        <Button Content="Export diagnostics…" Click="OnExport" />
+                        <Button Content="Reset app…" Click="OnReset" />
+                    </StackPanel>
+                    <TextBlock x:Name="ToolsText" Style="{StaticResource DsBody}" />
                 </StackPanel>
             </Border>
 
             <Border Style="{StaticResource DsCard}">
                 <StackPanel Spacing="8">
                     <TextBlock Text="Virtual controller" Style="{StaticResource DsSectionTitle}" />
-                    <TextBlock Style="{StaticResource DsBody}" Text="Uses VIIPER with the signed usbip-win2 driver (ViGEmBus was not used: it is archived and no longer updated). Set it up and switch it on from the Virtual Controller page. DualSense Precision never installs drivers itself." />
+                    <TextBlock Style="{StaticResource DsBody}" Text="Uses VIIPER with the signed usbip-win2 driver (ViGEmBus wasn't used: it's archived and no longer updated). Hiding the real controller uses HidHide. Both are separate free programs that Setup can install for you, each with Windows' permission prompt. DualSense Precision never installs drivers on its own." />
                 </StackPanel>
             </Border>
 

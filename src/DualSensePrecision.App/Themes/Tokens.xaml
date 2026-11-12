@@ -3,27 +3,37 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!--
-        DualSense Precision design system.
-        Dark-first, low-chroma surfaces, one accent, semantic colours used only for state.
-        Spacing scale: 4 / 8 / 12 / 16 / 24 / 32.  Radius: 6 (controls), 10 (cards).
+        DualSense Precision design system, in the Opifex Studios palette (opifexstudios.ca):
+        warm near-black surfaces, cream text, "volt" amber accent with an ember gradient, mint/coral for state.
+        Type: Oxanium (display), Figtree (body), IBM Plex Mono (numbers) - bundled, SIL Open Font License.
+        Spacing scale: 4 / 8 / 12 / 16 / 24 / 32.  Radius: 3 (controls), 6 (cards) - sharp, like the site.
     -->
 
+    <!-- Fonts (bundled in Assets\Fonts) -->
+    <FontFamily x:Key="DsDisplayFont">ms-appx:///Assets/Fonts/Oxanium.ttf#Oxanium</FontFamily>
+    <FontFamily x:Key="DsBodyFont">ms-appx:///Assets/Fonts/Figtree.ttf#Figtree</FontFamily>
+    <FontFamily x:Key="DsMonoFont">ms-appx:///Assets/Fonts/IBMPlexMono-Regular.ttf#IBM Plex Mono</FontFamily>
+    <!-- Default font for every stock control and TextBlock. -->
+    <FontFamily x:Key="ContentControlThemeFontFamily">ms-appx:///Assets/Fonts/Figtree.ttf#Figtree</FontFamily>
+
     <!-- Surfaces -->
-    <Color x:Key="DsBackgroundColor">#0B0D12</Color>
-    <Color x:Key="DsSurfaceColor">#12151C</Color>
-    <Color x:Key="DsSurfaceRaisedColor">#181C25</Color>
-    <Color x:Key="DsStrokeColor">#232836</Color>
-    <Color x:Key="DsTextPrimaryColor">#E8EBF2</Color>
-    <Color x:Key="DsTextSecondaryColor">#8A93A6</Color>
-    <Color x:Key="DsTextTertiaryColor">#5C6475</Color>
+    <Color x:Key="DsBackgroundColor">#0B0906</Color>
+    <Color x:Key="DsSurfaceColor">#15110B</Color>
+    <Color x:Key="DsSurfaceRaisedColor">#1C170F</Color>
+    <Color x:Key="DsStrokeColor">#2E2617</Color>
+    <Color x:Key="DsTextPrimaryColor">#F2EBDD</Color>
+    <Color x:Key="DsTextSecondaryColor">#A3967E</Color>
+    <Color x:Key="DsTextTertiaryColor">#75695A</Color>
 
     <!-- Accent + semantic -->
-    <Color x:Key="DsAccentColor">#3D7BFF</Color>
-    <Color x:Key="DsAccentSoftColor">#1F3D7BFF</Color>
-    <Color x:Key="DsSuccessColor">#3DDC97</Color>
-    <Color x:Key="DsWarningColor">#FFB547</Color>
-    <Color x:Key="DsDangerColor">#FF5C6C</Color>
-    <Color x:Key="DsInfoColor">#8A93A6</Color>
+    <Color x:Key="DsAccentColor">#F2B544</Color>
+    <Color x:Key="DsAccentSoftColor">#26F2B544</Color>
+    <Color x:Key="DsEmberColor">#E0782F</Color>
+    <Color x:Key="DsOnAccentColor">#1A1408</Color>
+    <Color x:Key="DsSuccessColor">#5BE3A6</Color>
+    <Color x:Key="DsWarningColor">#E0782F</Color>
+    <Color x:Key="DsDangerColor">#FF7A6B</Color>
+    <Color x:Key="DsInfoColor">#A3967E</Color>
 
     <SolidColorBrush x:Key="DsBackgroundBrush" Color="{StaticResource DsBackgroundColor}" />
     <SolidColorBrush x:Key="DsSurfaceBrush" Color="{StaticResource DsSurfaceColor}" />
@@ -34,27 +44,59 @@
     <SolidColorBrush x:Key="DsTextTertiaryBrush" Color="{StaticResource DsTextTertiaryColor}" />
     <SolidColorBrush x:Key="DsAccentBrush" Color="{StaticResource DsAccentColor}" />
     <SolidColorBrush x:Key="DsAccentSoftBrush" Color="{StaticResource DsAccentSoftColor}" />
+    <SolidColorBrush x:Key="DsEmberBrush" Color="{StaticResource DsEmberColor}" />
+    <SolidColorBrush x:Key="DsOnAccentBrush" Color="{StaticResource DsOnAccentColor}" />
     <SolidColorBrush x:Key="DsSuccessBrush" Color="{StaticResource DsSuccessColor}" />
     <SolidColorBrush x:Key="DsWarningBrush" Color="{StaticResource DsWarningColor}" />
     <SolidColorBrush x:Key="DsDangerBrush" Color="{StaticResource DsDangerColor}" />
+    <LinearGradientBrush x:Key="DsVoltGradientBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#F2B544" Offset="0" />
+        <GradientStop Color="#E0782F" Offset="1" />
+    </LinearGradientBrush>
 
-    <!-- Override WinUI accent so stock controls (sliders, toggles) match. -->
-    <Color x:Key="SystemAccentColor">#3D7BFF</Color>
-    <Color x:Key="SystemAccentColorLight1">#5A8FFF</Color>
-    <Color x:Key="SystemAccentColorLight2">#7AA5FF</Color>
-    <Color x:Key="SystemAccentColorLight3">#9BBBFF</Color>
-    <Color x:Key="SystemAccentColorDark1">#2F66DB</Color>
-    <Color x:Key="SystemAccentColorDark2">#2552B5</Color>
-    <Color x:Key="SystemAccentColorDark3">#1C3F8C</Color>
+    <!-- Stock WinUI controls (toggles, sliders, accent buttons, selection) follow the Opifex accent. -->
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Dark">
+            <Color x:Key="SystemAccentColor">#F2B544</Color>
+            <Color x:Key="SystemAccentColorLight1">#F5C366</Color>
+            <Color x:Key="SystemAccentColorLight2">#F2B544</Color>
+            <Color x:Key="SystemAccentColorLight3">#F8D58F</Color>
+            <Color x:Key="SystemAccentColorDark1">#D99A2B</Color>
+            <Color x:Key="SystemAccentColorDark2">#B37D1F</Color>
+            <Color x:Key="SystemAccentColorDark3">#8C6015</Color>
+            <!-- Dark text on amber, like the site's buttons (white on amber is hard to read). -->
+            <Color x:Key="TextOnAccentFillColorPrimary">#1A1408</Color>
+            <Color x:Key="TextOnAccentFillColorSecondary">#3A2C12</Color>
+            <Color x:Key="TextOnAccentFillColorDisabled">#75695A</Color>
+            <SolidColorBrush x:Key="TextOnAccentFillColorPrimaryBrush" Color="#1A1408" />
+            <SolidColorBrush x:Key="TextOnAccentFillColorSecondaryBrush" Color="#3A2C12" />
+            <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="#0B0906" />
+            <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground" Color="#0B0906" />
+            <SolidColorBrush x:Key="NavigationViewTopPaneBackground" Color="#0B0906" />
+            <SolidColorBrush x:Key="NavigationViewContentBackground" Color="#0E0B07" />
+            <SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="#2E2617" />
+            <SolidColorBrush x:Key="CardBackgroundFillColorDefaultBrush" Color="#15110B" />
+            <SolidColorBrush x:Key="ControlFillColorDefaultBrush" Color="#1C170F" />
+            <SolidColorBrush x:Key="ControlFillColorSecondaryBrush" Color="#241D12" />
+            <SolidColorBrush x:Key="ControlFillColorTertiaryBrush" Color="#15110B" />
+            <SolidColorBrush x:Key="ControlStrokeColorDefaultBrush" Color="#2E2617" />
+            <SolidColorBrush x:Key="SolidBackgroundFillColorBaseBrush" Color="#0B0906" />
+            <SolidColorBrush x:Key="LayerFillColorDefaultBrush" Color="#120E09" />
+            <SolidColorBrush x:Key="TextFillColorPrimaryBrush" Color="#F2EBDD" />
+            <SolidColorBrush x:Key="TextFillColorSecondaryBrush" Color="#A3967E" />
+            <SolidColorBrush x:Key="TextFillColorTertiaryBrush" Color="#75695A" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
 
-    <CornerRadius x:Key="DsCardRadius">10</CornerRadius>
-    <CornerRadius x:Key="DsControlRadius">6</CornerRadius>
+    <CornerRadius x:Key="DsCardRadius">6</CornerRadius>
+    <CornerRadius x:Key="DsControlRadius">3</CornerRadius>
     <Thickness x:Key="DsPagePadding">32,24,32,32</Thickness>
     <Thickness x:Key="DsCardPadding">20</Thickness>
 
     <!-- Typography -->
     <Style x:Key="DsPageTitle" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="28" />
+        <Setter Property="FontFamily" Value="{StaticResource DsDisplayFont}" />
+        <Setter Property="FontSize" Value="30" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{StaticResource DsTextPrimaryBrush}" />
     </Style>
@@ -65,7 +107,8 @@
         <Setter Property="Margin" Value="0,4,0,0" />
     </Style>
     <Style x:Key="DsSectionTitle" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontFamily" Value="{StaticResource DsDisplayFont}" />
+        <Setter Property="FontSize" Value="16" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{StaticResource DsTextPrimaryBrush}" />
     </Style>
@@ -75,20 +118,21 @@
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
     <Style x:Key="DsLabel" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource DsMonoFont}" />
         <Setter Property="FontSize" Value="11" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="CharacterSpacing" Value="60" />
+        <Setter Property="CharacterSpacing" Value="80" />
         <Setter Property="Foreground" Value="{StaticResource DsTextTertiaryBrush}" />
     </Style>
     <Style x:Key="DsMetricValue" TargetType="TextBlock">
         <Setter Property="FontSize" Value="26" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="FontFamily" Value="Cascadia Mono, Consolas" />
+        <Setter Property="FontFamily" Value="{StaticResource DsMonoFont}" />
         <Setter Property="Foreground" Value="{StaticResource DsTextPrimaryBrush}" />
     </Style>
     <Style x:Key="DsMono" TargetType="TextBlock">
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="FontFamily" Value="Cascadia Mono, Consolas" />
+        <Setter Property="FontFamily" Value="{StaticResource DsMonoFont}" />
         <Setter Property="Foreground" Value="{StaticResource DsTextSecondaryBrush}" />
         <Setter Property="IsTextSelectionEnabled" Value="True" />
     </Style>

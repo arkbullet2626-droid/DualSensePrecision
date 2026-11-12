@@ -1,0 +1,83 @@
+<Page
+    x:Class="DualSensePrecision.App.Views.AboutPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="Transparent">
+
+    <ScrollViewer>
+        <StackPanel Padding="{StaticResource DsPagePadding}" Spacing="20" MaxWidth="900" HorizontalAlignment="Left">
+
+            <!-- Identity -->
+            <Border Style="{StaticResource DsCard}" Padding="28">
+                <Grid ColumnSpacing="20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Width="64" Height="64" CornerRadius="6" Background="{StaticResource DsVoltGradientBrush}" VerticalAlignment="Top">
+                        <TextBlock Text="P" FontSize="34" FontWeight="Bold" FontFamily="{StaticResource DsDisplayFont}"
+                                   Foreground="{StaticResource DsOnAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="DualSense Precision" Style="{StaticResource DsPageTitle}" />
+                        <TextBlock x:Name="VersionText" Style="{StaticResource DsBody}" FontFamily="{StaticResource DsMonoFont}" />
+                        <TextBlock Style="{StaticResource DsBody}"
+                                   Text="By Opifex Studios. Free and open source under the MIT licence. Controller tuning for the DualSense and Xbox controllers on Windows." />
+                        <TextBlock Margin="0,4,0,0" FontSize="12" Foreground="{StaticResource DsSuccessBrush}" Text="Free · Open source · No account · No tracking" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Updates -->
+            <Border Style="{StaticResource DsCard}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Updates" Style="{StaticResource DsSectionTitle}" />
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <Button x:Name="CheckButton" Content="Check for updates" Click="OnCheckUpdates" Style="{StaticResource AccentButtonStyle}" />
+                        <ProgressRing x:Name="CheckRing" IsActive="False" Width="18" Height="18" />
+                        <HyperlinkButton x:Name="GetUpdate" Content="Download the new version" Visibility="Collapsed" Click="OnOpenReleases" />
+                    </StackPanel>
+                    <TextBlock x:Name="UpdateText" Style="{StaticResource DsBody}" />
+                    <TextBlock Style="{StaticResource DsBody}" FontSize="12" Foreground="{StaticResource DsTextTertiaryBrush}"
+                               Text="Checking asks GitHub for the newest version number. Nothing about you or your PC is sent. Your profiles are kept when you install an update." />
+                </StackPanel>
+            </Border>
+
+            <!-- Help -->
+            <Border Style="{StaticResource DsCard}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Help" Style="{StaticResource DsSectionTitle}" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Content="Show the welcome guide" Click="OnWelcome" />
+                        <Button Content="Report a problem" Click="OnIssues" />
+                        <Button Content="Export diagnostics…" Click="OnExport" />
+                    </StackPanel>
+                    <TextBlock x:Name="HelpText" Style="{StaticResource DsBody}" />
+                    <TextBlock Style="{StaticResource DsBody}" FontSize="12" Foreground="{StaticResource DsTextTertiaryBrush}"
+                               Text="Reporting a problem opens the project's GitHub Issues page, which is public. Attach the diagnostics file only if you're happy to share it: it has the app's logs, settings and a short PC summary (no profiles)." />
+                </StackPanel>
+            </Border>
+
+            <!-- Legal -->
+            <Border Style="{StaticResource DsCard}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Licence, credits and privacy" Style="{StaticResource DsSectionTitle}" />
+                    <TextBlock Style="{StaticResource DsBody}"
+                               Text="DualSense Precision is MIT-licensed. It's built with .NET, the Windows App SDK and CommunityToolkit.Mvvm (all MIT), and uses the Oxanium, Figtree and IBM Plex Mono fonts (SIL Open Font License). VIIPER, usbip-win2 and HidHide are separate free programs with their own licences, installed only if you choose them." />
+                    <TextBlock Style="{StaticResource DsBody}"
+                               Text="Privacy: everything the app saves stays on your PC in %LOCALAPPDATA%\DualSensePrecision. No accounts, analytics or crash reports. The only internet request is the update check, which you can turn off in Settings." />
+                    <TextBlock Style="{StaticResource DsBody}"
+                               Text="DualSense and PlayStation are trademarks of Sony Interactive Entertainment; Xbox is a trademark of Microsoft. DualSense Precision isn't affiliated with or endorsed by either." />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Content="Licence" Click="OnLicense" />
+                        <Button Content="Third-party notices" Click="OnNotices" />
+                        <Button Content="Privacy policy" Click="OnPrivacy" />
+                        <Button Content="Source code" Click="OnSource" />
+                        <Button Content="opifexstudios.ca" Click="OnWebsite" />
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource DsBody}" FontSize="12" Foreground="{StaticResource DsTextTertiaryBrush}" Text="Contact: support@opifexstudios.ca" IsTextSelectionEnabled="True" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

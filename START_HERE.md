@@ -1,48 +1,51 @@
-# DualSense Precision v0.14.2: hiding fix
+# DualSense Precision 0.15.0 — release candidate for 1.0
 
-**New in 0.14.2:** switching on "Hide your real controller from games" no longer fails with *"HidHide request failed: The parameter is incorrect"*, and the app now records what it hides **before** hiding it, so it's always undone when you switch off or close the app. "Check what games see" also works for a DualSense now.
+Everything planned for 1.0 is in this build. If the tests below pass, the next build is **1.0.0**.
 
-Install it like any update: close the app, run `DualSensePrecision-0.14.2-setup.exe`. HidHide is already installed, so its option won't appear.
+## What's new
 
----
-
-# From 0.14.1: the installer fix
-
-This version fixes Setup so **HidHide really installs** (in 0.14.0 it silently did nothing on some PCs).
-
-What was wrong: HidHide's own installer can't run invisibly. It needs to show its screens to ask Windows for administrator permission, and one of its steps can show a small message box that has to be clicked. 0.14.0 tried to run it invisibly, so it quietly gave up. Setup now opens HidHide's installer normally for you to click through, and **checks afterwards that it really installed**. VIIPER's install also now shows a proper Windows permission prompt and is checked the same way.
+- **Opifex Studios look:** warm black, cream text, amber accent with an ember gradient, plus the studio fonts (Oxanium headings, Figtree text, IBM Plex Mono numbers).
+- **Tray icon:** closing the window keeps the app running in the notification area, so your remaps, the virtual controller and hiding keep working. Right-click the icon → **Exit** to quit completely.
+- **Start with Windows:** optional, starts quietly in the tray. You can turn it on in Setup or in Settings.
+- **Welcome guide:** shown on first launch. You can open it again from About.
+- **About page:** version, update check, help, licence, credits and privacy.
+- **Update check:** asks GitHub for the newest version on start (can be switched off) and shows a banner when one is out.
+- **Troubleshooting:** a local log, **Export diagnostics** (a .zip you can choose to share) and **Reset app**.
+- Game-rules reminders next to macros and keyboard/mouse remaps.
 
 ## Install
 
-1. Close DualSense Precision.
-2. Run **`DualSensePrecision-0.14.1-setup.exe`**. If SmartScreen appears: **More info → Run anyway**.
-3. On the options page, make sure **"Download and install HidHide 1.5.230…"** is ticked, then click **Install**.
-4. A message explains what's next. Click **OK**. HidHide's own installer opens:
-   - click **Yes** when Windows asks for permission;
-   - click through its screens (Next, accept the licence, Install, Finish);
-   - if a small **"Nefarius' Updater"** box appears, click **Close** (HidHide still installs);
-   - if it offers to restart, choose **later** (Setup offers a restart at the end).
-5. Back in DualSense Precision's Setup, finish and choose **Restart now**.
+1. Close DualSense Precision completely (if it's in the tray: right-click the icon → **Exit**).
+2. Run **`DualSensePrecision-0.15.0-setup.exe`**. If SmartScreen appears: **More info → Run anyway**.
+3. VIIPER and HidHide are already installed, so their boxes don't appear. Leave **Start DualSense Precision with Windows** unticked for now (test 9 covers it).
 
-## Tests for this version
+## Tests
 
-**A. HidHide installs**
-1. Steps 3–4 above happen as described. If Setup says *"HidHide doesn't look installed yet"*, finish HidHide's window if it's still open and click **Retry**; tell Claude if Retry keeps failing.
-2. After restarting, the Start menu has **HidHide Configuration Client**, and `C:\Program Files\Nefarius Software Solutions\HidHide` exists.
-3. Open DualSense Precision. **Settings** shows **0.14.1**. On **Virtual Controller**, the "HidHide isn't installed" warning is gone.
+**A. Look**
+1. Everything is in the Opifex colours: warm near-black background, cream text, amber toggles/sliders/buttons (with **dark** text on amber buttons), and the small "P" logo in the title bar has an amber-to-orange gradient.
+2. Page titles use the squared Oxanium font, body text uses Figtree, and numbers (labels like REPORT RATE, the raw monitor) use IBM Plex Mono. If text looks like plain Windows Segoe UI, tell Claude.
+3. Click through every page: nothing is unreadable, clipped or still blue.
 
-**B. Hiding works (from 0.14.0)**
-4. Virtual controller **on**, then **Hide your real controller from games → On → Hide it**. The status says it's hiding your controller.
-5. **Check what games see** says *✓ Games see exactly one Xbox controller: the virtual pad.* (If it says 2, unplug and replug the controller, then check again.)
-6. Start **Rocket League** after this: pressing Menu adds only one player.
-7. Switch hiding off: the check shows 2 again. Close the app with hiding on: your controller is visible again (Win+R → `joy.cpl`).
+**B. Welcome guide**
+4. On first start after updating, the **Welcome to DualSense Precision** guide appears with 4 steps. **Open Virtual Controller** takes you there; it doesn't appear again on the next start.
 
-**C. Status messages**
-8. (Only if convenient) Before restarting after step 5 of Install, opening the app shows *"HidHide is installed but not running yet. Restart Windows…"* instead of "not installed".
+**C. Tray**
+5. Close the window with the X: a Windows notification says it's still running, and the app's icon is in the notification area (it may be under the ^ arrow). Your controller still works in a game or in Windows' `joy.cpl`.
+6. Left-click the tray icon: the window comes back. Right-click: **Open DualSense Precision** / **Exit (stops the virtual controller)**.
+7. Choose **Exit**: the app quits, the virtual controller disappears, and your real controller is visible to games again.
+8. Settings → turn off **Closing the window keeps the app running in the tray**: now the X quits the app completely. Turn it back on.
 
-**D. Optional: fresh-PC check for VIIPER**
-9. On a PC without VIIPER (or after uninstalling it from Windows Settings → Apps), run Setup with the VIIPER box ticked: Windows asks for permission (click **Yes**), Setup finishes without errors, and after restarting the Virtual Controller goes green.
+**D. Start with Windows**
+9. Settings → turn on **Start with Windows**. Sign out and back in (or restart): the app starts in the tray without opening a window. Turn it off again if you don't want it.
 
-## Behind the scenes
+**E. Updates and About**
+10. **About** shows *Version 0.15.0*. **Check for updates** says it couldn't check (the repository is still private, so this is expected until release) or that you're up to date.
+11. The buttons on About open the right things: **Licence** and **Third-party notices** open text files; **Source code** / **Report a problem** / **Privacy policy** / **opifexstudios.ca** open the browser (GitHub pages need you signed in until the repo is public, and the privacy section is added to the website at release).
 
-Every build now installs the new Setup.exe on a clean Windows machine on GitHub (app + VIIPER) and refuses to publish if anything didn't install. HidHide can't be checked that way because its installer needs a person to click through it.
+**F. Troubleshooting**
+12. Settings → **Open logs folder**: a folder opens with `app-<today>.log`. It lists start-up, the controller connecting, the virtual controller on/off and hiding, but no button presses.
+13. **Export diagnostics…** → save the .zip: it contains `summary.txt`, `settings.json` and the logs.
+14. **Reset app…** → **Cancel** changes nothing. Then do it for real with **Also delete my profiles** *unticked*: the app restarts with default settings (the welcome guide shows again), your profiles are still there, and your controller isn't left hidden.
+
+**G. Everything else still works (quick check)**
+15. Controller detected, sticks/triggers/mapping/macros work, the virtual controller goes green, and hiding still gives one controller in Rocket League.

@@ -1,6 +1,6 @@
 # DualSense Precision
 
-Wired DualSense (PS5) and Xbox controller tuning for Windows 10/11: real report-timing telemetry, stick and trigger shaping, button mapping, macros, adaptive triggers (DualSense) and profiles. By Opifex Studios.
+DualSense (PS5) and Xbox controller tuning for Windows 10/11: real report-timing telemetry, stick and trigger shaping, button mapping, macros, adaptive triggers (DualSense) and profiles. By Opifex Studios.
 
 ## Requirements (development)
 
@@ -10,7 +10,7 @@ Wired DualSense (PS5) and Xbox controller tuning for Windows 10/11: real report-
 
 ## Install (for users)
 
-**Just download and run the latest `DualSensePrecision-<version>-setup.exe` from the repo's Releases page.** Nothing else is needed: no .NET, no build tools. Everything below is for developers.
+**Download the latest installer: [DualSensePrecision-Setup.exe](https://github.com/arkbullet2626-droid/DualSensePrecision/releases/latest/download/DualSensePrecision-Setup.exe)** (also on the Releases page with SHA-256 checksums). Nothing else is needed: no .NET, no build tools. Everything below is for developers.
 
 ### Building the installer yourself
 

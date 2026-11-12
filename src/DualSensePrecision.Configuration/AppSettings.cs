@@ -41,6 +41,12 @@ public sealed record AppSettings
 
     /// <summary>True if this app switched HidHide's hiding on (so it switches it back off afterwards).</summary>
     public bool HidHideActivatedByApp { get; init; }
+
+    /// <summary>The welcome guide has been shown once.</summary>
+    public bool FirstRunDone { get; init; }
+
+    /// <summary>The "still running in the tray" notice has been shown once.</summary>
+    public bool TrayHintShown { get; init; }
 }
 
 public static class AppPaths

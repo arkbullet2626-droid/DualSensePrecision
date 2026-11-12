@@ -325,7 +325,7 @@ public sealed partial class ControllerTesterPage : Page
             canvas.Children.Add(outline);
             canvas.Children.Add(new Line { X1 = C - R, Y1 = C, X2 = C + R, Y2 = C, Stroke = Res("DsStrokeBrush") });
             canvas.Children.Add(new Line { X1 = C, Y1 = C - R, X2 = C, Y2 = C + R, Stroke = Res("DsStrokeBrush") });
-            _range = new Polygon { Stroke = Res("DsAccentBrush"), StrokeThickness = 1.5, Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(0x22, 0x3D, 0x7B, 0xFF)) };
+            _range = new Polygon { Stroke = Res("DsAccentBrush"), StrokeThickness = 1.5, Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(0x26, 0xF2, 0xB5, 0x44)) };
             _trail = new Polyline { Stroke = Res("DsTextTertiaryBrush"), StrokeThickness = 1 };
             _dot = new Ellipse { Width = 12, Height = 12, Fill = Res("DsAccentBrush"), Stroke = Res("DsTextPrimaryBrush"), StrokeThickness = 1.5 };
             canvas.Children.Add(_range);

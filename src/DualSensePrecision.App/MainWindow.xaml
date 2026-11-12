@@ -13,12 +13,12 @@
         <!-- Custom title bar -->
         <Grid x:Name="TitleBar" Padding="16,0,140,0">
             <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                <Border Width="18" Height="18" CornerRadius="5" Background="{StaticResource DsAccentBrush}">
-                    <TextBlock Text="P" FontSize="11" FontWeight="Bold" Foreground="White"
+                <Border Width="18" Height="18" CornerRadius="3" Background="{StaticResource DsVoltGradientBrush}">
+                    <TextBlock Text="P" FontSize="11" FontWeight="Bold" Foreground="{StaticResource DsOnAccentBrush}" FontFamily="{StaticResource DsDisplayFont}"
                                HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Border>
                 <TextBlock Text="DualSense Precision" FontSize="12" Foreground="{StaticResource DsTextSecondaryBrush}" VerticalAlignment="Center" />
-                <Border x:Name="MockBadge" Style="{StaticResource DsPill}" Background="#33FFB547" Visibility="Collapsed">
+                <Border x:Name="MockBadge" Style="{StaticResource DsPill}" Background="#33E0782F" Visibility="Collapsed">
                     <TextBlock Text="SIMULATED CONTROLLER" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource DsWarningBrush}" />
                 </Border>
             </StackPanel>
@@ -50,11 +50,15 @@
                 <NavigationViewItem Content="Appearance" Tag="Appearance"><NavigationViewItem.Icon><FontIcon Glyph="&#xE790;" /></NavigationViewItem.Icon></NavigationViewItem>
             </NavigationView.MenuItems>
 
+            <NavigationView.FooterMenuItems>
+                <NavigationViewItem Content="About" Tag="About"><NavigationViewItem.Icon><FontIcon Glyph="&#xE946;" /></NavigationViewItem.Icon></NavigationViewItem>
+            </NavigationView.FooterMenuItems>
+
             <NavigationView.PaneFooter>
                 <StackPanel>
                 <ComboBox x:Name="ProfileSwitcher" Margin="12,8,12,0" HorizontalAlignment="Stretch"
                           Header="Profile" SelectionChanged="OnProfileSwitcherChanged" />
-                <Border Margin="12,8,12,12" Padding="12,10" CornerRadius="8" Background="{StaticResource DsSurfaceBrush}"
+                <Border Margin="12,8,12,12" Padding="12,10" CornerRadius="4" Background="{StaticResource DsSurfaceBrush}"
                         BorderBrush="{StaticResource DsStrokeBrush}" BorderThickness="1">
                     <StackPanel Spacing="2">
                         <StackPanel Orientation="Horizontal" Spacing="8">
@@ -73,7 +77,14 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <InfoBar x:Name="ErrorBar" IsOpen="False" Severity="Error" Margin="32,12,32,0" />
+                <StackPanel>
+                    <InfoBar x:Name="ErrorBar" IsOpen="False" Severity="Error" Margin="32,12,32,0" />
+                    <InfoBar x:Name="UpdateBar" IsOpen="False" Severity="Success" Title="Update available" Margin="32,12,32,0">
+                        <InfoBar.ActionButton>
+                            <Button Content="Download" Click="OnDownloadUpdate" />
+                        </InfoBar.ActionButton>
+                    </InfoBar>
+                </StackPanel>
                 <Frame x:Name="ContentFrame" Grid.Row="1" />
             </Grid>
         </NavigationView>

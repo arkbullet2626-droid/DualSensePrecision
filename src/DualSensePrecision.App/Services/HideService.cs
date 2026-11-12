@@ -62,7 +62,7 @@ public sealed class HideService : IDisposable
             _wake.WaitOne(5000); // periodic pass catches a second real controller plugged in while hiding
             if (_stop) break;
             try { Apply(); }
-            catch (Exception ex) { LastError = ex.Message; Status = "Couldn't change HidHide: " + ex.Message; Notify(); }
+            catch (Exception ex) { LastError = ex.Message; Status = "Couldn't change HidHide: " + ex.Message; AppLog.Error("HidHide change failed", ex); Notify(); }
         }
     }
 
@@ -147,6 +147,7 @@ public sealed class HideService : IDisposable
 
             IsHiding = true;
             Hidden = targets;
+            AppLog.Info($"Hiding real {family} controller from games ({targets.Count} device entries)");
             LastError = null;
             Status = $"Hiding your {(family == ControllerFamily.Xbox ? "Xbox controller" : "DualSense")} from games ({targets.Count} device entries). " +
                      "Start (or restart) your game now so it picks this up.";
@@ -189,6 +190,7 @@ public sealed class HideService : IDisposable
             if (s.HidHideActivatedByApp && HidHideClient.GetBlacklist().Count == 0) HidHideClient.SetActive(false);
             if ((s.HiddenByApp?.Length ?? 0) > 0 || s.HidHideActivatedByApp) // only write settings when something was recorded
                 AppServices.SaveSettings(AppServices.Settings with { HiddenByApp = Array.Empty<string>(), HidHideActivatedByApp = false });
+            if (IsHiding || ours.Length > 0) AppLog.Info("Real controller un-hidden");
             IsHiding = false;
             Hidden = Array.Empty<string>();
             if (message != null) Status = message;

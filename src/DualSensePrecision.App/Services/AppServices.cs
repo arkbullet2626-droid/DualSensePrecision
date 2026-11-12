@@ -1,3 +1,4 @@
+using DualSensePrecision.Core;
 using DualSensePrecision.Configuration;
 using DualSensePrecision.Profiles;
 using DualSensePrecision.VirtualController;
@@ -47,6 +48,13 @@ public static class AppServices
         if (Settings.AutomaticControllerDetection || Settings.UseMockController)
             Controller.Start(Settings);
         Hide = new HideService();
+        Controller.StatusChanged += st =>
+        {
+            var i = Controller.Info;
+            AppLog.Info(st == ConnectionStatus.Connected && i != null
+                ? $"Controller connected: {i.Name} ({i.Family}, {i.ConnectionLabel}, {i.VendorId:X4}:{i.ProductId:X4})"
+                : $"Controller status: {st}{(Controller.LastError is { } e ? " - " + e : "")}");
+        };
         ApplyVirtualController();
     }
 
@@ -60,7 +68,7 @@ public static class AppServices
             {
                 Viiper = new ViiperXbox360Backend();
                 Viiper.RumbleRequested += (l, r) => Output.SetGameRumble(l, r);
-                Viiper.StateChanged += _ => Hide?.Reevaluate();
+                Viiper.StateChanged += st => { AppLog.Info($"Virtual controller: {st}"); Hide?.Reevaluate(); };
                 Controller.SetBackend(Viiper);
             }
             Viiper.Connect();
@@ -174,8 +182,13 @@ public static class AppServices
         }
     }
 
+    private static bool _shutDown;
+
     public static void Shutdown()
     {
+        if (_shutDown) return; // window close and restart can both get here
+        _shutDown = true;
+        AppLog.Info("Shutting down");
         FlushProfileSave();
         _saveTimer?.Dispose();
         Macros.Dispose();

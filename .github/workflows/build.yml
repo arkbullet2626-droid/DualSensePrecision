@@ -39,7 +39,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: DualSensePrecision-setup
-          path: installer/Output/*.exe
+          path: installer/Output/DualSensePrecision-*-setup.exe
           if-no-files-found: error
 
       # Release gate: install the Setup.exe the way a user would and check it really worked.
@@ -48,7 +48,7 @@ jobs:
         shell: pwsh
         timeout-minutes: 10
         run: |
-          $exe = Get-Item installer/Output/*.exe | Select-Object -First 1
+          $exe = Get-Item installer/Output/DualSensePrecision-*-setup.exe | Select-Object -First 1
           $p = Start-Process $exe.FullName -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/TASKS="viiper"','/LOG="setup.log"' -PassThru
           if (-not $p.WaitForExit(480000)) { Get-Content setup.log -Tail 40; throw "Setup didn't finish within 8 minutes." }
           "setup exit code: $($p.ExitCode)"
@@ -69,13 +69,21 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $exe = Get-Item installer/Output/*.exe | Select-Object -First 1
+          $exe = Get-Item installer/Output/DualSensePrecision-*-setup.exe | Select-Object -First 1
           $version = $exe.Name -replace '^DualSensePrecision-(.+)-setup\.exe$', '$1'
           $tag = "v$version"
+          # A fixed-name copy so https://github.com/<owner>/<repo>/releases/latest/download/DualSensePrecision-Setup.exe
+          # always serves the newest installer (the website's download button never needs changing).
+          $stable = Join-Path $exe.DirectoryName 'DualSensePrecision-Setup.exe'
+          Copy-Item $exe.FullName $stable -Force
+          $sums = Join-Path $exe.DirectoryName 'SHA256SUMS.txt'
+          @($exe, (Get-Item $stable)) | ForEach-Object { "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower())  $($_.Name)" } | Set-Content $sums -Encoding ascii
+          Get-Content $sums
+          $files = @($exe.FullName, $stable, $sums)
           gh release view $tag *> $null
           if ($LASTEXITCODE -eq 0) {
-            gh release upload $tag $exe.FullName --clobber
+            gh release upload $tag @files --clobber
             gh release edit $tag --notes-file START_HERE.md
           } else {
-            gh release create $tag $exe.FullName --title "DualSense Precision $version" --notes-file START_HERE.md --target $env:GITHUB_SHA --latest
+            gh release create $tag @files --title "DualSense Precision $version" --notes-file START_HERE.md --target $env:GITHUB_SHA --latest
           }

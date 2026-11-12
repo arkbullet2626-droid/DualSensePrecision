@@ -34,6 +34,131 @@ public sealed partial class MainWindow : Window
         FillProfileSwitcher();
 
         Nav.SelectedItem = Nav.MenuItems[0];
+
+        // Tray icon: always there while the app runs, so closing the window can keep the controller working.
+        _tray = new TrayIcon("DualSense Precision", icon);
+        _tray.OpenRequested += ShowFromTray;
+        _tray.ExitRequested += ExitApp;
+        _tray.Show();
+        AppWindow.Closing += OnClosing;
+        Closed += (_, _) => _tray.Dispose();
+
+        Activated += OnFirstActivated;
+    }
+
+    private readonly TrayIcon _tray;
+    private bool _exiting;
+
+    /// <summary>Start hidden with just the tray icon (used by "Start with Windows").</summary>
+    public void StartInTray() => AppLog.Info("Started minimised to the tray");
+
+    public void ShowFromTray()
+    {
+        AppWindow.Show();
+        Activate();
+        SingleInstanceFront();
+    }
+
+    private void SingleInstanceFront()
+    {
+        if (AppWindow.Presenter is OverlappedPresenter p && p.State == OverlappedPresenterState.Minimized) p.Restore();
+    }
+
+    private void OnClosing(AppWindow sender, AppWindowClosingEventArgs args)
+    {
+        if (_exiting || !AppServices.Settings.MinimizeToTray) return;
+        args.Cancel = true;
+        AppWindow.Hide();
+        if (!AppServices.Settings.TrayHintShown)
+        {
+            _tray.Notify("DualSense Precision is still running",
+                "Your controller settings and the virtual controller keep working. Right-click the tray icon and choose Exit to close it completely.");
+            try { AppServices.SaveSettings(AppServices.Settings with { TrayHintShown = true }); } catch { }
+        }
+    }
+
+    /// <summary>Really quit: stops the virtual controller, un-hides the real one, removes the tray icon.</summary>
+    public void ExitApp()
+    {
+        _exiting = true;
+        Close();
+        Application.Current.Exit();
+    }
+
+    private async void OnFirstActivated(object sender, WindowActivatedEventArgs e)
+    {
+        Activated -= OnFirstActivated;
+        if (!AppServices.Settings.FirstRunDone)
+        {
+            await Task.Delay(400); // let the window finish drawing
+            await ShowWelcomeAsync();
+        }
+        if (AppServices.Settings.CheckForUpdates)
+        {
+            await Task.Delay(3000);
+            var r = await UpdateChecker.CheckAsync();
+            if (r.UpdateAvailable) ShowUpdate(r.Message);
+        }
+    }
+
+    public void ShowUpdate(string message)
+    {
+        UpdateBar.Message = message + " Updates are free and keep your profiles.";
+        UpdateBar.IsOpen = true;
+    }
+
+    private async void OnDownloadUpdate(object sender, RoutedEventArgs e) =>
+        await global::Windows.System.Launcher.LaunchUriAsync(new Uri(UpdateChecker.ReleasesPage));
+
+    /// <summary>The first-run guide (also reachable from About).</summary>
+    public async Task ShowWelcomeAsync()
+    {
+        var body = new StackPanel { Spacing = 12, MaxWidth = 520 };
+        void Step(string n, string title, string text)
+        {
+            var row = new Grid { ColumnSpacing = 12 };
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            var badge = new Border
+            {
+                Width = 26, Height = 26, CornerRadius = new CornerRadius(3),
+                Background = (Brush)Application.Current.Resources["DsVoltGradientBrush"],
+                Child = new TextBlock
+                {
+                    Text = n, FontWeight = Microsoft.UI.Text.FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center, Foreground = (Brush)Application.Current.Resources["DsOnAccentBrush"],
+                },
+            };
+            var txt = new StackPanel { Spacing = 2 };
+            txt.Children.Add(new TextBlock { Text = title, FontWeight = Microsoft.UI.Text.FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap });
+            txt.Children.Add(new TextBlock { Text = text, TextWrapping = TextWrapping.Wrap, Foreground = (Brush)Application.Current.Resources["DsTextSecondaryBrush"] });
+            Grid.SetColumn(txt, 1);
+            row.Children.Add(badge);
+            row.Children.Add(txt);
+            body.Children.Add(row);
+        }
+        Step("1", "Connect your controller", "Plug in a DualSense with a USB-C data cable, or connect an Xbox controller (USB, Bluetooth or Xbox Wireless Adapter). It's picked up automatically.");
+        Step("2", "Tune it", "Stick Settings, Trigger Settings and Button Mapping change how it feels. Everything saves to the profile shown in the sidebar.");
+        Step("3", "Send it to games", "On Virtual Controller, switch the virtual Xbox controller on: games then get your tuned input. Needs VIIPER (Setup can install it).");
+        Step("4", "Stop doubled input", "Also on Virtual Controller, switch on 'Hide your real controller from games' so games see only the tuned pad. Needs HidHide (Setup can install it).");
+        body.Children.Add(new TextBlock
+        {
+            Text = "Some games ban macros or remapping in online play. Check a game's rules before using them there.",
+            TextWrapping = TextWrapping.Wrap, FontSize = 12, Foreground = (Brush)Application.Current.Resources["DsWarningBrush"],
+        });
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = Content.XamlRoot,
+            Title = "Welcome to DualSense Precision",
+            Content = body,
+            PrimaryButtonText = "Open Virtual Controller",
+            CloseButtonText = "Got it",
+            DefaultButton = ContentDialogButton.Close,
+        };
+        var result = await dialog.ShowAsync();
+        try { AppServices.SaveSettings(AppServices.Settings with { FirstRunDone = true }); } catch { }
+        if (result == ContentDialogResult.Primary) NavigateTo("Virtual");
     }
 
     public void ShowError(string message, InfoBarSeverity severity = InfoBarSeverity.Error)
@@ -59,6 +184,11 @@ public sealed partial class MainWindow : Window
             ? new EntranceNavigationTransitionInfo()
             : (NavigationTransitionInfo)new SuppressNavigationTransitionInfo();
 
+        if (args.SelectedItem is NavigationViewItem { Tag: "About" })
+        {
+            ContentFrame.Navigate(typeof(AboutPage), null, transition);
+            return;
+        }
         if (args.IsSettingsSelected)
         {
             ContentFrame.Navigate(typeof(SettingsPage), null, transition);

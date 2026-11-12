@@ -51,7 +51,7 @@ public sealed partial class TriggerMeter : UserControl
         if (s.Mode != TriggerMode.Digital)
         {
             // Deadzone: shaded start of the track
-            var dz = new Rectangle { Width = Math.Clamp(s.Deadzone, 0, 1) * w, Height = h, Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(0x40, 0xFF, 0x5C, 0x6C)), RadiusX = 4, RadiusY = 4 };
+            var dz = new Rectangle { Width = Math.Clamp(s.Deadzone, 0, 1) * w, Height = h, Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(0x40, 0xFF, 0x7A, 0x6B)), RadiusX = 4, RadiusY = 4 };
             Markers.Children.Add(dz);
             Mark(s.MaxPoint, B("DsAccentBrush"));
         }

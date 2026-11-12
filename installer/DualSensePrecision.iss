@@ -53,6 +53,7 @@ RestartApplications=no
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Shortcuts:"
+Name: "startup"; Description: "Start DualSense Precision with Windows (in the tray, so your settings are ready for games)"; GroupDescription: "Shortcuts:"; Flags: unchecked
 Name: "viiper"; Description: "Download and install VIIPER {#ViiperVersion} (about 13 MB from GitHub) - needed for the virtual Xbox controller. It installs the signed usbip-win2 driver: Windows will ask for administrator permission (click Yes), and a restart is needed."; GroupDescription: "Virtual controller:"; Check: not ViiperInstalled
 Name: "hidhide"; Description: "Download and install HidHide {#HidHideVersion} (about 8 MB from GitHub) - lets the app hide your real controller from games so they only see the virtual one (you switch this on in the app). HidHide's own installer opens for you to click through; Windows asks for administrator permission for its signed driver, and a restart is needed."; GroupDescription: "Virtual controller:"; Check: not HidHideInstalled
 
@@ -60,6 +61,9 @@ Name: "hidhide"; Description: "Download and install HidHide {#HidHideVersion} (a
 Source: "..\publish\win-x64\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs ignoreversion
 Source: "..\LICENSE"; DestDir: "{app}"; DestName: "LICENSE.txt"; Flags: ignoreversion
 Source: "..\THIRD-PARTY-NOTICES.md"; DestDir: "{app}"; DestName: "THIRD-PARTY-NOTICES.txt"; Flags: ignoreversion
+
+[Registry]
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "DualSense Precision"; ValueData: """{app}\{#AppExe}"" --minimized"; Flags: uninsdeletevalue; Tasks: startup
 
 [Icons]
 Name: "{autoprograms}\{#AppName}"; Filename: "{app}\{#AppExe}"
@@ -205,6 +209,10 @@ procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   Data: String;
 begin
+  if CurUninstallStep = usUninstall then
+    // "Start with Windows" entry the app may have added (per-user, HKCU).
+    RegDeleteValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', 'DualSense Precision');
+
   if CurUninstallStep = usPostUninstall then
   begin
     Data := ExpandConstant('{#DataDir}');

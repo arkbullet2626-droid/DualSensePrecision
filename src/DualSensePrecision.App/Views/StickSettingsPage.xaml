@@ -46,7 +46,7 @@
                                 <TextBlock Text="Processed" Style="{StaticResource DsBody}" FontSize="12" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="6">
-                                <Ellipse Width="9" Height="9" Fill="#99FF5C6C" VerticalAlignment="Center" />
+                                <Ellipse Width="9" Height="9" Fill="#99FF7A6B" VerticalAlignment="Center" />
                                 <TextBlock Text="Deadzone" Style="{StaticResource DsBody}" FontSize="12" />
                             </StackPanel>
                         </StackPanel>

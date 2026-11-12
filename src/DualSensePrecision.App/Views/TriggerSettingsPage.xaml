@@ -80,7 +80,7 @@
                     </Grid>
                     <controls:TriggerMeter x:Name="Meter" />
                     <StackPanel Orientation="Horizontal" Spacing="16">
-                        <TextBlock Style="{StaticResource DsBody}" FontSize="12"><Run Text="▍" Foreground="#FF5C6C" /> Deadzone</TextBlock>
+                        <TextBlock Style="{StaticResource DsBody}" FontSize="12"><Run Text="▍" Foreground="#FF7A6B" /> Deadzone</TextBlock>
                         <TextBlock Style="{StaticResource DsBody}" FontSize="12"><Run Text="▍" Foreground="{StaticResource DsSuccessBrush}" /> Activation point</TextBlock>
                         <TextBlock Style="{StaticResource DsBody}" FontSize="12"><Run Text="▍" Foreground="{StaticResource DsAccentBrush}" /> 100% point</TextBlock>
                         <TextBlock Style="{StaticResource DsBody}" FontSize="12"><Run Text="▍" Foreground="{StaticResource DsWarningBrush}" /> Full press</TextBlock>

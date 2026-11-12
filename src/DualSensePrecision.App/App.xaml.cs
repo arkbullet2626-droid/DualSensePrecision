@@ -14,6 +14,7 @@ public partial class App : Application
         {
             // Surface, don't swallow: log to disk and show the message in the shell's info bar.
             CrashLog.Write(e.Exception);
+            AppLog.Error("Unhandled exception", e.Exception);
             e.Handled = _window != null;
             _window?.ShowError($"Unexpected error: {e.Message}");
         };
@@ -31,10 +32,28 @@ public partial class App : Application
             return;
         }
 
+        AppLog.Prune();
+        AppLog.Info($"DualSense Precision {UpdateChecker.Current} starting on {Environment.OSVersion.VersionString}");
         AppServices.Initialize();
+        StartupRegistration.Refresh();
         _window = new MainWindow();
         _window.Closed += (_, _) => AppServices.Shutdown();
-        _window.Activate();
+
+        // Started by "Start with Windows": stay in the tray until the user opens it.
+        bool minimized = Environment.GetCommandLineArgs().Contains(StartupRegistration.MinimizedArg, StringComparer.OrdinalIgnoreCase);
+        if (minimized) _window.StartInTray();
+        else _window.Activate();
+    }
+
+    /// <summary>Closes everything cleanly and starts a fresh copy of the app (used by "Reset app").</summary>
+    public static void Restart()
+    {
+        AppServices.Shutdown();
+        try { _singleInstance?.ReleaseMutex(); } catch { }
+        _singleInstance?.Dispose();
+        _singleInstance = null;
+        if (Environment.ProcessPath is { } exe) System.Diagnostics.Process.Start(exe);
+        Current.Exit();
     }
 }
 

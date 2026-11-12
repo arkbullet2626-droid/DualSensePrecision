@@ -18,9 +18,9 @@
         <Rectangle x:Name="OuterSquare" Stroke="{StaticResource DsAccentBrush}" StrokeThickness="1" StrokeDashArray="4,3" Opacity="0.7" Visibility="Collapsed" />
 
         <!-- Inner deadzone: ignored region -->
-        <Ellipse x:Name="InnerZone" Fill="#33FF5C6C" Stroke="#99FF5C6C" StrokeThickness="1" />
-        <Rectangle x:Name="InnerBandV" Fill="#26FF5C6C" Visibility="Collapsed" />
-        <Rectangle x:Name="InnerBandH" Fill="#26FF5C6C" Visibility="Collapsed" />
+        <Ellipse x:Name="InnerZone" Fill="#33FF7A6B" Stroke="#99FF7A6B" StrokeThickness="1" />
+        <Rectangle x:Name="InnerBandV" Fill="#26FF7A6B" Visibility="Collapsed" />
+        <Rectangle x:Name="InnerBandH" Fill="#26FF7A6B" Visibility="Collapsed" />
 
         <Line x:Name="Link" Stroke="{StaticResource DsTextTertiaryBrush}" StrokeThickness="1" StrokeDashArray="2,2" />
         <Ellipse x:Name="RawDot" Width="10" Height="10" Fill="{StaticResource DsTextSecondaryBrush}" />

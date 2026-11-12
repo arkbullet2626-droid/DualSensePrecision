@@ -1,6 +1,6 @@
 # DualSense Precision — Development Status
 
-Last update: 2026-11-10 · Version 0.14.2 · M1–4 verified on hardware; Stick, Trigger and Appearance verified; virtual Xbox 360 controller verified end to end; Button Mapping verified; Macros built; Xbox controller input built; optional HidHide hiding built (not yet hardware-tested).
+Last update: 2026-11-10 · Version 0.15.0 · M1–4 verified on hardware; Stick, Trigger and Appearance verified; virtual Xbox 360 controller verified end to end; Button Mapping verified; Macros built; Xbox controller input built; optional HidHide hiding built (not yet hardware-tested).
 
 ## Verification log
 
@@ -14,6 +14,8 @@ Last update: 2026-11-10 · Version 0.14.2 · M1–4 verified on hardware; Stick,
 - v0.7.0 built on Windows: 112/113 — PreciseWait returned up to 1 ms early (integer ms rounding). Fixed in v0.7.1 (tick-based deadline).
 - v0.7.1 (Macros) — user moved on to requesting stick recording before reporting the full macro test list.
 - v0.10.0 failed to build: XAML x:Name "MotionResult" clashed with the MotionResult type (CS0236/CS1061, followed by a cascading WMC9999). Renamed to MotionResultText in v0.10.1; also fixed CS0108 (MainWindow.Current → `new`) and CS0252 (ReferenceEquals). Scanned all XAML for other name/type clashes: none.
+- v0.15.0 (release candidate): Opifex Studios palette (from opifexstudios.ca, confirmed by the user) and bundled fonts (Oxanium/Figtree/IBM Plex Mono, OFL); tray icon (Win32 Shell_NotifyIcon) with close-to-tray, Open/Exit menu and one-time notice; Start with Windows (HKCU Run, --minimized; also an unticked Setup task, removed on uninstall); local daily log (7 days, no input data); Export diagnostics zip; Reset app (un-hides first, optional profile delete, restarts); GitHub update check + banner + About page (version, licence, notices, privacy, links); first-run welcome guide; game-rules wording on macro/keyboard remaps. CI release now also uploads DualSensePrecision-Setup.exe (stable latest/download name) and SHA256SUMS.txt.
+- v0.13.0 Xbox test list: user confirmed all tests pass.
 - v0.14.2 verified on hardware: hide switch works with correct status texts, controller keeps working in the app, Rocket League sees one controller (no second player), switching off and closing the app both un-hide.
 - v0.14.2: HidHide installed fine via the 0.14.1 Setup (user confirmed). Switching hiding on then showed "HidHide request failed: The parameter is incorrect": IOCTL_GET_ACTIVE only accepts a 1-byte BOOLEAN output buffer (the generic get used a size query then 2 bytes). Worse, that step ran after the blacklist was written but before the app recorded its entries, so they wouldn't have been removed on exit. Fixed: GetActive uses a 1-byte buffer; the app records what it will hide before writing HidHide's list (write-ahead), counts every target as its own, and switching hiding off also un-hides the connected controller's entries (recovers anything a previous version lost track of). Settings are only rewritten when something changed. "Check what games see" now also tests a DualSense directly (an outside process tries to open it) because XInput can't see a DualSense.
 - v0.14.1 (installer fix): on the user's PC the 0.14.0 Setup didn't install HidHide at all (no Program Files folder, no error). Diagnosed on a clean Windows runner: HidHide 1.5.230 uses an Advanced Installer bootstrapper (asInvoker) that can't request admin rights in silent mode, '/quiet' isn't its silent switch, and even its real silent mode ('/exenoui /qn') hangs because the MSI's RegisterUpdater action ('nefarius_HidHide_Updater.exe --install', condition NOT Installed, no property to skip it) shows a 'Failed to register in autostart' dialog. Fix: Setup now opens HidHide's installer with its normal screens (after explaining the clicks) and verifies the HidHide service exists afterwards, with Retry/Cancel. VIIPER's silent install verified on a clean runner (exit 3010 = installed, restart needed; port 3242 listening); because VIIPER refuses the driver install without admin rights, Setup now starts it with 'runas' (UAC prompt), treats 3010 as success and verifies viiper.exe exists. Every CI build now runs the Setup.exe unattended with the VIIPER task and refuses to publish if the app or VIIPER didn't install. App: tells 'HidHide installed, restart Windows' apart from 'not installed', links the official download page.
@@ -42,7 +44,7 @@ Last update: 2026-11-10 · Version 0.14.2 · M1–4 verified on hardware; Stick,
 | 5 — Customization | **In progress** — Stick editor verified; Trigger + Appearance verified; Button Mapping verified |
 | 6 — Advanced | **In progress** — adaptive triggers, LEDs, rumble verified; virtual Xbox 360 controller verified; macros, haptics, DS4 target pending |
 | 7 — Profiles & testing | **Complete** — Profiles and Controller Tester verified on hardware |
-| 8 — Polish & installer | **In progress** — installer built (unverified); app settings items and HidHide remain |
+| 8 — Polish & installer | **Release candidate** — installer verified (CI install test + hardware), Settings extras, tray, updates, About, logs/diagnostics done |
 
 ## Feature status
 

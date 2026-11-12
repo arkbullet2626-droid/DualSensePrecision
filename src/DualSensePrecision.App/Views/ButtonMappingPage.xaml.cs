@@ -316,11 +316,11 @@ public sealed partial class ButtonMappingPage : Page
             : k switch
             {
                 2 => "Controller remaps reach games through the Virtual Controller. Turn it on there if it's off.",
-                3 or 4 => "Keyboard and mouse output works in any app, with or without the virtual controller. Some games' anti-cheat ignores simulated keyboard/mouse input.",
+                3 or 4 => "Keyboard and mouse output works in any app, with or without the virtual controller. Some games' anti-cheat ignores simulated keyboard/mouse input, and some games don't allow remapping tools in competitive play.",
                 1 => "This button will do nothing.",
                 5 => (AppServices.ActiveProfile?.Macros.Count ?? 0) == 0
                     ? "You don't have any macros yet — create one on the Macros page."
-                    : "How the macro plays (once, while held, or toggle) is set on the Macros page.",
+                    : "How the macro plays (once, while held, or toggle) is set on the Macros page. Some games ban macros in online play — check the game's rules first.",
                 _ => "",
             };
     }
