@@ -14,9 +14,9 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Border Width="64" Height="64" CornerRadius="6" Background="{StaticResource DsVoltGradientBrush}" VerticalAlignment="Top">
+                    <Border Width="64" Height="64" CornerRadius="6" Background="{StaticResource DsLogoBrush}" VerticalAlignment="Top">
                         <TextBlock Text="P" FontSize="34" FontWeight="Bold" FontFamily="{StaticResource DsDisplayFont}"
-                                   Foreground="{StaticResource DsOnAccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                   Foreground="{StaticResource DsLogoInkBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <StackPanel Grid.Column="1" Spacing="4">
                         <TextBlock Text="DualSense Precision" Style="{StaticResource DsPageTitle}" />

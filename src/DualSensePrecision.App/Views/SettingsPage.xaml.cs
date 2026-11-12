@@ -220,8 +220,21 @@ public sealed partial class SettingsPage : Page
         SaveSoon();
     }
 
+    private void UpdateRestartHint()
+    {
+        bool startedLight = Application.Current.RequestedTheme == ApplicationTheme.Light;
+        RestartHint.Visibility = _palette.IsLight != startedLight ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void OnRestartForTheme(object sender, RoutedEventArgs e)
+    {
+        try { AppServices.SaveSettings(AppServices.Settings with { Palette = _palette, UiScale = ScaleSlider.Value / 100.0 }); } catch { }
+        App.Restart();
+    }
+
     private void UpdateContrast()
     {
+        UpdateRestartHint();
         double ratio = ThemeService.TextContrast(_palette);
         ContrastText.Text = ratio >= 7 ? $"Text contrast {ratio:0.0}:1 — easy to read."
             : ratio >= 4.5 ? $"Text contrast {ratio:0.0}:1 — readable."

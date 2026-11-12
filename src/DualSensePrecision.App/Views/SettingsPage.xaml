@@ -70,6 +70,11 @@
                         </StackPanel>
                         <StackPanel x:Name="ColorRows" Spacing="8" />
                         <TextBlock x:Name="ContrastText" Style="{StaticResource DsBody}" />
+                        <StackPanel x:Name="RestartHint" Orientation="Horizontal" Spacing="10" Visibility="Collapsed">
+                            <TextBlock Style="{StaticResource DsBody}" VerticalAlignment="Center"
+                                       Text="You switched between a light and a dark theme. Pop-up menus and dialogs switch over after a restart." />
+                            <Button Content="Restart now" Click="OnRestartForTheme" />
+                        </StackPanel>
                     </StackPanel>
                 </StackPanel>
             </Border>

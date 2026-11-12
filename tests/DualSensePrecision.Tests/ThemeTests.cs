@@ -72,6 +72,18 @@ public class ThemeTests
     }
 
     [Fact]
+    public void LightPresetsAreLightAndReadable()
+    {
+        foreach (var (name, p) in ThemePalette.Presets)
+        {
+            Assert.Equal(name.Contains("(light)"), p.IsLight);
+            double contrast = ColorMath.Contrast(ColorMath.Parse(p.Text, ""), ColorMath.Parse(p.Background, ""));
+            Assert.True(contrast >= 7, $"{name}: text contrast {contrast:0.0}");
+        }
+        Assert.Equal(12, ThemePalette.Presets.Count);
+    }
+
+    [Fact]
     public void SettingsRoundTripKeepsPaletteAndScale()
     {
         var s = new AppSettings { Palette = ThemePalette.Presets[1].Palette, UiScale = 1.25 };

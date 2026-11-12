@@ -28,8 +28,10 @@ public static class ThemeService
         var raised = ColorMath.Mix(panel, text, 0.035);
         var secondary = ColorMath.Mix(text, bg, 0.35);
         var tertiary = ColorMath.Mix(text, bg, 0.55);
-        var darkInk = ColorMath.Mix(bg, new ColorMath.Rgb(0, 0, 0), 0.4);
-        var onAccent = ColorMath.OnColor(accent, darkInk, text);
+        bool light = p.IsLight;
+        var onAccent = ColorMath.OnColor(accent, new ColorMath.Rgb(0x1A, 0x14, 0x08), new ColorMath.Rgb(0xFF, 0xFF, 0xFF));
+        // Amber text on a light background is hard to read: darken it there.
+        var accentText = light ? ColorMath.Mix(accent, new ColorMath.Rgb(0, 0, 0), 0.45) : ColorMath.Mix(accent, text, 0.2);
 
         var res = Tokens() ?? Application.Current.Resources;
         void Set(string key, ColorMath.Rgb c, byte a = 255)
@@ -54,8 +56,9 @@ public static class ThemeService
         SetGradient(res, "DsHeroGradientBrush", W(ColorMath.Mix(panel, accent, 0.12)), W(panel));
 
         // Stock WinUI controls (theme dictionary in Tokens.xaml)
-        if (Tokens()?.ThemeDictionaries.TryGetValue("Dark", out var td) == true && td is ResourceDictionary dark)
+        foreach (var themeKey in new[] { "Dark", "Light" })
         {
+            if (Tokens()?.ThemeDictionaries.TryGetValue(themeKey, out var td) != true || td is not ResourceDictionary dark) continue;
             void T(string key, ColorMath.Rgb c, byte a = 255)
             {
                 if (dark.TryGetValue(key, out var o) && o is SolidColorBrush b) b.Color = W(c, a);
@@ -63,9 +66,9 @@ public static class ThemeService
             T("AccentFillColorDefaultBrush", accent);
             T("AccentFillColorSecondaryBrush", accent, 0xE6);
             T("AccentFillColorTertiaryBrush", accent, 0xCC);
-            T("AccentTextFillColorPrimaryBrush", ColorMath.Mix(accent, text, 0.2));
-            T("AccentTextFillColorSecondaryBrush", accent);
-            T("AccentTextFillColorTertiaryBrush", ColorMath.Mix(accent, bg, 0.15));
+            T("AccentTextFillColorPrimaryBrush", accentText);
+            T("AccentTextFillColorSecondaryBrush", light ? accentText : accent);
+            T("AccentTextFillColorTertiaryBrush", ColorMath.Mix(accentText, bg, 0.15));
             T("SystemControlHighlightAccentBrush", accent);
             T("SystemControlForegroundAccentBrush", accent);
             T("FocusStrokeColorOuterBrush", text);
@@ -87,8 +90,12 @@ public static class ThemeService
             T("TextFillColorSecondaryBrush", secondary);
             T("TextFillColorTertiaryBrush", tertiary);
         }
+        IsLight = light;
         Applied?.Invoke();
     }
+
+    /// <summary>True while a light palette is applied (built-in controls use their light style).</summary>
+    public static bool IsLight { get; private set; }
 
     /// <summary>How readable the main text is on the background (WCAG contrast ratio, 1–21).</summary>
     public static double TextContrast(ThemePalette p) =>

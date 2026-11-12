@@ -10,6 +10,14 @@ public partial class App : Application
     public App()
     {
         InitializeComponent();
+        // Built-in controls (dropdowns, dialogs, flyouts) start in light or dark style to match the saved colours.
+        // This can only be set here, before any window exists; the main window also switches live.
+        try
+        {
+            var saved = new DualSensePrecision.Configuration.SettingsStore().Load();
+            if ((saved.Palette ?? new()).IsLight) RequestedTheme = ApplicationTheme.Light;
+        }
+        catch { /* default dark */ }
         UnhandledException += (_, e) =>
         {
             // Surface, don't swallow: log to disk and show the message in the shell's info bar.

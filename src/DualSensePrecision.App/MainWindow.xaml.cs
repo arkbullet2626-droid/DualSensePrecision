@@ -35,6 +35,8 @@ public sealed partial class MainWindow : Window
 
         Nav.SelectedItem = Nav.MenuItems[0];
         Scaler.Scale = AppServices.Settings.UiScale;
+        ThemeService.Applied += ApplyThemeMode;
+        ApplyThemeMode();
 
         // Tray icon: always there while the app runs, so closing the window can keep the controller working.
         _tray = new TrayIcon("DualSense Precision", icon);
@@ -45,6 +47,24 @@ public sealed partial class MainWindow : Window
         Closed += (_, _) => _tray.Dispose();
 
         Activated += OnFirstActivated;
+    }
+
+    /// <summary>Light palettes switch the window's built-in controls to their light style; also recolours the title-bar buttons.</summary>
+    private void ApplyThemeMode()
+    {
+        if (Content is FrameworkElement root) root.RequestedTheme = ThemeService.IsLight ? ElementTheme.Light : ElementTheme.Dark;
+        try
+        {
+            var tb = AppWindow.TitleBar;
+            var text = ((Microsoft.UI.Xaml.Media.SolidColorBrush)Application.Current.Resources["DsTextPrimaryBrush"]).Color;
+            var stroke = ((Microsoft.UI.Xaml.Media.SolidColorBrush)Application.Current.Resources["DsStrokeBrush"]).Color;
+            tb.ButtonForegroundColor = text;
+            tb.ButtonHoverForegroundColor = text;
+            tb.ButtonBackgroundColor = Microsoft.UI.Colors.Transparent;
+            tb.ButtonInactiveBackgroundColor = Microsoft.UI.Colors.Transparent;
+            tb.ButtonHoverBackgroundColor = stroke;
+        }
+        catch { }
     }
 
     /// <summary>Settings → Interface → Interface scale (applied live).</summary>

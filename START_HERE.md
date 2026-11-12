@@ -1,4 +1,16 @@
-# DualSense Precision 0.16.1 — release candidate for 1.0
+# DualSense Precision 0.17.0 — release candidate for 1.0
+
+**0.17.0:** 12 colour presets, including three fun ones (Synthwave, Deep Sea, Toxic), Deep Red and three **light** themes (Paper, Daylight, Sand). With a light theme, the app's built-in controls switch to their light style too. The small logo always stays Opifex amber, whatever theme you pick.
+
+### Tests for 0.17.0
+P1. Settings → Interface → **Start from a preset**: try **Synthwave**, **Deep Sea**, **Toxic** and **Deep Red**. Each repaints the whole app straight away, and the amber "P" logo in the title bar doesn't change.
+P2. Pick **Paper (light)**: the app goes light with dark text, and toggles, sliders, text boxes and dropdowns all look right and are readable. The title-bar minimise/close buttons stay visible.
+P3. A note appears: *"You switched between a light and a dark theme…"*. Click **Restart now**: the app reopens in Paper, and dropdown menus and dialogs (e.g. Reset app…) are light as well.
+P4. Try **Daylight (light)** and **Sand (light)**, then go back to **Opifex (default)** (restart when asked).
+
+---
+
+# From 0.16.1
 
 **0.16.1:** the colour editor now has four colours (Background, Panels and cards, Borders and lines, Main text). The accents always stay Opifex amber and orange, and presets only change those four.
 
@@ -41,7 +53,7 @@ Everything planned for 1.0 is in this build. If the tests below pass, the next b
 ## Install
 
 1. Close DualSense Precision completely (if it's in the tray: right-click the icon → **Exit**).
-2. Run **`DualSensePrecision-0.16.1-setup.exe`**. If SmartScreen appears: **More info → Run anyway**.
+2. Run **`DualSensePrecision-0.17.0-setup.exe`**. If SmartScreen appears: **More info → Run anyway**.
 3. VIIPER and HidHide are already installed, so their boxes don't appear. Leave **Start DualSense Precision with Windows** unticked for now (test 9 covers it).
 
 ## Tests
@@ -64,7 +76,7 @@ Everything planned for 1.0 is in this build. If the tests below pass, the next b
 9. Settings → turn on **Start with Windows**. Sign out and back in (or restart): the app starts in the tray without opening a window. Turn it off again if you don't want it.
 
 **E. Updates and About**
-10. **About** shows *Version 0.16.1*. **Check for updates** says it couldn't check (the repository is still private, so this is expected until release) or that you're up to date.
+10. **About** shows *Version 0.17.0*. **Check for updates** says it couldn't check (the repository is still private, so this is expected until release) or that you're up to date.
 11. The buttons on About open the right things: **Licence** and **Third-party notices** open text files; **Source code** / **Report a problem** / **Privacy policy** / **opifexstudios.ca** open the browser (GitHub pages need you signed in until the repo is public, and the privacy section is added to the website at release).
 
 **F. Troubleshooting**

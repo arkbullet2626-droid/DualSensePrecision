@@ -22,12 +22,25 @@ public sealed record ThemePalette
 
     public static IReadOnlyList<(string Name, ThemePalette Palette)> Presets { get; } = new[]
     {
+        // Dark
         ("Opifex (default)", Opifex),
         ("Midnight", new ThemePalette { Background = "#0B0D12", Panel = "#12151C", Border = "#232836", Text = "#E8EBF2" }),
         ("Forest", new ThemePalette { Background = "#0A0F0B", Panel = "#111A13", Border = "#22332A", Text = "#E6F2E9" }),
+        ("Deep Red", new ThemePalette { Background = "#120405", Panel = "#1F080A", Border = "#451318", Text = "#F7E4E4" }),
         ("Crimson", new ThemePalette { Background = "#0E0809", Panel = "#180E10", Border = "#33191D", Text = "#F4E6E8" }),
         ("Graphite", new ThemePalette { Background = "#0A0A0A", Panel = "#141414", Border = "#2A2A2A", Text = "#F0F0F0" }),
+        // Fun
+        ("Synthwave", new ThemePalette { Background = "#120A1F", Panel = "#1E1033", Border = "#46236E", Text = "#FFE3F6" }),
+        ("Deep Sea", new ThemePalette { Background = "#04131A", Panel = "#082331", Border = "#13455C", Text = "#DDF6FF" }),
+        ("Toxic", new ThemePalette { Background = "#0A0F04", Panel = "#131D08", Border = "#2F4A10", Text = "#EEFFD6" }),
+        // Light
+        ("Paper (light)", new ThemePalette { Background = "#F5F1E8", Panel = "#FFFDF8", Border = "#E0D6C2", Text = "#1E1A14" }),
+        ("Daylight (light)", new ThemePalette { Background = "#F2F3F6", Panel = "#FFFFFF", Border = "#D7DAE1", Text = "#15171C" }),
+        ("Sand (light)", new ThemePalette { Background = "#EAE0CC", Panel = "#F6EFE1", Border = "#CDBD9C", Text = "#2A2117" }),
     };
+
+    /// <summary>Light backgrounds switch the app's built-in controls to their light style.</summary>
+    public bool IsLight => ColorMath.Luminance(ColorMath.Parse(Background, Opifex.Background)) > 0.4;
 
     /// <summary>True if every slot is a valid #RRGGBB colour.</summary>
     public bool IsValid => new[] { Background, Panel, Border, Text, Accent, Accent2 }.All(h => ColorMath.TryParse(h, out _));

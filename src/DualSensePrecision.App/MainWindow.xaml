@@ -14,8 +14,8 @@
         <!-- Custom title bar -->
         <Grid x:Name="TitleBar" Padding="16,0,140,0">
             <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                <Border Width="18" Height="18" CornerRadius="3" Background="{StaticResource DsVoltGradientBrush}">
-                    <TextBlock Text="P" FontSize="11" FontWeight="Bold" Foreground="{StaticResource DsOnAccentBrush}" FontFamily="{StaticResource DsDisplayFont}"
+                <Border Width="18" Height="18" CornerRadius="3" Background="{StaticResource DsLogoBrush}">
+                    <TextBlock Text="P" FontSize="11" FontWeight="Bold" Foreground="{StaticResource DsLogoInkBrush}" FontFamily="{StaticResource DsDisplayFont}"
                                HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </Border>
                 <TextBlock Text="DualSense Precision" FontSize="12" Foreground="{StaticResource DsTextSecondaryBrush}" VerticalAlignment="Center" />
