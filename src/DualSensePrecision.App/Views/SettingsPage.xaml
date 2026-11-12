@@ -63,7 +63,7 @@
                     <StackPanel Spacing="10">
                         <TextBlock Text="Colours" Foreground="{StaticResource DsTextPrimaryBrush}" />
                         <TextBlock Style="{StaticResource DsBody}"
-                                   Text="Pick any colour for each part of the app: click a swatch to drag the colour picker, or type a hex code like #F2B544. Changes show straight away. Lighter shades (secondary text, raised panels, text on buttons) are worked out from these." />
+                                   Text="Pick any colour for the background, panels, borders and text: click a swatch to drag the colour picker, or type a hex code like #15110B. Changes show straight away. Lighter shades (secondary text, raised panels) are worked out from these. The amber accent stays the Opifex colour." />
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <ComboBox x:Name="PresetBox" Header="Start from a preset" MinWidth="220" SelectionChanged="OnPresetChanged" />
                             <Button Content="Reset to Opifex colours" VerticalAlignment="Bottom" Click="OnColorsReset" />

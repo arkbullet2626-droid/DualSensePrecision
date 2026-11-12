@@ -8,7 +8,7 @@ namespace DualSensePrecision.App.Services;
 /// <summary>
 /// Applies the user's interface colours live. Every page uses shared brush objects from Themes/Tokens.xaml, so
 /// changing a brush's colour repaints everything that uses it immediately — no restart, no page reload.
-/// Six colours are chosen by the user; the rest are derived from them so any combination stays consistent.
+/// Four colours are chosen by the user (accents stay Opifex amber/ember); the rest are derived so any combination stays consistent.
 /// </summary>
 public static class ThemeService
 {
@@ -21,8 +21,9 @@ public static class ThemeService
         var panel = ColorMath.Parse(p.Panel, d.Panel);
         var border = ColorMath.Parse(p.Border, d.Border);
         var text = ColorMath.Parse(p.Text, d.Text);
-        var accent = ColorMath.Parse(p.Accent, d.Accent);
-        var accent2 = ColorMath.Parse(p.Accent2, d.Accent2);
+        // Accents are always the Opifex amber/ember (not user-editable).
+        var accent = ColorMath.Parse(ThemePalette.OpifexAccent, d.Accent);
+        var accent2 = ColorMath.Parse(ThemePalette.OpifexAccent2, d.Accent2);
 
         var raised = ColorMath.Mix(panel, text, 0.035);
         var secondary = ColorMath.Mix(text, bg, 0.35);

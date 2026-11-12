@@ -3,8 +3,8 @@ using System.Globalization;
 namespace DualSensePrecision.Configuration;
 
 /// <summary>
-/// The six user-editable interface colours (hex #RRGGBB). Every other shade the app uses is derived from these,
-/// so any combination stays consistent. Defaults are the Opifex Studios palette.
+/// The interface colours (hex #RRGGBB). Users edit the four surface/text colours; the accents are the fixed
+/// Opifex Studios amber and ember. Every other shade the app uses is derived from these.
 /// </summary>
 public sealed record ThemePalette
 {
@@ -12,18 +12,21 @@ public sealed record ThemePalette
     public string Panel { get; init; } = "#15110B";
     public string Border { get; init; } = "#2E2617";
     public string Text { get; init; } = "#F2EBDD";
-    public string Accent { get; init; } = "#F2B544";
-    public string Accent2 { get; init; } = "#E0782F";
+    public string Accent { get; init; } = OpifexAccent;
+    public string Accent2 { get; init; } = OpifexAccent2;
+
+    public const string OpifexAccent = "#F2B544";
+    public const string OpifexAccent2 = "#E0782F";
 
     public static ThemePalette Opifex { get; } = new();
 
     public static IReadOnlyList<(string Name, ThemePalette Palette)> Presets { get; } = new[]
     {
         ("Opifex (default)", Opifex),
-        ("Midnight", new ThemePalette { Background = "#0B0D12", Panel = "#12151C", Border = "#232836", Text = "#E8EBF2", Accent = "#3D7BFF", Accent2 = "#00D1FF" }),
-        ("Forest", new ThemePalette { Background = "#0A0F0B", Panel = "#111A13", Border = "#22332A", Text = "#E6F2E9", Accent = "#5BE3A6", Accent2 = "#2FB37A" }),
-        ("Crimson", new ThemePalette { Background = "#0E0809", Panel = "#180E10", Border = "#33191D", Text = "#F4E6E8", Accent = "#FF5C6C", Accent2 = "#FF9A5C" }),
-        ("Graphite", new ThemePalette { Background = "#0A0A0A", Panel = "#141414", Border = "#2A2A2A", Text = "#F0F0F0", Accent = "#E8E8E8", Accent2 = "#9A9A9A" }),
+        ("Midnight", new ThemePalette { Background = "#0B0D12", Panel = "#12151C", Border = "#232836", Text = "#E8EBF2" }),
+        ("Forest", new ThemePalette { Background = "#0A0F0B", Panel = "#111A13", Border = "#22332A", Text = "#E6F2E9" }),
+        ("Crimson", new ThemePalette { Background = "#0E0809", Panel = "#180E10", Border = "#33191D", Text = "#F4E6E8" }),
+        ("Graphite", new ThemePalette { Background = "#0A0A0A", Panel = "#141414", Border = "#2A2A2A", Text = "#F0F0F0" }),
     };
 
     /// <summary>True if every slot is a valid #RRGGBB colour.</summary>

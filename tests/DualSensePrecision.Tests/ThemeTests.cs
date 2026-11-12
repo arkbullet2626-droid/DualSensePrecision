@@ -68,6 +68,7 @@ public class ThemeTests
         Assert.Equal(ThemePalette.Opifex, ThemePalette.Presets[0].Palette);
         Assert.Equal("#F2B544", new ThemePalette().Accent);
         Assert.False((new ThemePalette() with { Text = "#12" }).IsValid);
+        Assert.All(ThemePalette.Presets, p => Assert.Equal(ThemePalette.OpifexAccent, p.Palette.Accent)); // accents aren't themable
     }
 
     [Fact]

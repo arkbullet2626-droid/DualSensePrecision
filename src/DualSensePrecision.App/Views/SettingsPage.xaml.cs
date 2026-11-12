@@ -23,7 +23,7 @@ public sealed partial class SettingsPage : Page
         StartWithWindows.IsOn = StartupRegistration.IsEnabled;
         ScaleSlider.Value = Math.Round(s.UiScale * 100);
         ScaleValue.Text = $"{ScaleSlider.Value:0} %";
-        _palette = s.Palette ?? new ThemePalette();
+        _palette = (s.Palette ?? new ThemePalette()) with { Accent = ThemePalette.OpifexAccent, Accent2 = ThemePalette.OpifexAccent2 };
         foreach (var (name, _) in ThemePalette.Presets) PresetBox.Items.Add(name);
         PresetBox.SelectedIndex = PresetIndex(_palette);
         BuildColorRows();
@@ -108,8 +108,6 @@ public sealed partial class SettingsPage : Page
         ("Panel", "Panels and cards", "Cards, the sidebar footer, inputs"),
         ("Border", "Borders and lines", "Card edges, dividers"),
         ("Text", "Main text", "Titles and body text"),
-        ("Accent", "Main accent", "Buttons, toggles, sliders, highlights"),
-        ("Accent2", "Second accent", "Gradients and warnings, used sparingly"),
     };
 
     private static string Get(ThemePalette p, string slot) => slot switch
@@ -126,6 +124,7 @@ public sealed partial class SettingsPage : Page
 
     private static int PresetIndex(ThemePalette p)
     {
+        p = p with { Accent = ThemePalette.OpifexAccent, Accent2 = ThemePalette.OpifexAccent2 }; // older saves may hold custom accents
         for (int i = 0; i < ThemePalette.Presets.Count; i++)
             if (ThemePalette.Presets[i].Palette == p) return i;
         return -1; // custom

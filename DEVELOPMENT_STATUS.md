@@ -1,6 +1,6 @@
 # DualSense Precision — Development Status
 
-Last update: 2026-11-10 · Version 0.16.0 · M1–4 verified on hardware; Stick, Trigger and Appearance verified; virtual Xbox 360 controller verified end to end; Button Mapping verified; Macros built; Xbox controller input built; optional HidHide hiding built (not yet hardware-tested).
+Last update: 2026-11-10 · Version 0.16.1 · M1–4 verified on hardware; Stick, Trigger and Appearance verified; virtual Xbox 360 controller verified end to end; Button Mapping verified; Macros built; Xbox controller input built; optional HidHide hiding built (not yet hardware-tested).
 
 ## Verification log
 
@@ -14,6 +14,7 @@ Last update: 2026-11-10 · Version 0.16.0 · M1–4 verified on hardware; Stick,
 - v0.7.0 built on Windows: 112/113 — PreciseWait returned up to 1 ms early (integer ms rounding). Fixed in v0.7.1 (tick-based deadline).
 - v0.7.1 (Macros) — user moved on to requesting stick recording before reporting the full macro test list.
 - v0.10.0 failed to build: XAML x:Name "MotionResult" clashed with the MotionResult type (CS0236/CS1061, followed by a cascading WMC9999). Renamed to MotionResultText in v0.10.1; also fixed CS0108 (MainWindow.Current → `new`) and CS0252 (ReferenceEquals). Scanned all XAML for other name/type clashes: none.
+- v0.16.1: user asked to drop Main/Second accent from the colour editor; accents fixed to Opifex amber/ember, presets only change the 4 surface/text colours.
 - v0.16.0 (release candidate): user-customisable interface colours (6 slots: background, panels, borders, text, accent, second accent; ColorPicker flyout + hex box; presets; reset; WCAG contrast warning) applied live by mutating the shared brushes in Tokens.xaml (derived shades computed in ColorMath); interface scale 75–150 % via a ScaleHost panel (measure ÷ scale, render × scale). Saved in settings (Palette, UiScale).
 - v0.15.0 (release candidate): Opifex Studios palette (from opifexstudios.ca, confirmed by the user) and bundled fonts (Oxanium/Figtree/IBM Plex Mono, OFL); tray icon (Win32 Shell_NotifyIcon) with close-to-tray, Open/Exit menu and one-time notice; Start with Windows (HKCU Run, --minimized; also an unticked Setup task, removed on uninstall); local daily log (7 days, no input data); Export diagnostics zip; Reset app (un-hides first, optional profile delete, restarts); GitHub update check + banner + About page (version, licence, notices, privacy, links); first-run welcome guide; game-rules wording on macro/keyboard remaps. CI release now also uploads DualSensePrecision-Setup.exe (stable latest/download name) and SHA256SUMS.txt.
 - v0.13.0 Xbox test list: user confirmed all tests pass.
