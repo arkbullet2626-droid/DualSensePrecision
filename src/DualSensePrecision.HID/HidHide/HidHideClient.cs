@@ -97,11 +97,14 @@ public static class HidHideClient
     public static List<string> GetBlacklist() { using var h = Open(); return GetList(h, IOCTL_GET_BLACKLIST); }
     public static List<string> GetWhitelist() { using var h = Open(); return GetList(h, IOCTL_GET_WHITELIST); }
 
+    /// <summary>HidHide answers this one with a single BOOLEAN byte; any other buffer size is rejected.</summary>
     public static bool GetActive()
     {
         using var h = Open();
-        var b = Get(h, IOCTL_GET_ACTIVE);
-        return b.Length > 0 && b[0] != 0;
+        var b = new byte[1];
+        if (!DeviceIoControl(h, IOCTL_GET_ACTIVE, null, 0, b, 1, out _, IntPtr.Zero))
+            throw new HidHideException($"HidHide request failed: {new Win32Exception(Marshal.GetLastWin32Error()).Message}");
+        return b[0] != 0;
     }
 
     public static void SetActive(bool on) { using var h = Open(); Set(h, IOCTL_SET_ACTIVE, new[] { (byte)(on ? 1 : 0) }); }

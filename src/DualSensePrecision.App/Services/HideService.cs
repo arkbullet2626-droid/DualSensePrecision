@@ -85,7 +85,7 @@ public sealed class HideService : IDisposable
             NeedsRestart = !IsInstalled && HidHideClient.IsRegistered;
             if (!AppServices.Settings.HideRealController)
             {
-                Restore(null);
+                Restore(null, CurrentTargetsOrEmpty());
                 Status = "Off. Games see your real controller as well as the virtual one.";
                 Notify();
                 return;
@@ -127,16 +127,24 @@ public sealed class HideService : IDisposable
             var wl = HidHideClient.GetWhitelist();
             if (!wl.Contains(me, StringComparer.OrdinalIgnoreCase)) HidHideClient.SetWhitelist(wl.Append(me));
 
-            // 2. Swap our old entries for the new ones (other entries untouched).
+            // 2. Record what we're about to hide BEFORE hiding it, so a failure or crash at any later step can
+            //    still be undone (on the next pass, on exit, or on the next start). Every target counts as ours.
+            var claim = ours.Union(targets, StringComparer.OrdinalIgnoreCase).ToArray();
+            AppServices.SaveSettings(AppServices.Settings with { HiddenByApp = claim });
+
+            // 3. Swap our old entries for the new ones (other apps' entries untouched).
             var bl = HidHideLogic.RemoveEntries(HidHideClient.GetBlacklist(), ours);
-            var (newList, added) = HidHideLogic.AddEntries(bl, targets);
+            var (newList, _) = HidHideLogic.AddEntries(bl, targets);
             HidHideClient.SetBlacklist(newList);
+            AppServices.SaveSettings(AppServices.Settings with { HiddenByApp = targets.ToArray() });
 
-            // 3. Switch hiding on if it was off (and remember to switch it back).
-            bool activatedByUs = settings.HidHideActivatedByApp;
-            if (!HidHideClient.GetActive()) { HidHideClient.SetActive(true); activatedByUs = true; }
+            // 4. Switch hiding on if it was off (and remember to switch it back).
+            if (!HidHideClient.GetActive())
+            {
+                AppServices.SaveSettings(AppServices.Settings with { HidHideActivatedByApp = true });
+                HidHideClient.SetActive(true);
+            }
 
-            AppServices.SaveSettings(AppServices.Settings with { HiddenByApp = added.ToArray(), HidHideActivatedByApp = activatedByUs });
             IsHiding = true;
             Hidden = targets;
             LastError = null;
@@ -146,19 +154,41 @@ public sealed class HideService : IDisposable
         }
     }
 
-    /// <summary>Removes only what this app added, and switches HidHide back off if this app switched it on.</summary>
-    private void Restore(string? message)
+    /// <summary>The current controller's device entries, if one is connected (used when the user switches hiding off).</summary>
+    private static IReadOnlyList<string> CurrentTargetsOrEmpty()
+    {
+        try
+        {
+            var c = AppServices.Controller;
+            if (c.Status != ConnectionStatus.Connected || c.IsMock) return Array.Empty<string>();
+            return c.Family == ControllerFamily.Xbox ? HideTargets.ForXboxControllers()
+                : c.Info?.DevicePath is { } p ? HideTargets.ForDualSense(p) : Array.Empty<string>();
+        }
+        catch { return Array.Empty<string>(); }
+    }
+
+    /// <summary>
+    /// Removes what this app hid (plus, when the user switches hiding off, the connected controller's entries, so it's
+    /// visible again even if an earlier version lost track of them), and switches HidHide back off if this app switched it on.
+    /// </summary>
+    private void Restore(string? message, IReadOnlyList<string>? alsoUnhide = null)
     {
         lock (_lock)
         {
             var s = AppServices.Settings;
-            var ours = s.HiddenByApp ?? Array.Empty<string>();
+            var ours = (s.HiddenByApp ?? Array.Empty<string>()).Concat(alsoUnhide ?? Array.Empty<string>()).ToArray();
             if (ours.Length == 0 && !s.HidHideActivatedByApp) { IsHiding = false; Hidden = Array.Empty<string>(); return; }
             if (!HidHideClient.IsInstalled) return;
 
-            if (ours.Length > 0) HidHideClient.SetBlacklist(HidHideLogic.RemoveEntries(HidHideClient.GetBlacklist(), ours));
+            if (ours.Length > 0)
+            {
+                var current = HidHideClient.GetBlacklist();
+                var kept = HidHideLogic.RemoveEntries(current, ours);
+                if (kept.Count != current.Count) HidHideClient.SetBlacklist(kept);
+            }
             if (s.HidHideActivatedByApp && HidHideClient.GetBlacklist().Count == 0) HidHideClient.SetActive(false);
-            AppServices.SaveSettings(AppServices.Settings with { HiddenByApp = Array.Empty<string>(), HidHideActivatedByApp = false });
+            if ((s.HiddenByApp?.Length ?? 0) > 0 || s.HidHideActivatedByApp) // only write settings when something was recorded
+                AppServices.SaveSettings(AppServices.Settings with { HiddenByApp = Array.Empty<string>(), HidHideActivatedByApp = false });
             IsHiding = false;
             Hidden = Array.Empty<string>();
             if (message != null) Status = message;
@@ -194,8 +224,18 @@ public sealed class HideService : IDisposable
                 return "The check couldn't run (PowerShell didn't answer).";
             int app = XInputProbe.Connected().Count;
             bool virtualOn = AppServices.Viiper?.State == VirtualState.Connected;
+            var c = AppServices.Controller;
+            if (c.Status == ConnectionStatus.Connected && c.Family == ControllerFamily.DualSense && !c.IsMock && c.Info?.DevicePath is { } dsPath)
+            {
+                // A DualSense isn't an XInput device, so also ask: can an outside program open the DualSense itself?
+                bool gamesCanOpen = await CanOutsideProgramOpenAsync(dsPath);
+                string ds = gamesCanOpen ? "Games CAN still see your DualSense." : "✓ Your DualSense is hidden from games.";
+                return $"{ds} Games see {games} Xbox-style controller{(games == 1 ? "" : "s")} (the virtual pad{(games == 1 ? "" : "s")})." +
+                       (!virtualOn ? " The virtual controller is off." : "");
+            }
             string verdict = !virtualOn
                 ? "The virtual controller is off."
+                : games == 1 && app >= 2 ? "✓ Games see exactly one Xbox controller: the virtual pad. This app still sees your real one."
                 : games == 1 ? "✓ Games see exactly one Xbox controller: the virtual pad."
                 : games == 0 ? "Games see no Xbox controller — the virtual pad may still be starting."
                 : $"Games still see {games} Xbox controllers. If you just switched hiding on, unplug and reconnect the controller (or restart Windows once after installing HidHide).";
@@ -205,6 +245,23 @@ public sealed class HideService : IDisposable
         {
             return $"The check couldn't run: {ex.Message}";
         }
+    }
+
+    /// <summary>Runs PowerShell (not on HidHide's allowed list, like a game) and tries to open the device.</summary>
+    private static async Task<bool> CanOutsideProgramOpenAsync(string devicePath)
+    {
+        string script =
+            "$t=Add-Type -MemberDefinition '[DllImport(\"kernel32.dll\", CharSet=CharSet.Unicode, SetLastError=true)] public static extern Microsoft.Win32.SafeHandles.SafeFileHandle CreateFileW(string n, uint a, uint s, System.IntPtr p, uint c, uint f, System.IntPtr t);' -Name F -Namespace P -PassThru;" +
+            "$h=$t::CreateFileW('" + devicePath.Replace("'", "''") + "', 0, 3, [IntPtr]::Zero, 3, 0, [IntPtr]::Zero); if ($h.IsInvalid) { 'no' } else { $h.Dispose(); 'yes' }";
+        var encoded = Convert.ToBase64String(System.Text.Encoding.Unicode.GetBytes(script));
+        var psi = new ProcessStartInfo("powershell.exe", $"-NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand {encoded}")
+        {
+            RedirectStandardOutput = true, RedirectStandardError = true, UseShellExecute = false, CreateNoWindow = true,
+        };
+        using var p = Process.Start(psi)!;
+        var output = await p.StandardOutput.ReadToEndAsync();
+        await p.WaitForExitAsync();
+        return output.Trim().EndsWith("yes", StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>Un-hides on exit so the controller is never left invisible.</summary>

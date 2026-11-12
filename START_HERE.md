@@ -1,4 +1,12 @@
-# DualSense Precision v0.14.1: the installer fix
+# DualSense Precision v0.14.2: hiding fix
+
+**New in 0.14.2:** switching on "Hide your real controller from games" no longer fails with *"HidHide request failed: The parameter is incorrect"*, and the app now records what it hides **before** hiding it, so it's always undone when you switch off or close the app. "Check what games see" also works for a DualSense now.
+
+Install it like any update: close the app, run `DualSensePrecision-0.14.2-setup.exe`. HidHide is already installed, so its option won't appear.
+
+---
+
+# From 0.14.1: the installer fix
 
 This version fixes Setup so **HidHide really installs** (in 0.14.0 it silently did nothing on some PCs).
 
