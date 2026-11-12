@@ -3,24 +3,27 @@ on: workflow_dispatch
 jobs:
   check:
     runs-on: windows-latest
+    timeout-minutes: 20
     steps:
-      - name: Download HidHide and verify hash
+      - name: Download HidHide
+        shell: pwsh
+        run: Invoke-WebRequest https://github.com/nefarius/HidHide/releases/download/v1.5.230.0/HidHide_1.5.230_x64.exe -OutFile hh.exe
+      - name: Silent install, no update check, diagnose any wait
         shell: pwsh
         run: |
-          Invoke-WebRequest https://github.com/nefarius/HidHide/releases/download/v1.5.230.0/HidHide_1.5.230_x64.exe -OutFile hh.exe
-          (Get-FileHash hh.exe -Algorithm SHA256).Hash
-          (Get-AuthenticodeSignature hh.exe | Select-Object Status, @{n='Signer';e={$_.SignerCertificate.Subject}}) | Format-List
-      - name: New switches (/exenoui /qn /norestart /exelog)
-        timeout-minutes: 8
-        shell: pwsh
-        run: |
-          $log = "$env:RUNNER_TEMP\hidhide-install.log"
-          $p = Start-Process .\hh.exe -ArgumentList '/exenoui','/qn','/norestart',"/exelog `"$log`"" -PassThru
-          if (-not $p.WaitForExit(300000)) { "TIMED OUT after 5 minutes"; Stop-Process $p -Force }
-          "exit code: $($p.ExitCode)"
+          $log = "$env:RUNNER_TEMP\exe.log"
+          $msilog = "$env:RUNNER_TEMP\msi.log"
+          $args = @('/exenoui','/exenoupdates','/exelog',"`"$log`"",'/qn','/norestart','/L*v',"`"$msilog`"")
+          "args: $args"
+          $p = Start-Process .\hh.exe -ArgumentList $args -PassThru
+          if (-not $p.WaitForExit(150000)) {
+            "STILL RUNNING after 150 s. Processes:"
+            Get-CimInstance Win32_Process | Where-Object { $_.CreationDate -gt (Get-Date).AddMinutes(-3) } | Select-Object ProcessId, ParentProcessId, Name, CommandLine | Format-Table -AutoSize -Wrap | Out-String -Width 400
+            Get-Process | Where-Object MainWindowTitle | Select-Object Name, MainWindowTitle | Format-Table | Out-String -Width 300
+          } else { "exit code: $($p.ExitCode)" }
           "service key: $(Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Services\HidHide')"
-          "program files: $(Test-Path 'C:\Program Files\Nefarius Software Solutions\HidHide')"
-          Get-ChildItem 'C:\Program Files\Nefarius Software Solutions\HidHide' -Recurse -ErrorAction SilentlyContinue | Select-Object -First 20 FullName
-          if (Test-Path $log) { Get-Content $log -Tail 40 }
-          sc.exe query HidHide
-          Test-Path '\\.\HidHide'
+          "--- exe log"; if (Test-Path $log) { Get-Content $log -Tail 60 } else { "(none)" }
+          "--- msi log errors"; if (Test-Path $msilog) { Select-String -Path $msilog -Pattern 'Return value 3|error|Error 1|MainEngineThread|Product:|Windows Installer installed|reboot' | Select-Object -Last 40 | ForEach-Object Line } else { "(none)" }
+          "--- temp logs"; Get-ChildItem $env:TEMP -Filter *.log -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 10 Name, Length
+          "--- setupapi tail"; Get-Content C:\Windows\INF\setupapi.dev.log -Tail 40 -ErrorAction SilentlyContinue
+          exit 0
