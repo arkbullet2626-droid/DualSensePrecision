@@ -10,18 +10,13 @@ jobs:
           Invoke-WebRequest https://github.com/nefarius/HidHide/releases/download/v1.5.230.0/HidHide_1.5.230_x64.exe -OutFile hh.exe
           (Get-FileHash hh.exe -Algorithm SHA256).Hash
           (Get-AuthenticodeSignature hh.exe | Select-Object Status, @{n='Signer';e={$_.SignerCertificate.Subject}}) | Format-List
-      - name: Old switches (/quiet /norestart)
-        shell: pwsh
-        run: |
-          $p = Start-Process .\hh.exe -ArgumentList '/quiet','/norestart' -Wait -PassThru
-          "exit code: $($p.ExitCode)"
-          "service key: $(Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Services\HidHide')"
-          "program files: $(Test-Path 'C:\Program Files\Nefarius Software Solutions\HidHide')"
       - name: New switches (/exenoui /qn /norestart /exelog)
+        timeout-minutes: 8
         shell: pwsh
         run: |
           $log = "$env:RUNNER_TEMP\hidhide-install.log"
-          $p = Start-Process .\hh.exe -ArgumentList '/exenoui','/qn','/norestart',"/exelog `"$log`"" -Wait -PassThru
+          $p = Start-Process .\hh.exe -ArgumentList '/exenoui','/qn','/norestart',"/exelog `"$log`"" -PassThru
+          if (-not $p.WaitForExit(300000)) { "TIMED OUT after 5 minutes"; Stop-Process $p -Force }
           "exit code: $($p.ExitCode)"
           "service key: $(Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Services\HidHide')"
           "program files: $(Test-Path 'C:\Program Files\Nefarius Software Solutions\HidHide')"
