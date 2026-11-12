@@ -17,34 +17,7 @@ jobs:
           Copy-Item $msi.FullName "$env:RUNNER_TEMP\HidHide.msi"
           "copied $($msi.FullName)"
           Get-ChildItem 'C:\ProgramData\Nefarius Software Solutions' -Recurse | Select-Object FullName, Length | Format-Table -AutoSize | Out-String -Width 300
-      - name: Dump updater-related MSI tables
-        shell: powershell
-        run: |
-          $path = "$env:RUNNER_TEMP\HidHide.msi"
-          "MSI: $path"
-          $wi = New-Object -ComObject WindowsInstaller.Installer
-          $db = $wi.OpenDatabase($path, 0)
-          function Q($sql) {
-            $v = $db.OpenView($sql)
-            $v.Execute()
-            while ($r = $v.Fetch()) {
-              (1..$r.FieldCount | ForEach-Object { $r.StringData($_) }) -join ' | '
-            }
-          }
-          "=== CustomAction (updater / watchdog / AI_)"
-          Q "SELECT Action, Type, Source, Target FROM CustomAction" | Where-Object { $_ -match 'pdat|Watchdog|vicius|AI_DETECT|Reboot' }
-          "=== InstallExecuteSequence for those"
-          Q "SELECT Action, Condition, Sequence FROM InstallExecuteSequence" | Where-Object { $_ -match 'pdat|Watchdog|vicius|AI_DETECT|Reboot' }
-          "=== Properties"
-          Q "SELECT Property, Value FROM Property" | Where-Object { $_ -match 'UPDAT|pdat|SILENT|UI' }
-          "=== Feature"
-          Q "SELECT Feature, Title, Level FROM Feature"
-          "=== Condition"
-          Q "SELECT Feature_, Level, Condition FROM Condition"
-          "=== All InstallExecuteSequence with conditions"
-          Q "SELECT Action, Condition, Sequence FROM InstallExecuteSequence" | Where-Object { $_ -notmatch '\| \|' }
       - uses: actions/upload-artifact@v4
         with:
           name: hidhide-msi
-          path: ${{ runner.temp }}/x64tools
-          if-no-files-found: ignore
+          path: ${{ runner.temp }}/HidHide.msi
