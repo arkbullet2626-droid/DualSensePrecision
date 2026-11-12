@@ -5,25 +5,36 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 20
     steps:
-      - name: Download HidHide
-        shell: pwsh
-        run: Invoke-WebRequest https://github.com/nefarius/HidHide/releases/download/v1.5.230.0/HidHide_1.5.230_x64.exe -OutFile hh.exe
-      - name: Silent install, no update check, diagnose any wait
+      - name: Download and extract HidHide's MSI
         shell: pwsh
         run: |
-          $log = "$env:RUNNER_TEMP\exe.log"
-          $msilog = "$env:RUNNER_TEMP\msi.log"
-          $args = @('/exenoui','/exenoupdates','/exelog',"`"$log`"",'/qn','/norestart','/L*v',"`"$msilog`"")
-          "args: $args"
-          $p = Start-Process .\hh.exe -ArgumentList $args -PassThru
-          if (-not $p.WaitForExit(150000)) {
-            "STILL RUNNING after 150 s. Processes:"
-            Get-CimInstance Win32_Process | Where-Object { $_.CreationDate -gt (Get-Date).AddMinutes(-3) } | Select-Object ProcessId, ParentProcessId, Name, CommandLine | Format-Table -AutoSize -Wrap | Out-String -Width 400
-            Get-Process | Where-Object MainWindowTitle | Select-Object Name, MainWindowTitle | Format-Table | Out-String -Width 300
-          } else { "exit code: $($p.ExitCode)" }
-          "service key: $(Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Services\HidHide')"
-          "--- exe log"; if (Test-Path $log) { Get-Content $log -Tail 60 } else { "(none)" }
-          "--- msi log errors"; if (Test-Path $msilog) { Select-String -Path $msilog -Pattern 'Return value 3|error|Error 1|MainEngineThread|Product:|Windows Installer installed|reboot' | Select-Object -Last 40 | ForEach-Object Line } else { "(none)" }
-          "--- temp logs"; Get-ChildItem $env:TEMP -Filter *.log -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 10 Name, Length
-          "--- setupapi tail"; Get-Content C:\Windows\INF\setupapi.dev.log -Tail 40 -ErrorAction SilentlyContinue
-          exit 0
+          Invoke-WebRequest https://github.com/nefarius/HidHide/releases/download/v1.5.230.0/HidHide_1.5.230_x64.exe -OutFile hh.exe
+          $p = Start-Process .\hh.exe -ArgumentList '/extract',"`"$env:RUNNER_TEMP\x`"" -PassThru
+          if (-not $p.WaitForExit(60000)) { Stop-Process $p -Force; "extract timed out" }
+          Get-ChildItem "$env:RUNNER_TEMP\x" -Recurse | Select-Object FullName, Length | Format-Table -AutoSize | Out-String -Width 300
+      - name: Dump updater-related MSI tables
+        shell: pwsh
+        run: |
+          $msi = Get-ChildItem "$env:RUNNER_TEMP\x" -Recurse -Filter *.msi | Select-Object -First 1
+          "MSI: $($msi.FullName)"
+          $wi = New-Object -ComObject WindowsInstaller.Installer
+          $db = $wi.GetType().InvokeMember('OpenDatabase','InvokeMethod',$null,$wi,@($msi.FullName,0))
+          function Q($sql) {
+            $v = $db.GetType().InvokeMember('OpenView','InvokeMethod',$null,$db,@($sql))
+            $v.GetType().InvokeMember('Execute','InvokeMethod',$null,$v,$null)
+            while ($r = $v.GetType().InvokeMember('Fetch','InvokeMethod',$null,$v,$null)) {
+              $n = $r.GetType().InvokeProperty -eq $null
+              $cols = $r.GetType().InvokeMember('FieldCount','GetProperty',$null,$r,$null)
+              (1..$cols | ForEach-Object { $r.GetType().InvokeMember('StringData','GetProperty',$null,$r,@($_)) }) -join ' | '
+            }
+          }
+          "=== CustomAction (updater / watchdog / AI_)"
+          Q "SELECT Action, Type, Source, Target FROM CustomAction" | Where-Object { $_ -match 'pdat|Watchdog|vicius' }
+          "=== InstallExecuteSequence for those"
+          Q "SELECT Action, Condition, Sequence FROM InstallExecuteSequence" | Where-Object { $_ -match 'pdat|Watchdog|vicius' }
+          "=== Properties"
+          Q "SELECT Property, Value FROM Property" | Where-Object { $_ -match 'UPDAT|pdat|SILENT|UI' }
+          "=== Feature"
+          Q "SELECT Feature, Title, Level FROM Feature"
+          "=== Condition"
+          Q "SELECT Feature_, Level, Condition FROM Condition"
