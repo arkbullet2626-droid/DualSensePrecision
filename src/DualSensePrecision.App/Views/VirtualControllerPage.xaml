@@ -45,9 +45,10 @@
                                       OnContent="On" OffContent="Off" Toggled="OnHideToggled" />
                     </Grid>
                     <TextBlock x:Name="HideStatus" Style="{StaticResource DsBody}" Foreground="{StaticResource DsTextPrimaryBrush}" TextWrapping="Wrap" />
-                    <StackPanel x:Name="HideInstallHelp" Spacing="6" Visibility="Collapsed">
-                        <TextBlock Style="{StaticResource DsBody}" TextWrapping="Wrap" Foreground="{StaticResource DsWarningBrush}"
-                                   Text="HidHide isn't installed. Run the DualSense Precision setup again and tick 'Download and install HidHide'. Windows asks for permission for the driver, then restart Windows." />
+                    <StackPanel x:Name="HideInstallHelp" Spacing="8" Visibility="Collapsed">
+                        <TextBlock x:Name="HideInstallText" Style="{StaticResource DsBody}" TextWrapping="Wrap" Foreground="{StaticResource DsWarningBrush}"
+                                   Text="HidHide isn't installed. Get it from its official page (HidHide_1.5.230_x64.exe), run it and click through its screens, then restart Windows. Or run the DualSense Precision setup again with 'Download and install HidHide' ticked." />
+                        <Button x:Name="GetHidHideButton" Content="Open the official HidHide download page" Click="OnGetHidHide" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="12">
                         <Button x:Name="CheckButton" Content="Check what games see" Click="OnCheckGames" />

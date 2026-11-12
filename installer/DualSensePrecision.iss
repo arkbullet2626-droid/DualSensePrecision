@@ -54,7 +54,7 @@ RestartApplications=no
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Shortcuts:"
 Name: "viiper"; Description: "Download and install VIIPER {#ViiperVersion} (about 13 MB from GitHub) - needed for the virtual Xbox controller. It installs the signed usbip-win2 driver: Windows will ask for administrator permission, and a restart may be needed."; GroupDescription: "Virtual controller:"; Check: not ViiperInstalled
-Name: "hidhide"; Description: "Download and install HidHide {#HidHideVersion} (about 8 MB from GitHub) - lets the app hide your real controller from games so they only see the virtual one (you switch this on in the app). It installs the signed HidHide driver: Windows will ask for administrator permission, and a restart is needed."; GroupDescription: "Virtual controller:"; Check: not HidHideInstalled
+Name: "hidhide"; Description: "Download and install HidHide {#HidHideVersion} (about 8 MB from GitHub) - lets the app hide your real controller from games so they only see the virtual one (you switch this on in the app). HidHide's own installer opens for you to click through; Windows asks for administrator permission for its signed driver, and a restart is needed."; GroupDescription: "Virtual controller:"; Check: not HidHideInstalled
 
 [Files]
 Source: "..\publish\win-x64\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs ignoreversion
@@ -125,6 +125,42 @@ begin
   end;
 end;
 
+// HidHide's installer (Advanced Installer) can't run silently: in silent mode it can't ask Windows for administrator
+// rights, and its updater step can show a message box that would wait forever with nobody to click it. So it runs
+// with its normal screens, the user clicks through, and we check afterwards that it really installed.
+procedure InstallHidHide;
+var
+  ResultCode: Integer;
+  Answer: Integer;
+begin
+  WizardForm.StatusLabel.Caption := 'Waiting for HidHide''s installer - click through its window to finish...';
+  SuppressibleMsgBox('HidHide''s installer will open now.' + #13#10 + #13#10 +
+    '1. Click Yes when Windows asks for permission.' + #13#10 +
+    '2. Click through its screens (Next, accept, Install, Finish).' + #13#10 +
+    '3. If a small "Nefarius'' Updater" message appears, click Close - HidHide still installs.' + #13#10 + #13#10 +
+    'If it asks to restart, choose to restart later: this setup offers a restart at the end.',
+    mbInformation, MB_OK, IDOK);
+  repeat
+    if not ShellExec('', ExpandConstant('{tmp}\hidhide-setup.exe'), '', '', SW_SHOWNORMAL, ewWaitUntilTerminated, ResultCode) then
+      SuppressibleMsgBox('Could not start HidHide''s installer: ' + SysErrorMessage(ResultCode), mbError, MB_OK, IDOK);
+    if HidHideInstalled then
+    begin
+      HidHideRan := True;
+      Exit;
+    end;
+    Answer := SuppressibleMsgBox('HidHide doesn''t look installed yet.' + #13#10 + #13#10 +
+      'If its installer window is still open, finish it first, then click Retry to check again.' + #13#10 +
+      'Click Cancel to carry on without HidHide (you can run this setup again later).',
+      mbError, MB_RETRYCANCEL, IDCANCEL);
+    // Retry: check again first (the installer may have finished in an elevated copy of itself).
+    if (Answer = IDRETRY) and HidHideInstalled then
+    begin
+      HidHideRan := True;
+      Exit;
+    end;
+  until Answer <> IDRETRY;
+end;
+
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   ResultCode: Integer;
@@ -147,19 +183,7 @@ begin
   end;
 
   if (CurStep = ssPostInstall) and HidHideDownloaded then
-  begin
-    WizardForm.StatusLabel.Caption := 'Installing HidHide (Windows will ask for permission to install the driver)...';
-    // HidHide's own signed installer, unattended. It asks Windows for administrator permission itself.
-    if ShellExec('', ExpandConstant('{tmp}\hidhide-setup.exe'), '/quiet /norestart', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
-    begin
-      HidHideRan := True;
-      if (ResultCode <> 0) and (ResultCode <> 3010) then
-        SuppressibleMsgBox('HidHide''s installer finished with code ' + IntToStr(ResultCode) + '.' + #13#10 +
-          'If hiding doesn''t work later, install HidHide from github.com/nefarius/HidHide/releases.', mbInformation, MB_OK, IDOK);
-    end
-    else
-      SuppressibleMsgBox('Could not start HidHide''s installer: ' + SysErrorMessage(ResultCode), mbError, MB_OK, IDOK);
-  end;
+    InstallHidHide;
 end;
 
 // usbip-win2 can need a restart before Windows attaches virtual devices; offer one (the user can choose later).

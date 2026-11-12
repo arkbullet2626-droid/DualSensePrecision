@@ -61,6 +61,10 @@ public sealed partial class VirtualControllerPage : Page
         var h = AppServices.Hide;
         HideStatus.Text = h.Status;
         HideInstallHelp.Visibility = h.IsInstalled ? Visibility.Collapsed : Visibility.Visible;
+        GetHidHideButton.Visibility = h.NeedsRestart ? Visibility.Collapsed : Visibility.Visible;
+        HideInstallText.Text = h.NeedsRestart
+            ? "HidHide is installed but its driver isn't running yet. Restart Windows, then come back here."
+            : "HidHide isn't installed. Get it from its official page (HidHide_1.5.230_x64.exe), run it and click through its screens, then restart Windows. Or run the DualSense Precision setup again with 'Download and install HidHide' ticked.";
         DoubleInputBar.IsOpen = !h.IsHiding;
     }
 
@@ -103,6 +107,9 @@ public sealed partial class VirtualControllerPage : Page
         catch (Exception ex) { HideStatus.Text = $"Couldn't save the setting: {ex.Message}"; return; }
         AppServices.Hide.Reevaluate();
     }
+
+    private async void OnGetHidHide(object sender, RoutedEventArgs e) =>
+        await global::Windows.System.Launcher.LaunchUriAsync(new Uri("https://github.com/nefarius/HidHide/releases/tag/v1.5.230.0"));
 
     private async void OnCheckGames(object sender, RoutedEventArgs e)
     {

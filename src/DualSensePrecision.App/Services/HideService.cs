@@ -24,6 +24,9 @@ public sealed class HideService : IDisposable
     private volatile bool _stop;
 
     public bool IsInstalled { get; private set; }
+
+    /// <summary>Installed but its driver isn't running yet — Windows needs a restart.</summary>
+    public bool NeedsRestart { get; private set; }
     public bool IsHiding { get; private set; }
     public IReadOnlyList<string> Hidden { get; private set; } = Array.Empty<string>();
     public string Status { get; private set; } = "";
@@ -45,7 +48,13 @@ public sealed class HideService : IDisposable
     private void Run()
     {
         // First pass: undo anything left over from a previous run that didn't exit cleanly.
-        try { IsInstalled = HidHideClient.IsInstalled; Restore("Cleaned up after the last session."); }
+        try
+        {
+            IsInstalled = HidHideClient.IsInstalled;
+            NeedsRestart = !IsInstalled && HidHideClient.IsRegistered;
+            Restore("Cleaned up after the last session.");
+            Apply(); // fills in the status line straight away
+        }
         catch (Exception ex) { LastError = ex.Message; }
 
         while (!_stop)
@@ -73,6 +82,7 @@ public sealed class HideService : IDisposable
         lock (_lock)
         {
             IsInstalled = HidHideClient.IsInstalled;
+            NeedsRestart = !IsInstalled && HidHideClient.IsRegistered;
             if (!AppServices.Settings.HideRealController)
             {
                 Restore(null);
@@ -82,7 +92,9 @@ public sealed class HideService : IDisposable
             }
             if (!IsInstalled)
             {
-                Status = "HidHide isn't installed, so nothing can be hidden yet.";
+                Status = NeedsRestart
+                    ? "HidHide is installed but not running yet. Restart Windows to finish installing it."
+                    : "HidHide isn't installed, so nothing can be hidden yet.";
                 Notify();
                 return;
             }

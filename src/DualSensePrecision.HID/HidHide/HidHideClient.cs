@@ -37,6 +37,16 @@ public static class HidHideClient
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     private static extern uint QueryDosDeviceW(string deviceName, char[] target, int max);
 
+    /// <summary>True if HidHide's driver service is registered with Windows (installed, though maybe not running until a restart).</summary>
+    public static bool IsRegistered
+    {
+        get
+        {
+            try { using var k = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\HidHide"); return k != null; }
+            catch { return false; }
+        }
+    }
+
     /// <summary>True if the HidHide driver is installed and running.</summary>
     public static bool IsInstalled
     {

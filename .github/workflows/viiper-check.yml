@@ -1,0 +1,26 @@
+name: VIIPER install check
+on: workflow_dispatch
+jobs:
+  check:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - name: Run VIIPER's unattended install exactly as Setup does
+        shell: pwsh
+        run: |
+          Invoke-WebRequest https://github.com/Alia5/VIIPER/releases/download/v0.9.0/viiper-windows-amd64.exe -OutFile viiper-setup.exe
+          (Get-FileHash viiper-setup.exe -Algorithm SHA256).Hash
+          $p = Start-Process .\viiper-setup.exe -ArgumentList 'install','--quiet','--no-update' -PassThru -RedirectStandardOutput out.txt -RedirectStandardError err.txt
+          if (-not $p.WaitForExit(300000)) {
+            "TIMED OUT after 5 minutes"
+            Get-CimInstance Win32_Process | Where-Object { $_.CreationDate -gt (Get-Date).AddMinutes(-6) } | Select-Object ProcessId, ParentProcessId, Name, CommandLine | Format-Table -AutoSize -Wrap | Out-String -Width 300
+            Get-Process | Where-Object MainWindowTitle | Select-Object Name, MainWindowTitle | Format-Table | Out-String -Width 300
+          } else { "exit code: $($p.ExitCode)" }
+          "--- stdout"; Get-Content out.txt -ErrorAction SilentlyContinue
+          "--- stderr"; Get-Content err.txt -ErrorAction SilentlyContinue
+          "viiper.exe present: $(Test-Path "$env:LOCALAPPDATA\VIIPER\viiper.exe")"
+          "usbip folder: $(Test-Path 'C:\Program Files\USBip')"
+          Get-PnpDevice -ErrorAction SilentlyContinue | Where-Object { $_.InstanceId -match 'USBIP' } | Select-Object Status, Class, FriendlyName, InstanceId | Format-Table -AutoSize | Out-String -Width 300
+          Start-Sleep 3
+          "port 3242 listening: $([bool](Get-NetTCPConnection -LocalPort 3242 -State Listen -ErrorAction SilentlyContinue))"
+          exit 0
