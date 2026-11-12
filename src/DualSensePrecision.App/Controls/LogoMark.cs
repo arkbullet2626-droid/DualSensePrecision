@@ -1,7 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Shapes;
 
 namespace DualSensePrecision.App.Controls;
 
@@ -18,7 +17,7 @@ public sealed partial class LogoMark : UserControl
 
     public LogoMark()
     {
-        var path = (Path)Microsoft.UI.Xaml.Markup.XamlReader.Load(
+        var path = (Microsoft.UI.Xaml.Shapes.Path)Microsoft.UI.Xaml.Markup.XamlReader.Load(
             $"<Path xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" Data=\"{PathData}\" />");
         path.Fill = (Brush)Application.Current.Resources["DsLogoBrush"];
         // Keep the full 64×64 box so the mark's padding is the same everywhere.
