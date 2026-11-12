@@ -52,3 +52,7 @@ DEVELOPMENT_STATUS.md                 What works, what doesn't, what's next
 - **Not detected:** use a data-capable USB-C cable (many are charge-only), plug directly into the PC rather than a hub, and close apps that take exclusive controller access.
 - **Xbox controller not detected:** it must show in Windows' Game Controllers (joy.cpl). Bluetooth Xbox pads need Windows 10 1903+ and recent controller firmware (update it in the Xbox Accessories app).
 - **Report rate lower than expected:** that's the controller's hardware rate, measured honestly. USB hubs and front-panel ports can add jitter.
+
+## Licence
+
+MIT, © 2026 Opifex Studios. See [`LICENSE`](LICENSE). Third-party components and optional downloads (VIIPER, usbip-win2, HidHide) keep their own licences: see [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md).

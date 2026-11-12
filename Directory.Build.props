@@ -6,6 +6,8 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Company>Opifex Studios</Company>
+    <Copyright>Copyright (c) 2026 Opifex Studios. MIT License.</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Product>DualSense Precision</Product>
     <Version>0.14.1</Version>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
