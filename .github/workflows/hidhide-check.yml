@@ -9,23 +9,26 @@ jobs:
         shell: pwsh
         run: |
           Invoke-WebRequest https://github.com/nefarius/HidHide/releases/download/v1.5.230.0/HidHide_1.5.230_x64.exe -OutFile hh.exe
-          $p = Start-Process .\hh.exe -ArgumentList '/extract',"`"$env:RUNNER_TEMP\x`"" -PassThru
-          if (-not $p.WaitForExit(60000)) { Stop-Process $p -Force; "extract timed out" }
-          Get-ChildItem "$env:RUNNER_TEMP\x" -Recurse | Select-Object FullName, Length | Format-Table -AutoSize | Out-String -Width 300
+          # The bootstrapper extracts the MSI to ProgramData before installing; start it, grab the MSI, stop it.
+          $p = Start-Process .\hh.exe -ArgumentList '/exenoui','/exenoupdates','/qn','/norestart' -PassThru
+          $msi = $null
+          for ($i = 0; $i -lt 60 -and -not $msi; $i++) { Start-Sleep 1; $msi = Get-ChildItem 'C:\ProgramData\Nefarius Software Solutions' -Recurse -Filter *.msi -ErrorAction SilentlyContinue | Select-Object -First 1 }
+          Start-Sleep 2
+          Copy-Item $msi.FullName "$env:RUNNER_TEMP\HidHide.msi"
+          "copied $($msi.FullName)"
+          Get-ChildItem 'C:\ProgramData\Nefarius Software Solutions' -Recurse | Select-Object FullName, Length | Format-Table -AutoSize | Out-String -Width 300
       - name: Dump updater-related MSI tables
         shell: pwsh
         run: |
-          $msi = Get-ChildItem "$env:RUNNER_TEMP\x" -Recurse -Filter *.msi | Select-Object -First 1
-          "MSI: $($msi.FullName)"
+          $path = "$env:RUNNER_TEMP\HidHide.msi"
+          "MSI: $path"
           $wi = New-Object -ComObject WindowsInstaller.Installer
-          $db = $wi.GetType().InvokeMember('OpenDatabase','InvokeMethod',$null,$wi,@($msi.FullName,0))
+          $db = $wi.OpenDatabase($path, 0)
           function Q($sql) {
-            $v = $db.GetType().InvokeMember('OpenView','InvokeMethod',$null,$db,@($sql))
-            $v.GetType().InvokeMember('Execute','InvokeMethod',$null,$v,$null)
-            while ($r = $v.GetType().InvokeMember('Fetch','InvokeMethod',$null,$v,$null)) {
-              $n = $r.GetType().InvokeProperty -eq $null
-              $cols = $r.GetType().InvokeMember('FieldCount','GetProperty',$null,$r,$null)
-              (1..$cols | ForEach-Object { $r.GetType().InvokeMember('StringData','GetProperty',$null,$r,@($_)) }) -join ' | '
+            $v = $db.OpenView($sql)
+            $v.Execute()
+            while ($r = $v.Fetch()) {
+              (1..$r.FieldCount | ForEach-Object { $r.StringData($_) }) -join ' | '
             }
           }
           "=== CustomAction (updater / watchdog / AI_)"
