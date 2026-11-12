@@ -17,7 +17,26 @@ jobs:
           Copy-Item $msi.FullName "$env:RUNNER_TEMP\HidHide.msi"
           "copied $($msi.FullName)"
           Get-ChildItem 'C:\ProgramData\Nefarius Software Solutions' -Recurse | Select-Object FullName, Length | Format-Table -AutoSize | Out-String -Width 300
-      - uses: actions/upload-artifact@v4
-        with:
-          name: hidhide-msi
-          path: ${{ runner.temp }}/HidHide.msi
+      - name: Dump MSI tables
+        shell: powershell
+        run: |
+          $path = "$env:RUNNER_TEMP\HidHide.msi"
+          $wi = New-Object -ComObject WindowsInstaller.Installer
+          $db = $wi.GetType().InvokeMember('OpenDatabase', 'InvokeMethod', $null, $wi, @($path, 0))
+          function Q($sql) {
+            $v = $db.GetType().InvokeMember('OpenView', 'InvokeMethod', $null, $db, @($sql))
+            [void]$v.GetType().InvokeMember('Execute', 'InvokeMethod', $null, $v, $null)
+            while ($true) {
+              $r = $v.GetType().InvokeMember('Fetch', 'InvokeMethod', $null, $v, $null)
+              if ($r -eq $null) { break }
+              $n = $r.GetType().InvokeMember('FieldCount', 'GetProperty', $null, $r, $null)
+              $vals = foreach ($i in 1..$n) { $r.GetType().InvokeMember('StringData', 'GetProperty', $null, $r, @($i)) }
+              $vals -join ' | '
+            }
+          }
+          "=== CustomAction"
+          Q "SELECT Action, Type, Source, Target FROM CustomAction" | Where-Object { $_ -notmatch '^AI_' }
+          "=== InstallExecuteSequence (non-standard)"
+          Q "SELECT Action, Condition, Sequence FROM InstallExecuteSequence" | Where-Object { $_ -match 'Updater|Watchdog|Driver|Device|Class|Reboot|ETW' }
+          "=== Property"
+          Q "SELECT Property, Value FROM Property" | Where-Object { $_ -notmatch '^(AI_|ARP|Ai)' }
