@@ -81,6 +81,7 @@ public class ThemeTests
             Assert.True(contrast >= 7, $"{name}: text contrast {contrast:0.0}");
         }
         Assert.Equal(12, ThemePalette.Presets.Count);
+        Assert.Equal(12, ThemePalette.Presets.Select(x => x.Palette.Logo).Distinct().Count()); // every theme has its own logo colour
     }
 
     [Fact]

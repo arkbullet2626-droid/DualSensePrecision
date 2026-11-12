@@ -135,12 +135,8 @@
     <SolidColorBrush x:Key="DsSuccessBrush" Color="{StaticResource DsSuccessColor}" />
     <SolidColorBrush x:Key="DsWarningBrush" Color="{StaticResource DsWarningColor}" />
     <SolidColorBrush x:Key="DsDangerBrush" Color="{StaticResource DsDangerColor}" />
-    <!-- The logo never follows the user's colours: always Opifex amber/ember with dark ink. -->
-    <LinearGradientBrush x:Key="DsLogoBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Color="#F2B544" Offset="0" />
-        <GradientStop Color="#E0782F" Offset="1" />
-    </LinearGradientBrush>
-    <SolidColorBrush x:Key="DsLogoInkBrush" Color="#1A1408" />
+    <!-- The DP logo: one solid colour that follows the theme (Settings → Interface → Colours → Logo). -->
+    <SolidColorBrush x:Key="DsLogoBrush" Color="#F2B544" />
     <LinearGradientBrush x:Key="DsHeroGradientBrush" StartPoint="0,0" EndPoint="1,1">
         <GradientStop Color="#2A1D0B" Offset="0" />
         <GradientStop Color="#15110B" Offset="0.65" />

@@ -1,4 +1,21 @@
-# DualSense Precision 0.17.0 — release candidate for 1.0
+# DualSense Precision 0.18.0 — release candidate for 1.0
+
+**0.18.0:**
+- **New logo:** the DP monogram (cut-corner version) replaces the old "P" square in the title bar and on About, and is the new app, taskbar and tray icon.
+- **The logo follows the theme:** every preset has its own logo colour (amber for Opifex, blue for Midnight, pink for Synthwave…), and the colour editor has a **Logo** slot for custom palettes. (The taskbar/tray icon file stays amber.)
+- **Smoother interface scale:** while you drag the slider it stays exactly under your mouse and the rest of the app zooms smoothly around it; when you let go, the new size settles into place.
+
+### Tests for 0.18.0
+L1. The title bar shows the new DP mark; About shows it large; the taskbar, Alt-Tab and tray show the new amber DP icon.
+L2. Switch presets: the DP mark changes colour with each (Opifex amber, Midnight blue, Synthwave pink, Deep Sea cyan, Paper brown…).
+L3. In the colour editor, change **Logo** to any colour: the title-bar and About marks follow live, and it's kept after reopening.
+S1. Settings → Interface → drag **Interface scale** slowly from 100 % to 150 % and back: the slider stays under the mouse the whole time and everything else grows/shrinks smoothly around it.
+S2. Let go: the page settles smoothly at the new size with the slider still roughly where it was. Clicking the bar (instead of dragging) and the **100 %** button also animate smoothly.
+S3. Use the keyboard (click the slider, then arrow keys): each step applies.
+
+---
+
+# From 0.17.0
 
 **0.17.0:** 12 colour presets, including three fun ones (Synthwave, Deep Sea, Toxic), Deep Red and three **light** themes (Paper, Daylight, Sand). With a light theme, the app's built-in controls switch to their light style too. The small logo always stays Opifex amber, whatever theme you pick.
 
@@ -53,7 +70,7 @@ Everything planned for 1.0 is in this build. If the tests below pass, the next b
 ## Install
 
 1. Close DualSense Precision completely (if it's in the tray: right-click the icon → **Exit**).
-2. Run **`DualSensePrecision-0.17.0-setup.exe`**. If SmartScreen appears: **More info → Run anyway**.
+2. Run **`DualSensePrecision-0.18.0-setup.exe`**. If SmartScreen appears: **More info → Run anyway**.
 3. VIIPER and HidHide are already installed, so their boxes don't appear. Leave **Start DualSense Precision with Windows** unticked for now (test 9 covers it).
 
 ## Tests
@@ -76,7 +93,7 @@ Everything planned for 1.0 is in this build. If the tests below pass, the next b
 9. Settings → turn on **Start with Windows**. Sign out and back in (or restart): the app starts in the tray without opening a window. Turn it off again if you don't want it.
 
 **E. Updates and About**
-10. **About** shows *Version 0.17.0*. **Check for updates** says it couldn't check (the repository is still private, so this is expected until release) or that you're up to date.
+10. **About** shows *Version 0.18.0*. **Check for updates** says it couldn't check (the repository is still private, so this is expected until release) or that you're up to date.
 11. The buttons on About open the right things: **Licence** and **Third-party notices** open text files; **Source code** / **Report a problem** / **Privacy policy** / **opifexstudios.ca** open the browser (GitHub pages need you signed in until the repo is public, and the privacy section is added to the website at release).
 
 **F. Troubleshooting**

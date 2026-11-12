@@ -12,6 +12,9 @@ public sealed record ThemePalette
     public string Panel { get; init; } = "#15110B";
     public string Border { get; init; } = "#2E2617";
     public string Text { get; init; } = "#F2EBDD";
+
+    /// <summary>The DP logo's colour. Follows the theme; each preset has its own.</summary>
+    public string Logo { get; init; } = "#F2B544";
     public string Accent { get; init; } = OpifexAccent;
     public string Accent2 { get; init; } = OpifexAccent2;
 
@@ -24,26 +27,26 @@ public sealed record ThemePalette
     {
         // Dark
         ("Opifex (default)", Opifex),
-        ("Midnight", new ThemePalette { Background = "#0B0D12", Panel = "#12151C", Border = "#232836", Text = "#E8EBF2" }),
-        ("Forest", new ThemePalette { Background = "#0A0F0B", Panel = "#111A13", Border = "#22332A", Text = "#E6F2E9" }),
-        ("Deep Red", new ThemePalette { Background = "#120405", Panel = "#1F080A", Border = "#451318", Text = "#F7E4E4" }),
-        ("Crimson", new ThemePalette { Background = "#0E0809", Panel = "#180E10", Border = "#33191D", Text = "#F4E6E8" }),
-        ("Graphite", new ThemePalette { Background = "#0A0A0A", Panel = "#141414", Border = "#2A2A2A", Text = "#F0F0F0" }),
+        ("Midnight", new ThemePalette { Background = "#0B0D12", Panel = "#12151C", Border = "#232836", Text = "#E8EBF2", Logo = "#3D7BFF" }),
+        ("Forest", new ThemePalette { Background = "#0A0F0B", Panel = "#111A13", Border = "#22332A", Text = "#E6F2E9", Logo = "#5BE3A6" }),
+        ("Deep Red", new ThemePalette { Background = "#120405", Panel = "#1F080A", Border = "#451318", Text = "#F7E4E4", Logo = "#FF3B4E" }),
+        ("Crimson", new ThemePalette { Background = "#0E0809", Panel = "#180E10", Border = "#33191D", Text = "#F4E6E8", Logo = "#FF6B7A" }),
+        ("Graphite", new ThemePalette { Background = "#0A0A0A", Panel = "#141414", Border = "#2A2A2A", Text = "#F0F0F0", Logo = "#E8E8E8" }),
         // Fun
-        ("Synthwave", new ThemePalette { Background = "#120A1F", Panel = "#1E1033", Border = "#46236E", Text = "#FFE3F6" }),
-        ("Deep Sea", new ThemePalette { Background = "#04131A", Panel = "#082331", Border = "#13455C", Text = "#DDF6FF" }),
-        ("Toxic", new ThemePalette { Background = "#0A0F04", Panel = "#131D08", Border = "#2F4A10", Text = "#EEFFD6" }),
+        ("Synthwave", new ThemePalette { Background = "#120A1F", Panel = "#1E1033", Border = "#46236E", Text = "#FFE3F6", Logo = "#FF4FB8" }),
+        ("Deep Sea", new ThemePalette { Background = "#04131A", Panel = "#082331", Border = "#13455C", Text = "#DDF6FF", Logo = "#2EC4E6" }),
+        ("Toxic", new ThemePalette { Background = "#0A0F04", Panel = "#131D08", Border = "#2F4A10", Text = "#EEFFD6", Logo = "#B6FF3B" }),
         // Light
-        ("Paper (light)", new ThemePalette { Background = "#F5F1E8", Panel = "#FFFDF8", Border = "#E0D6C2", Text = "#1E1A14" }),
-        ("Daylight (light)", new ThemePalette { Background = "#F2F3F6", Panel = "#FFFFFF", Border = "#D7DAE1", Text = "#15171C" }),
-        ("Sand (light)", new ThemePalette { Background = "#EAE0CC", Panel = "#F6EFE1", Border = "#CDBD9C", Text = "#2A2117" }),
+        ("Paper (light)", new ThemePalette { Background = "#F5F1E8", Panel = "#FFFDF8", Border = "#E0D6C2", Text = "#1E1A14", Logo = "#B5761A" }),
+        ("Daylight (light)", new ThemePalette { Background = "#F2F3F6", Panel = "#FFFFFF", Border = "#D7DAE1", Text = "#15171C", Logo = "#2F6BFF" }),
+        ("Sand (light)", new ThemePalette { Background = "#EAE0CC", Panel = "#F6EFE1", Border = "#CDBD9C", Text = "#2A2117", Logo = "#A0521C" }),
     };
 
     /// <summary>Light backgrounds switch the app's built-in controls to their light style.</summary>
     public bool IsLight => ColorMath.Luminance(ColorMath.Parse(Background, Opifex.Background)) > 0.4;
 
     /// <summary>True if every slot is a valid #RRGGBB colour.</summary>
-    public bool IsValid => new[] { Background, Panel, Border, Text, Accent, Accent2 }.All(h => ColorMath.TryParse(h, out _));
+    public bool IsValid => new[] { Background, Panel, Border, Text, Logo, Accent, Accent2 }.All(h => ColorMath.TryParse(h, out _));
 }
 
 /// <summary>Small, dependency-free colour helpers (sRGB, 0–255 channels).</summary>

@@ -27,6 +27,11 @@ public sealed partial class SettingsPage : Page
         foreach (var (name, _) in ThemePalette.Presets) PresetBox.Items.Add(name);
         PresetBox.SelectedIndex = PresetIndex(_palette);
         BuildColorRows();
+        // Drag start/end on the slider (handledEventsToo: the slider's thumb handles these itself).
+        ScaleSlider.AddHandler(PointerPressedEvent, new Microsoft.UI.Xaml.Input.PointerEventHandler(OnScalePointerPressed), true);
+        ScaleSlider.AddHandler(PointerReleasedEvent, new Microsoft.UI.Xaml.Input.PointerEventHandler(OnScalePointerReleased), true);
+        ScaleSlider.AddHandler(PointerCaptureLostEvent, new Microsoft.UI.Xaml.Input.PointerEventHandler(OnScalePointerReleased), true);
+        Unloaded += (_, _) => { if (_animating) StopAnimating(); Host?.ClearPreview(); Host?.Settle(0, 0); };
         Preferred.SelectedIndex = s.PreferredController == ControllerFamily.Xbox ? 1 : 0;
         var v = typeof(SettingsPage).Assembly.GetName().Version;
         VersionText.Text = $"DualSense Precision {v?.Major}.{v?.Minor}.{v?.Build} · Opifex Studios · data in %LOCALAPPDATA%\\DualSensePrecision";
@@ -85,13 +90,118 @@ public sealed partial class SettingsPage : Page
 
     private DispatcherQueueTimerHolder? _saveLater;
 
+    // Dragging the scale slider previews the new size by zooming everything around the slider (which itself is
+    // counter-scaled so it stays exactly where it is under the mouse), with eased animation. Letting go commits
+    // the real layout scale and smoothly settles the page back into place.
+    private bool _scaleDragging;
+    private double _dragBase = 1, _k = 1, _kTarget = 1, _sliderK = 1;
+    private global::Windows.Foundation.Point _anchor;
+    private double _settleX, _settleY;
+    private bool _animating;
+
+    private Controls.ScaleHost? Host => MainWindow.Current?.Scaler;
+
     private void OnScaleChanged(object sender, Microsoft.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
         if (ScaleValue == null) return;
         ScaleValue.Text = $"{e.NewValue:0} %";
         if (_loading) return;
-        MainWindow.Current?.SetUiScale(e.NewValue / 100.0);
+        if (_scaleDragging)
+        {
+            _kTarget = e.NewValue / 100.0 / _dragBase;
+            StartAnimating();
+        }
+        else
+        {
+            CommitScale(); // keyboard arrows or the 100 % button
+        }
         SaveSoon();
+    }
+
+    private void OnScalePointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (Host is not { } host) return;
+        _scaleDragging = true;
+        _dragBase = host.Scale;
+        _k = _kTarget = 1;
+        // Anchor on the slider's centre, in the scale host's coordinates (i.e. on screen inside the window).
+        var t = ScaleSlider.TransformToVisual(host);
+        _anchor = t.TransformPoint(new global::Windows.Foundation.Point(ScaleSlider.ActualWidth / 2, ScaleSlider.ActualHeight / 2));
+    }
+
+    private void OnScalePointerReleased(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        if (!_scaleDragging) return;
+        _scaleDragging = false;
+        CommitScale();
+    }
+
+    /// <summary>Applies the real layout scale, keeping the slider where it was on screen, then eases into place.</summary>
+    private void CommitScale()
+    {
+        if (Host is not { } host) return;
+        double target = ScaleSlider.Value / 100.0;
+        var before = ScaleSlider.TransformToVisual(host).TransformPoint(new global::Windows.Foundation.Point(ScaleSlider.ActualWidth / 2, ScaleSlider.ActualHeight / 2));
+
+        host.ClearPreview();
+        _k = _kTarget = 1;
+        _sliderK = host.Scale / target; // slider currently looks this size relative to its new real size → ease to 1
+        host.Scale = target;
+        host.UpdateLayout();
+
+        // Scroll so the slider ends up where it was; whatever the scroll can't fix is eased away visually.
+        var after = ScaleSlider.TransformToVisual(host).TransformPoint(new global::Windows.Foundation.Point(ScaleSlider.ActualWidth / 2, ScaleSlider.ActualHeight / 2));
+        double dy = after.Y - before.Y;
+        double wanted = Math.Clamp(PageScroll.VerticalOffset + dy / target, 0, PageScroll.ScrollableHeight);
+        PageScroll.ChangeView(null, wanted, null, disableAnimation: true);
+        PageScroll.UpdateLayout();
+        after = ScaleSlider.TransformToVisual(host).TransformPoint(new global::Windows.Foundation.Point(ScaleSlider.ActualWidth / 2, ScaleSlider.ActualHeight / 2));
+        _settleX = before.X - after.X;
+        _settleY = before.Y - after.Y;
+        StartAnimating();
+    }
+
+    private void StartAnimating()
+    {
+        if (_animating) return;
+        _animating = true;
+        Microsoft.UI.Xaml.Media.CompositionTarget.Rendering += OnFrame;
+    }
+
+    private void OnFrame(object? sender, object e)
+    {
+        if (Host is not { } host) { StopAnimating(); return; }
+        const double ease = 0.22; // fraction of the remaining distance per frame: quick but smooth
+
+        if (_scaleDragging)
+        {
+            _k += (_kTarget - _k) * ease;
+            host.SetPreview(_k, _anchor);
+            // Counter-scale the slider so it doesn't move or resize under the mouse.
+            ScaleSlider.RenderTransformOrigin = new global::Windows.Foundation.Point(0.5, 0.5);
+            ScaleSlider.RenderTransform = new ScaleTransform { ScaleX = 1 / _k, ScaleY = 1 / _k };
+            if (Math.Abs(_kTarget - _k) < 0.0005) { _k = _kTarget; host.SetPreview(_k, _anchor); }
+            return; // keep running while dragging
+        }
+
+        // Settling after commit: the slider grows back to its natural size and the page slides into place.
+        _sliderK += (1 - _sliderK) * ease;
+        _settleX += (0 - _settleX) * ease;
+        _settleY += (0 - _settleY) * ease;
+        ScaleSlider.RenderTransform = new ScaleTransform { ScaleX = _sliderK, ScaleY = _sliderK };
+        host.Settle(_settleX, _settleY);
+        if (Math.Abs(1 - _sliderK) < 0.002 && Math.Abs(_settleX) < 0.5 && Math.Abs(_settleY) < 0.5)
+        {
+            ScaleSlider.RenderTransform = null;
+            host.Settle(0, 0);
+            StopAnimating();
+        }
+    }
+
+    private void StopAnimating()
+    {
+        _animating = false;
+        Microsoft.UI.Xaml.Media.CompositionTarget.Rendering -= OnFrame;
     }
 
     private void OnScaleReset(object sender, RoutedEventArgs e) => ScaleSlider.Value = 100;
@@ -108,18 +218,19 @@ public sealed partial class SettingsPage : Page
         ("Panel", "Panels and cards", "Cards, the sidebar footer, inputs"),
         ("Border", "Borders and lines", "Card edges, dividers"),
         ("Text", "Main text", "Titles and body text"),
+        ("Logo", "Logo", "The DP mark in the title bar and on About"),
     };
 
     private static string Get(ThemePalette p, string slot) => slot switch
     {
         "Background" => p.Background, "Panel" => p.Panel, "Border" => p.Border,
-        "Text" => p.Text, "Accent" => p.Accent, _ => p.Accent2,
+        "Text" => p.Text, "Logo" => p.Logo, "Accent" => p.Accent, _ => p.Accent2,
     };
 
     private static ThemePalette With(ThemePalette p, string slot, string hex) => slot switch
     {
         "Background" => p with { Background = hex }, "Panel" => p with { Panel = hex }, "Border" => p with { Border = hex },
-        "Text" => p with { Text = hex }, "Accent" => p with { Accent = hex }, _ => p with { Accent2 = hex },
+        "Text" => p with { Text = hex }, "Logo" => p with { Logo = hex }, "Accent" => p with { Accent = hex }, _ => p with { Accent2 = hex },
     };
 
     private static int PresetIndex(ThemePalette p)

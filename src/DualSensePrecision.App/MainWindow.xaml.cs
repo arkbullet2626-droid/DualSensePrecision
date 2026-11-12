@@ -34,7 +34,7 @@ public sealed partial class MainWindow : Window
         FillProfileSwitcher();
 
         Nav.SelectedItem = Nav.MenuItems[0];
-        Scaler.Scale = AppServices.Settings.UiScale;
+        ScalerHost.Scale = AppServices.Settings.UiScale;
         ThemeService.Applied += ApplyThemeMode;
         ApplyThemeMode();
 
@@ -68,7 +68,10 @@ public sealed partial class MainWindow : Window
     }
 
     /// <summary>Settings → Interface → Interface scale (applied live).</summary>
-    public void SetUiScale(double scale) => Scaler.Scale = scale;
+    public void SetUiScale(double scale) => ScalerHost.Scale = scale;
+
+    /// <summary>The scaling container around the whole window content (for the scale slider's smooth preview).</summary>
+    public Controls.ScaleHost Scaler => ScalerHost;
 
     private readonly TrayIcon _tray;
     private bool _exiting;

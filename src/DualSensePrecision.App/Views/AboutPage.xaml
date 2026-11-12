@@ -2,6 +2,7 @@
     x:Class="DualSensePrecision.App.Views.AboutPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:DualSensePrecision.App.Controls"
     Background="Transparent">
 
     <ScrollViewer>
@@ -14,10 +15,7 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Border Width="64" Height="64" CornerRadius="6" Background="{StaticResource DsLogoBrush}" VerticalAlignment="Top">
-                        <TextBlock Text="P" FontSize="34" FontWeight="Bold" FontFamily="{StaticResource DsDisplayFont}"
-                                   Foreground="{StaticResource DsLogoInkBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
+                    <controls:LogoMark Width="72" Height="72" VerticalAlignment="Top" />
                     <StackPanel Grid.Column="1" Spacing="4">
                         <TextBlock Text="DualSense Precision" Style="{StaticResource DsPageTitle}" />
                         <TextBlock x:Name="VersionText" Style="{StaticResource DsBody}" FontFamily="{StaticResource DsMonoFont}" />

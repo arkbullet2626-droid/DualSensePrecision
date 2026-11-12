@@ -52,6 +52,7 @@ public static class ThemeService
         Set("DsEmberBrush", accent2);
         Set("DsWarningBrush", accent2);
         Set("DsOnAccentBrush", onAccent);
+        Set("DsLogoBrush", ColorMath.Parse(p.Logo, d.Logo));
         SetGradient(res, "DsVoltGradientBrush", W(accent), W(accent2));
         SetGradient(res, "DsHeroGradientBrush", W(ColorMath.Mix(panel, accent, 0.12)), W(panel));
 

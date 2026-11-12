@@ -1,6 +1,6 @@
 # DualSense Precision — Development Status
 
-Last update: 2026-11-10 · Version 0.17.0 · M1–4 verified on hardware; Stick, Trigger and Appearance verified; virtual Xbox 360 controller verified end to end; Button Mapping verified; Macros built; Xbox controller input built; optional HidHide hiding built (not yet hardware-tested).
+Last update: 2026-11-10 · Version 0.18.0 · M1–4 verified on hardware; Stick, Trigger and Appearance verified; virtual Xbox 360 controller verified end to end; Button Mapping verified; Macros built; Xbox controller input built; optional HidHide hiding built (not yet hardware-tested).
 
 ## Verification log
 
@@ -14,6 +14,7 @@ Last update: 2026-11-10 · Version 0.17.0 · M1–4 verified on hardware; Stick,
 - v0.7.0 built on Windows: 112/113 — PreciseWait returned up to 1 ms early (integer ms rounding). Fixed in v0.7.1 (tick-based deadline).
 - v0.7.1 (Macros) — user moved on to requesting stick recording before reporting the full macro test list.
 - v0.10.0 failed to build: XAML x:Name "MotionResult" clashed with the MotionResult type (CS0236/CS1061, followed by a cascading WMC9999). Renamed to MotionResultText in v0.10.1; also fixed CS0108 (MainWindow.Current → `new`) and CS0252 (ReferenceEquals). Scanned all XAML for other name/type clashes: none.
+- v0.18.0: user picked logo concept 02 (DP monogram); four variations drawn (A cut-corner, B rounded, C shared stem, D badge), A used provisionally: vector LogoMark control (title bar, About) in themed DsLogoBrush; per-preset logo colours + Logo slot in the editor; new AppIcon.ico (amber, 16–256 px). Interface-scale slider: drag previews a visual zoom anchored on the (counter-scaled) slider via CompositionTarget.Rendering easing; release commits layout scale, re-aligns scroll and eases the residual offset.
 - v0.17.0: 12 presets (dark: Opifex, Midnight, Forest, Deep Red, Crimson, Graphite; fun: Synthwave, Deep Sea, Toxic; light: Paper, Daylight, Sand). Light palettes switch the window's controls to the WinUI Light theme live (root RequestedTheme) and the whole app after restart (Application.RequestedTheme set in App ctor from saved palette); both theme dictionaries are recoloured. Logo uses fixed DsLogoBrush/DsLogoInkBrush, never themed. Three new logo concepts drafted (Twin Reticle, DP Monogram, Stick Gate) for the user to choose.
 - v0.16.1: user asked to drop Main/Second accent from the colour editor; accents fixed to Opifex amber/ember, presets only change the 4 surface/text colours.
 - v0.16.0 (release candidate): user-customisable interface colours (6 slots: background, panels, borders, text, accent, second accent; ColorPicker flyout + hex box; presets; reset; WCAG contrast warning) applied live by mutating the shared brushes in Tokens.xaml (derived shades computed in ColorMath); interface scale 75–150 % via a ScaleHost panel (measure ÷ scale, render × scale). Saved in settings (Palette, UiScale).
