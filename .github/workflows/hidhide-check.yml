@@ -26,18 +26,16 @@ jobs:
             }
           }
           "updater cmdline: " + (Get-CimInstance Win32_Process -Filter "Name='nefarius_HidHide_Updater.exe'" | Select-Object -Expand CommandLine)
-          "--- pressing the dialog's Close button"
+          "--- closing the dialog (WM_COMMAND IDCANCEL / IDCLOSE, like clicking Close)"
+          Add-Type -Namespace W -Name U -MemberDefinition '[DllImport("user32.dll")] public static extern bool PostMessage(System.IntPtr h, uint m, System.IntPtr w, System.IntPtr l);'
           foreach ($proc in Get-Process nefarius_HidHide_Updater -ErrorAction SilentlyContinue) {
-            $cond = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ProcessIdProperty, $proc.Id)
-            foreach ($w in [System.Windows.Automation.AutomationElement]::RootElement.FindAll([System.Windows.Automation.TreeScope]::Children, $cond)) {
-              foreach ($e in $w.FindAll([System.Windows.Automation.TreeScope]::Descendants, [System.Windows.Automation.Condition]::TrueCondition)) {
-                if ($e.Current.Name -eq 'Close') {
-                  $pat = $null
-                  if ($e.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern, [ref]$pat)) { $pat.Invoke(); "clicked Close" }
-                  else { "Close has no invoke pattern" }
-                }
-              }
-            }
+            $h = $proc.MainWindowHandle
+            "hwnd: $h"
+            [void][W.U]::PostMessage($h, 0x0111, [IntPtr]2, [IntPtr]::Zero)
+            Start-Sleep 3
+            if (-not $proc.HasExited) { [void][W.U]::PostMessage($h, 0x0111, [IntPtr]8, [IntPtr]::Zero); Start-Sleep 3 }
+            if (-not $proc.HasExited) { [void][W.U]::PostMessage($h, 0x0010, [IntPtr]::Zero, [IntPtr]::Zero); Start-Sleep 3 }
+            "updater exited: $($proc.HasExited)  exit code: $(if ($proc.HasExited) { $proc.ExitCode })"
           }
           Start-Sleep 10
           "updater still running: $([bool](Get-Process nefarius_HidHide_Updater -ErrorAction SilentlyContinue))"
