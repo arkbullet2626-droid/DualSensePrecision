@@ -42,6 +42,28 @@ jobs:
           path: installer/Output/*.exe
           if-no-files-found: error
 
+      # Release gate: install the Setup.exe the way a user would and check it really worked.
+      # (HidHide isn't tested here: its installer is interactive by design - see installer/DualSensePrecision.iss.)
+      - name: Install test (app + VIIPER, unattended)
+        shell: pwsh
+        timeout-minutes: 10
+        run: |
+          $exe = Get-Item installer/Output/*.exe | Select-Object -First 1
+          $p = Start-Process $exe.FullName -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/TASKS="viiper"','/LOG="setup.log"' -PassThru
+          if (-not $p.WaitForExit(480000)) { Get-Content setup.log -Tail 40; throw "Setup didn't finish within 8 minutes." }
+          "setup exit code: $($p.ExitCode)"
+          $app = "$env:LOCALAPPDATA\Programs\DualSense Precision\DualSensePrecision.exe"
+          $viiper = "$env:LOCALAPPDATA\VIIPER\viiper.exe"
+          "app installed:    $(Test-Path $app)"
+          "VIIPER installed: $(Test-Path $viiper)"
+          Start-Sleep 5
+          $listening = [bool](Get-NetTCPConnection -LocalPort 3242 -State Listen -ErrorAction SilentlyContinue)
+          "VIIPER running:   $listening"
+          if ($p.ExitCode -ne 0 -or -not (Test-Path $app) -or -not (Test-Path $viiper)) {
+            Get-Content setup.log -Tail 60
+            throw "Install test failed - not publishing this build."
+          }
+
       - name: Publish GitHub Release
         shell: pwsh
         env:

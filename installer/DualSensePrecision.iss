@@ -53,7 +53,7 @@ RestartApplications=no
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Shortcuts:"
-Name: "viiper"; Description: "Download and install VIIPER {#ViiperVersion} (about 13 MB from GitHub) - needed for the virtual Xbox controller. It installs the signed usbip-win2 driver: Windows will ask for administrator permission, and a restart may be needed."; GroupDescription: "Virtual controller:"; Check: not ViiperInstalled
+Name: "viiper"; Description: "Download and install VIIPER {#ViiperVersion} (about 13 MB from GitHub) - needed for the virtual Xbox controller. It installs the signed usbip-win2 driver: Windows will ask for administrator permission (click Yes), and a restart is needed."; GroupDescription: "Virtual controller:"; Check: not ViiperInstalled
 Name: "hidhide"; Description: "Download and install HidHide {#HidHideVersion} (about 8 MB from GitHub) - lets the app hide your real controller from games so they only see the virtual one (you switch this on in the app). HidHide's own installer opens for you to click through; Windows asks for administrator permission for its signed driver, and a restart is needed."; GroupDescription: "Virtual controller:"; Check: not HidHideInstalled
 
 [Files]
@@ -167,19 +167,24 @@ var
 begin
   if (CurStep = ssPostInstall) and ViiperDownloaded then
   begin
-    WizardForm.StatusLabel.Caption := 'Installing VIIPER (Windows will ask for permission to install the usbip-win2 driver)...';
+    WizardForm.StatusLabel.Caption := 'Installing VIIPER (click Yes when Windows asks for permission for the usbip-win2 driver)...';
     // VIIPER's own unattended installer: per-user copy, autostart, Start menu entry, and usbip-win2 via its signed installer.
-    // --no-update keeps the version this app was tested with.
-    if Exec(ExpandConstant('{tmp}\viiper-setup.exe'), 'install --quiet --no-update', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+    // Started with "runas" so Windows shows its permission prompt: VIIPER refuses to install the driver without admin rights.
+    // --no-update keeps the version this app was tested with. Exit code 3010 = installed, restart needed.
+    if ShellExec('runas', ExpandConstant('{tmp}\viiper-setup.exe'), 'install --quiet --no-update', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
     begin
       ViiperRan := True;
-      if ResultCode <> 0 then
+      if not ViiperInstalled then
+        SuppressibleMsgBox('VIIPER didn''t finish installing (code ' + IntToStr(ResultCode) + ').' + #13#10 +
+          'If you clicked No on the permission prompt, run this setup again and click Yes.' + #13#10 +
+          'Or install it yourself: winget install Alia5.VIIPER', mbError, MB_OK, IDOK)
+      else if (ResultCode <> 0) and (ResultCode <> 3010) then
         SuppressibleMsgBox('VIIPER''s installer finished with code ' + IntToStr(ResultCode) + '.' + #13#10 +
-          'If the virtual controller doesn''t turn green later, install VIIPER manually: winget install Alia5.VIIPER', mbInformation, MB_OK, IDOK);
+          'If the virtual controller doesn''t turn green after restarting, install VIIPER manually: winget install Alia5.VIIPER', mbInformation, MB_OK, IDOK);
     end
     else
-      SuppressibleMsgBox('Could not start VIIPER''s installer: ' + SysErrorMessage(ResultCode) + #13#10 +
-        'You can install it later with: winget install Alia5.VIIPER', mbError, MB_OK, IDOK);
+      SuppressibleMsgBox('VIIPER''s installer didn''t run: ' + SysErrorMessage(ResultCode) + #13#10 +
+        '(Clicking No on the Windows permission prompt causes this.) Run this setup again, or: winget install Alia5.VIIPER', mbError, MB_OK, IDOK);
   end;
 
   if (CurStep = ssPostInstall) and HidHideDownloaded then

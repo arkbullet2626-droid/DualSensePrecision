@@ -1,57 +1,40 @@
-# DualSense Precision v0.14.0: hide your real controller from games
+# DualSense Precision v0.14.1: the installer fix
 
-New in this version: games can be made to see **only the tuned virtual controller**, so Rocket League (and others) stop picking up your real controller as a second player. It uses **HidHide**, a free, signed driver by Nefarius that Setup can download and install for you. Hiding is **off until you switch it on** in the app.
+This version fixes Setup so **HidHide really installs** (in 0.14.0 it silently did nothing on some PCs).
+
+What was wrong: HidHide's own installer can't run invisibly. It needs to show its screens to ask Windows for administrator permission, and one of its steps can show a small message box that has to be clicked. 0.14.0 tried to run it invisibly, so it quietly gave up. Setup now opens HidHide's installer normally for you to click through, and **checks afterwards that it really installed**. VIIPER's install also now shows a proper Windows permission prompt and is checked the same way.
 
 ## Install
 
 1. Close DualSense Precision.
-2. Run **`DualSensePrecision-0.14.0-setup.exe`**. If SmartScreen appears: **More info → Run anyway**.
-3. On the options page, leave **"Download and install HidHide 1.5.230…"** ticked. (It only appears if HidHide isn't installed yet.)
-4. Click **Install**. A download page appears briefly. Windows then asks for **administrator permission** for the HidHide driver: click **Yes**.
-5. At the end choose **Restart now**. The restart is needed so HidHide can attach to your controllers.
-
-## Switch hiding on
-
-1. Open DualSense Precision, connect your controller, go to **Virtual Controller** and switch the virtual controller **on**.
-2. In the new card **"Hide your real controller from games"**, switch it **On**. Read the explanation and click **Hide it** (asked once).
-3. The status line says *Hiding your Xbox controller from games (N device entries)…*.
-4. **Start (or restart) your game afterwards.** A game that was already open keeps seeing the controller it had.
+2. Run **`DualSensePrecision-0.14.1-setup.exe`**. If SmartScreen appears: **More info → Run anyway**.
+3. On the options page, make sure **"Download and install HidHide 1.5.230…"** is ticked, then click **Install**.
+4. A message explains what's next. Click **OK**. HidHide's own installer opens:
+   - click **Yes** when Windows asks for permission;
+   - click through its screens (Next, accept the licence, Install, Finish);
+   - if a small **"Nefarius' Updater"** box appears, click **Close** (HidHide still installs);
+   - if it offers to restart, choose **later** (Setup offers a restart at the end).
+5. Back in DualSense Precision's Setup, finish and choose **Restart now**.
 
 ## Tests for this version
 
-**A. Install**
-1. Setup shows the HidHide option, downloads it, Windows asks for permission, and the finish page offers a restart. After restarting, **Settings** shows **0.14.0**.
+**A. HidHide installs**
+1. Steps 3–4 above happen as described. If Setup says *"HidHide doesn't look installed yet"*, finish HidHide's window if it's still open and click **Retry**; tell Claude if Retry keeps failing.
+2. After restarting, the Start menu has **HidHide Configuration Client**, and `C:\Program Files\Nefarius Software Solutions\HidHide` exists.
+3. Open DualSense Precision. **Settings** shows **0.14.1**. On **Virtual Controller**, the "HidHide isn't installed" warning is gone.
 
-**B. Before switching hiding on**
-2. With the virtual controller on and hiding off, click **Check what games see**. It reports *Games see 2 Xbox-style controllers; this app sees 2.*
+**B. Hiding works (from 0.14.0)**
+4. Virtual controller **on**, then **Hide your real controller from games → On → Hide it**. The status says it's hiding your controller.
+5. **Check what games see** says *✓ Games see exactly one Xbox controller: the virtual pad.* (If it says 2, unplug and replug the controller, then check again.)
+6. Start **Rocket League** after this: pressing Menu adds only one player.
+7. Switch hiding off: the check shows 2 again. Close the app with hiding on: your controller is visible again (Win+R → `joy.cpl`).
 
-**C. Switch hiding on**
-3. Switch **Hide your real controller from games** on: the explanation dialog appears. **Cancel** leaves it off; switch it on again and click **Hide it**.
-4. The status says it's hiding your controller, and the yellow *Games may see two controllers* warning disappears.
-5. Click **Check what games see**: after a second or two it says *✓ Games see exactly one Xbox controller: the virtual pad.*
-   - If it still says 2: unplug the controller and plug it back in (or switch a wireless pad off and on), then check again.
-6. The app still reads your controller: the Home stick dots move, and **What Windows sees** still lists both pads (the app is allowed to see hidden ones).
+**C. Status messages**
+8. (Only if convenient) Before restarting after step 5 of Install, opening the app shows *"HidHide is installed but not running yet. Restart Windows…"* instead of "not installed".
 
-**D. Rocket League (the original problem)**
-7. Start Rocket League **after** step 5. Press **Menu/Start**: only one player joins, and your tuned settings apply (try a big inner deadzone and see the car ignore small stick movement).
+**D. Optional: fresh-PC check for VIIPER**
+9. On a PC without VIIPER (or after uninstalling it from Windows Settings → Apps), run Setup with the VIIPER box ticked: Windows asks for permission (click **Yes**), Setup finishes without errors, and after restarting the Virtual Controller goes green.
 
-**E. Undo**
-8. Switch hiding **off**: status says *Off…*, and **Check what games see** shows 2 again.
-9. Switch hiding back on, then turn the **virtual controller off**: hiding is undone straight away (games see your real controller again, so it still works in games).
-10. With hiding on, **close the app**. Open the Windows Game Controllers panel (Win+R, type `joy.cpl`): your controller is listed again.
+## Behind the scenes
 
-**F. DualSense too (optional)**
-11. Connect your DualSense instead, with the virtual controller and hiding on: status says *Hiding your DualSense…*. In a game that supports PlayStation controllers natively, only the virtual Xbox pad shows up.
-
-**G. Everything from 0.13.0 still works**
-12. Quick spot-check: stick settings, button mapping and the Controller Tester work with the Xbox pad while hiding is on.
-
-## Good to know
-
-- Only DualSense Precision is allowed to see the hidden controller. Steam, browsers and other controller apps won't see it while hiding is on.
-- If the app ever closes unexpectedly, the next start un-hides your controller. You can also open **HidHide Configuration Client** (Start menu) and untick the device.
-- Uninstalling: HidHide is a separate program (*Windows Settings → Apps → HidHide*).
-
-## If something doesn't work
-
-Send Claude the test number, plus the text of the status line and the **Check what games see** result.
+Every build now installs the new Setup.exe on a clean Windows machine on GitHub (app + VIIPER) and refuses to publish if anything didn't install. HidHide can't be checked that way because its installer needs a person to click through it.
