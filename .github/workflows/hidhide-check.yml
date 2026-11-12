@@ -1,0 +1,31 @@
+name: HidHide install check
+on: workflow_dispatch
+jobs:
+  check:
+    runs-on: windows-latest
+    steps:
+      - name: Download HidHide and verify hash
+        shell: pwsh
+        run: |
+          Invoke-WebRequest https://github.com/nefarius/HidHide/releases/download/v1.5.230.0/HidHide_1.5.230_x64.exe -OutFile hh.exe
+          (Get-FileHash hh.exe -Algorithm SHA256).Hash
+          (Get-AuthenticodeSignature hh.exe | Select-Object Status, @{n='Signer';e={$_.SignerCertificate.Subject}}) | Format-List
+      - name: Old switches (/quiet /norestart)
+        shell: pwsh
+        run: |
+          $p = Start-Process .\hh.exe -ArgumentList '/quiet','/norestart' -Wait -PassThru
+          "exit code: $($p.ExitCode)"
+          "service key: $(Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Services\HidHide')"
+          "program files: $(Test-Path 'C:\Program Files\Nefarius Software Solutions\HidHide')"
+      - name: New switches (/exenoui /qn /norestart /exelog)
+        shell: pwsh
+        run: |
+          $log = "$env:RUNNER_TEMP\hidhide-install.log"
+          $p = Start-Process .\hh.exe -ArgumentList '/exenoui','/qn','/norestart',"/exelog `"$log`"" -Wait -PassThru
+          "exit code: $($p.ExitCode)"
+          "service key: $(Test-Path 'HKLM:\SYSTEM\CurrentControlSet\Services\HidHide')"
+          "program files: $(Test-Path 'C:\Program Files\Nefarius Software Solutions\HidHide')"
+          Get-ChildItem 'C:\Program Files\Nefarius Software Solutions\HidHide' -Recurse -ErrorAction SilentlyContinue | Select-Object -First 20 FullName
+          if (Test-Path $log) { Get-Content $log -Tail 40 }
+          sc.exe query HidHide
+          Test-Path '\\.\HidHide'
