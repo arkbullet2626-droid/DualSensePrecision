@@ -46,8 +46,8 @@ UninstallDisplayName={#AppName}
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
-; Closes a running copy before installing/uninstalling (same name the app uses for its single-instance lock).
-AppMutex=DualSensePrecision.SingleInstance
+; A running copy is asked to quit cleanly first (see CloseRunningApp in [Code]), so its controller gets un-hidden
+; and the virtual pad removed, exactly like choosing Exit from its tray icon.
 CloseApplications=yes
 RestartApplications=no
 
@@ -82,6 +82,49 @@ var
   ViiperRan: Boolean;
   HidHideDownloaded: Boolean;
   HidHideRan: Boolean;
+
+// Asks a running DualSense Precision to quit the same way its tray menu's Exit does (un-hides the controller,
+// removes the virtual pad), then waits for it. Older versions ignore the message; the user is asked instead.
+const
+  AppMutexName = 'DualSensePrecision.SingleInstance';
+  WM_APP_EXIT = $8002;
+
+function CloseRunningApp(): Boolean;
+var
+  Wnd: HWND;
+  I: Integer;
+begin
+  Result := True;
+  if not CheckForMutexes(AppMutexName) then Exit;
+  Wnd := FindWindowByClassName('DualSensePrecisionTray');
+  if Wnd <> 0 then
+  begin
+    PostMessage(Wnd, WM_APP_EXIT, 0, 0);
+    I := 0;
+    while CheckForMutexes(AppMutexName) and (I < 50) do
+    begin
+      Sleep(200);
+      I := I + 1;
+    end;
+  end;
+  while CheckForMutexes(AppMutexName) do
+    if SuppressibleMsgBox('DualSense Precision is still running.' + #13#10 +
+         'Right-click its tray icon and choose Exit, then click OK.', mbError, MB_OKCANCEL, IDCANCEL) = IDCANCEL then
+    begin
+      Result := False;
+      Exit;
+    end;
+end;
+
+function InitializeSetup(): Boolean;
+begin
+  Result := CloseRunningApp();
+end;
+
+function InitializeUninstall(): Boolean;
+begin
+  Result := CloseRunningApp();
+end;
 
 function ViiperInstalled: Boolean;
 begin

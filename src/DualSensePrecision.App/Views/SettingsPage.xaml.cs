@@ -303,7 +303,12 @@ public sealed partial class SettingsPage : Page
 
     private void CommitHex(string slot, TextBox box)
     {
-        if (ColorMath.TryParse(box.Text, out var c)) SetSlot(slot, c.Hex, fromPicker: false);
+        if (ColorMath.TryParse(box.Text, out var c))
+        {
+            // Enter and then losing focus (e.g. when the window closes) both commit: only apply real changes.
+            if (ColorMath.TryParse(Get(_palette, slot), out var current) && current == c) return;
+            SetSlot(slot, c.Hex, fromPicker: false);
+        }
         else box.Text = Get(_palette, slot); // invalid → put the current colour back
     }
 

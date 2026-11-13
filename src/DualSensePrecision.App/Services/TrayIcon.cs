@@ -13,6 +13,8 @@ public sealed class TrayIcon : IDisposable
     public event Action? ExitRequested;
 
     private const int WM_APP_TRAY = 0x8000 + 1;
+    /// <summary>Sent by Setup before updating: quit cleanly, as if Exit was chosen from the menu.</summary>
+    private const int WM_APP_EXIT = 0x8000 + 2;
     private const int WM_LBUTTONUP = 0x0202, WM_RBUTTONUP = 0x0205, WM_CONTEXTMENU = 0x007B, WM_COMMAND = 0x0111;
     private const int NIM_ADD = 0, NIM_MODIFY = 1, NIM_DELETE = 2;
     private const int NIF_MESSAGE = 0x1, NIF_ICON = 0x2, NIF_TIP = 0x4, NIF_INFO = 0x10;
@@ -92,6 +94,11 @@ public sealed class TrayIcon : IDisposable
             int ev = (int)((long)lParam & 0xFFFF);
             if (ev == WM_LBUTTONUP) OpenRequested?.Invoke();
             else if (ev is WM_RBUTTONUP or WM_CONTEXTMENU) ShowMenu();
+            return IntPtr.Zero;
+        }
+        if (msg == WM_APP_EXIT)
+        {
+            ExitRequested?.Invoke();
             return IntPtr.Zero;
         }
         if (msg == _taskbarCreated && _taskbarCreated != 0)

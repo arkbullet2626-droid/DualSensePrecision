@@ -44,14 +44,22 @@ public sealed partial class MainWindow : Window
         _tray.ExitRequested += ExitApp;
         _tray.Show();
         AppWindow.Closing += OnClosing;
-        Closed += (_, _) => _tray.Dispose();
+        Closed += (_, _) =>
+        {
+            _closed = true;
+            ThemeService.Applied -= ApplyThemeMode; // a late colour change must not touch a closed window
+            _tray.Dispose();
+        };
 
         Activated += OnFirstActivated;
     }
 
     /// <summary>Light palettes switch the window's built-in controls to their light style; also recolours the title-bar buttons.</summary>
+    private bool _closed;
+
     private void ApplyThemeMode()
     {
+        if (_closed) return;
         if (Content is FrameworkElement root) root.RequestedTheme = ThemeService.IsLight ? ElementTheme.Light : ElementTheme.Dark;
         try
         {
