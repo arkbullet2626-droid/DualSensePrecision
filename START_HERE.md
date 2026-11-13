@@ -1,4 +1,14 @@
-# Dual Precision 0.19.0 — release candidate for 1.0
+# Dual Precision 1.0.0 — release
+
+**1.0.0** is 0.19.0 plus one installer fix: setup now asks Windows to refresh its icons, so the desktop shortcut shows the DP logo instead of the old reticle. The GitHub release page shows the public release notes (`RELEASE_NOTES.md`); this file keeps the test history.
+
+### Tests for 1.0.0
+F1. Install over 0.19.0: the desktop shortcut and Start menu entry show the amber DP icon (if not straight away, after signing out and in).
+F2. About shows **Version 1.0.0**, and **Check for updates** says you're up to date.
+
+---
+
+# From 0.19.0
 
 **0.19.0: the app is now called Dual Precision** (it supports both PlayStation and Xbox controllers). The window, tray icon, Start menu, desktop shortcut, installer, About page and notifications all use the new name. The DP logo stays.
 
@@ -123,7 +133,7 @@ Everything planned for 1.0 is in this build. If the tests below pass, the next b
 ## Install
 
 1. Close Dual Precision completely (if it's in the tray: right-click the icon → **Exit**).
-2. Run **`DualPrecision-0.19.0-setup.exe`**. If SmartScreen appears: **More info → Run anyway**.
+2. Run **`DualPrecision-1.0.0-setup.exe`**. If SmartScreen appears: **More info → Run anyway**.
 3. VIIPER and HidHide are already installed, so their boxes don't appear. Leave **Start Dual Precision with Windows** unticked for now (test 9 covers it).
 
 ## Tests
@@ -146,7 +156,7 @@ Everything planned for 1.0 is in this build. If the tests below pass, the next b
 9. Settings → turn on **Start with Windows**. Sign out and back in (or restart): the app starts in the tray without opening a window. Turn it off again if you don't want it.
 
 **E. Updates and About**
-10. **About** shows *Version 0.19.0*. **Check for updates** says you're up to date.
+10. **About** shows *Version 1.0.0*. **Check for updates** says you're up to date.
 11. The buttons on About open the right things: **Licence** and **Third-party notices** open text files; **Source code** / **Report a problem** / **Privacy policy** / **opifexstudios.ca** open the browser (GitHub pages need you signed in until the repo is public, and the privacy section is added to the website at release).
 
 **F. Troubleshooting**

@@ -86,7 +86,7 @@ jobs:
           gh release view $tag *> $null
           if ($LASTEXITCODE -eq 0) {
             gh release upload $tag @files --clobber
-            gh release edit $tag --notes-file START_HERE.md
+            gh release edit $tag --notes-file RELEASE_NOTES.md
           } else {
-            gh release create $tag @files --title "Dual Precision $version" --notes-file START_HERE.md --target $env:GITHUB_SHA --latest
+            gh release create $tag @files --title "Dual Precision $version" --notes-file RELEASE_NOTES.md --target $env:GITHUB_SHA --latest
           }

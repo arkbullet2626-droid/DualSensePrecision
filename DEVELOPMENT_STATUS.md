@@ -96,3 +96,4 @@ Last update: 2026-11-10 · Version 0.18.0 · M1–4 verified on hardware; Stick,
 2. Hardware test M3/M4 with a real DualSense: confirm byte offsets, firmware report, hot-plug, measured rate.
 3. M5 UIs: stick editor with draggable curve + live raw/processed view, trigger page, lightbar/LED page.
 4. Decide virtual-controller backend (needs your call).
+- v1.0.0 (released Nov 12, 2026): renamed to Dual Precision in 0.19.0 (user-facing only; data folder, exe, AppId, mutex kept); 0.18.x fixes from on-PC testing (shutdown ordering, VIIPER auto-start, light-theme status colours, pop-up theme before App.xaml loads, setup closes the running app via WM_APP+2 to the tray window); installer refreshes shell icons. Public release notes in RELEASE_NOTES.md.
