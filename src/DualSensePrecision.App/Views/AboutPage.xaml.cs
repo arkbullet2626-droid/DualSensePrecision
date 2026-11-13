@@ -6,7 +6,7 @@ namespace DualSensePrecision.App.Views;
 
 public sealed partial class AboutPage : Page
 {
-    public const string PrivacyUrl = "https://opifexstudios.ca/#dualsense-precision-privacy";
+    public const string PrivacyUrl = "https://opifexstudios.ca/#dual-precision-privacy";
     public const string WebsiteUrl = "https://opifexstudios.ca";
 
     public AboutPage()
