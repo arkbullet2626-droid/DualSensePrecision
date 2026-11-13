@@ -5,7 +5,7 @@ using Microsoft.UI.Xaml.Shapes;
 
 namespace DualSensePrecision.App.Controls;
 
-/// <summary>Live stick view: raw position (grey), processed position (blue), deadzone boundaries.</summary>
+/// <summary>Live stick view: raw position (grey), processed position (accent), deadzone boundaries.</summary>
 public sealed partial class StickVisualizer : UserControl
 {
     private const double C = 120, R = 104;

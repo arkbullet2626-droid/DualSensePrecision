@@ -63,7 +63,7 @@
                             <Button Content="Reset" Click="OnResetButtons" />
                         </StackPanel>
                     </Grid>
-                    <TextBlock Style="{StaticResource DsBody}" FontSize="12" Text="Blue = pressed now. Green outline = has worked at least once." />
+                    <TextBlock Style="{StaticResource DsBody}" FontSize="12" Text="Amber = pressed now. Green outline = has worked at least once." />
                     <VariableSizedWrapGrid x:Name="ButtonGrid" Orientation="Horizontal" ItemWidth="118" ItemHeight="44" />
                 </StackPanel>
             </Border>
@@ -79,7 +79,7 @@
                         </StackPanel>
                     </Grid>
                     <TextBlock Style="{StaticResource DsBody}" FontSize="12"
-                               Text="Rotate each stick slowly around its edge to map its range (blue outline). For the drift test, let go of both sticks." />
+                               Text="Rotate each stick slowly around its edge to map its range (amber outline). For the drift test, let go of both sticks." />
                     <Grid ColumnSpacing="24">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />

@@ -57,11 +57,12 @@ public partial class App : Application
     /// <summary>Closes everything cleanly and starts a fresh copy of the app (used by "Reset app").</summary>
     public static void Restart()
     {
-        AppServices.Shutdown();
+        try { AppServices.Shutdown(); } catch (Exception ex) { CrashLog.Write(ex); }
         try { _singleInstance?.ReleaseMutex(); } catch { }
-        _singleInstance?.Dispose();
+        try { _singleInstance?.Dispose(); } catch { }
         _singleInstance = null;
-        if (Environment.ProcessPath is { } exe) System.Diagnostics.Process.Start(exe);
+        try { if (Environment.ProcessPath is { } exe) System.Diagnostics.Process.Start(exe); }
+        catch (Exception ex) { CrashLog.Write(ex); }
         Current.Exit();
     }
 }

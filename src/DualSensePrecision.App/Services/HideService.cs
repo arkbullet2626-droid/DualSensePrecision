@@ -39,11 +39,19 @@ public sealed class HideService : IDisposable
     {
         _worker = new Thread(Run) { IsBackground = true, Name = "HidHide" };
         _worker.Start();
-        AppServices.Controller.StatusChanged += _ => Reevaluate();
+        AppServices.Controller.StatusChanged += OnControllerStatus;
     }
 
-    /// <summary>Re-check what should be hidden (cheap to call often; work happens on the worker thread).</summary>
-    public void Reevaluate() => _wake.Set();
+    private void OnControllerStatus(ConnectionStatus _) => Reevaluate();
+
+    /// <summary>Re-check what should be hidden (cheap to call often; work happens on the worker thread).
+    /// Safe to call after Dispose (the controller can still report "disconnected" while the app shuts down).</summary>
+    public void Reevaluate()
+    {
+        if (_stop) return;
+        try { _wake.Set(); }
+        catch (ObjectDisposedException) { }
+    }
 
     private void Run()
     {
@@ -269,7 +277,9 @@ public sealed class HideService : IDisposable
     /// <summary>Un-hides on exit so the controller is never left invisible.</summary>
     public void Dispose()
     {
+        if (_stop) return;
         _stop = true;
+        AppServices.Controller.StatusChanged -= OnControllerStatus;
         _wake.Set();
         _worker.Join(2000);
         try { Restore(null); } catch { /* next start cleans up */ }

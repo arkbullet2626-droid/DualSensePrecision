@@ -68,7 +68,7 @@ public static class AppServices
             {
                 Viiper = new ViiperXbox360Backend();
                 Viiper.RumbleRequested += (l, r) => Output.SetGameRumble(l, r);
-                Viiper.StateChanged += st => { AppLog.Info($"Virtual controller: {st}"); Hide?.Reevaluate(); };
+                Viiper.StateChanged += OnVirtualState;
                 Controller.SetBackend(Viiper);
             }
             Viiper.Connect();
@@ -82,6 +82,22 @@ public static class AppServices
             Hide?.Reevaluate(); // virtual pad gone → un-hide the real controller
             Task.Run(old.Dispose); // removing the device from VIIPER can take a moment; keep the UI responsive
         }
+    }
+
+    private static VirtualState? _lastLoggedVirtual;
+
+    private static void OnVirtualState(VirtualState st)
+    {
+        // While VIIPER is missing the backend retries every 2 s (Connecting → ServerMissing → Connecting…);
+        // log that once, not twice per retry.
+        bool retrying = st == VirtualState.Connecting && _lastLoggedVirtual == VirtualState.ServerMissing;
+        if (!retrying && st != _lastLoggedVirtual)
+        {
+            AppLog.Info($"Virtual controller: {st}");
+            _lastLoggedVirtual = st;
+        }
+        if (st == VirtualState.ServerMissing && ViiperLauncher.TryStartOnce() is { } note) AppLog.Info(note);
+        Hide?.Reevaluate();
     }
 
     private static readonly object SettingsLock = new();
@@ -189,13 +205,20 @@ public static class AppServices
         if (_shutDown) return; // window close and restart can both get here
         _shutDown = true;
         AppLog.Info("Shutting down");
-        FlushProfileSave();
-        _saveTimer?.Dispose();
-        Macros.Dispose();
-        Output.Dispose();
-        Hide?.Dispose();   // un-hide the real controller before the virtual pad goes away
-        Viiper?.Dispose(); // removes the virtual pad so games don't see a frozen controller
-        Controller.Dispose();
+        // Each step runs even if an earlier one fails: un-hiding and removing the virtual pad must always happen.
+        Step(FlushProfileSave);
+        Step(() => _saveTimer?.Dispose());
+        Step(Macros.Dispose);
+        Step(Output.Dispose);
+        Step(() => Hide?.Dispose());   // un-hide the real controller before the virtual pad goes away
+        Step(() => Viiper?.Dispose()); // removes the virtual pad so games don't see a frozen controller
+        Step(Controller.Dispose);
+    }
+
+    private static void Step(Action a)
+    {
+        try { a(); }
+        catch (Exception ex) { AppLog.Error("Shutdown step failed", ex); }
     }
 }
 

@@ -50,7 +50,10 @@ public static class ThemeService
         Set("DsAccentBrush", accent);
         Set("DsAccentSoftBrush", accent, 0x26);
         Set("DsEmberBrush", accent2);
-        Set("DsWarningBrush", accent2);
+        Set("DsWarningBrush", light ? ColorMath.Mix(accent2, new ColorMath.Rgb(0, 0, 0), 0.2) : accent2);
+        // Status colours: the bright mint and coral are made for dark backgrounds; use deeper shades on light ones.
+        Set("DsSuccessBrush", light ? new ColorMath.Rgb(0x17, 0x72, 0x4A) : new ColorMath.Rgb(0x5B, 0xE3, 0xA6));
+        Set("DsDangerBrush", light ? new ColorMath.Rgb(0xC2, 0x3B, 0x2C) : new ColorMath.Rgb(0xFF, 0x7A, 0x6B));
         Set("DsOnAccentBrush", onAccent);
         Set("DsLogoBrush", ColorMath.Parse(p.Logo, d.Logo));
         SetGradient(res, "DsVoltGradientBrush", W(accent), W(accent2));

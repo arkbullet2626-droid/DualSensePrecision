@@ -146,7 +146,7 @@ public sealed partial class VirtualControllerPage : Page
             null or VirtualState.Off => ("Off", "Games read your controller directly. Turn on to send them your tuned settings.", "DsTextTertiaryBrush", false),
             VirtualState.Connecting => ("Connecting…", v.StatusMessage ?? "", "DsWarningBrush", false),
             VirtualState.Connected => ("Active — games see an Xbox 360 controller", v.StatusMessage ?? "", "DsSuccessBrush", false),
-            VirtualState.ServerMissing => ("VIIPER isn't running", (v.StatusMessage ?? "") + " Follow the setup below, or start VIIPER if it's already installed. Retrying every 2 seconds.", "DsDangerBrush", true),
+            VirtualState.ServerMissing => ("VIIPER isn't running", "If VIIPER is installed, DualSense Precision starts it for you; otherwise follow the setup below. Retrying every 2 seconds.", "DsDangerBrush", true),
             _ => ("Problem", (v.StatusMessage ?? "Unknown error.") + " Retrying automatically.", "DsDangerBrush", true),
         };
         StateTitle.Text = title;

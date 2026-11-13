@@ -1,4 +1,21 @@
-# DualSense Precision 0.18.0 — release candidate for 1.0
+# DualSense Precision 0.18.1 — release candidate for 1.0
+
+**0.18.1** fixes what Claude found testing 0.18.0 on your PC:
+- **Restart now** and **Reset app** work again (they hit an error while shutting down and the app didn't come back).
+- If VIIPER is installed but not running, the app now **starts it for you** (once per session) instead of waiting for you to sign out and in.
+- While VIIPER is missing the log no longer fills up with two lines every few seconds.
+- On light themes, green and red status text (e.g. "Free · Open source", "Connected") is darker and readable.
+- The Tester and Stick Settings say **amber** instead of "blue" for the pressed/processed markers.
+
+### Tests for 0.18.1
+R1. Settings → Interface → pick **Paper (light)** → **Restart now**: the app closes and reopens in Paper within a few seconds. Pick your own colours again (or Opifex) → **Restart now** again.
+R2. **Reset app…** → leave *Also delete my profiles* unticked → confirm: the app reopens with default settings and the welcome guide, your profiles are still there.
+R3. Quit VIIPER if it's running (its tray icon → Quit, or Task Manager → end `viiper.exe`), then open DualSense Precision: within a few seconds **Virtual Controller** turns green without you starting VIIPER yourself.
+R4. In a light theme, the green "Connected" dot text in the sidebar and the green text on About are easy to read.
+
+---
+
+# From 0.18.0
 
 **0.18.0:**
 - **New logo:** the DP monogram (cut-corner version) replaces the old "P" square in the title bar and on About, and is the new app, taskbar and tray icon.
@@ -70,7 +87,7 @@ Everything planned for 1.0 is in this build. If the tests below pass, the next b
 ## Install
 
 1. Close DualSense Precision completely (if it's in the tray: right-click the icon → **Exit**).
-2. Run **`DualSensePrecision-0.18.0-setup.exe`**. If SmartScreen appears: **More info → Run anyway**.
+2. Run **`DualSensePrecision-0.18.1-setup.exe`**. If SmartScreen appears: **More info → Run anyway**.
 3. VIIPER and HidHide are already installed, so their boxes don't appear. Leave **Start DualSense Precision with Windows** unticked for now (test 9 covers it).
 
 ## Tests
@@ -93,7 +110,7 @@ Everything planned for 1.0 is in this build. If the tests below pass, the next b
 9. Settings → turn on **Start with Windows**. Sign out and back in (or restart): the app starts in the tray without opening a window. Turn it off again if you don't want it.
 
 **E. Updates and About**
-10. **About** shows *Version 0.18.0*. **Check for updates** says it couldn't check (the repository is still private, so this is expected until release) or that you're up to date.
+10. **About** shows *Version 0.18.1*. **Check for updates** says you're up to date.
 11. The buttons on About open the right things: **Licence** and **Third-party notices** open text files; **Source code** / **Report a problem** / **Privacy policy** / **opifexstudios.ca** open the browser (GitHub pages need you signed in until the repo is public, and the privacy section is added to the website at release).
 
 **F. Troubleshooting**

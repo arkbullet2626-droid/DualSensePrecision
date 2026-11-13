@@ -23,7 +23,7 @@
 
             <InfoBar IsOpen="True" IsClosable="True" Severity="Informational"
                      Title="Where these settings take effect"
-                     Message="The processed output (blue dot) is what a virtual controller will send to games. Until a virtual controller is set up, games still read your controller directly, so these settings preview here but don't change in-game aim yet." />
+                     Message="The processed output (amber dot) is what a virtual controller will send to games. Until a virtual controller is set up, games still read your controller directly, so these settings preview here but don't change in-game aim yet." />
 
             <!-- Live view + curve -->
             <Grid ColumnSpacing="16">
@@ -91,7 +91,7 @@
                         </Grid>
                         <controls:CurveEditor x:Name="Curve" Grid.Row="1" />
                         <TextBlock Grid.Row="2" Style="{StaticResource DsBody}" FontSize="12"
-                                   Text="Drag the blue points to reshape. Double-click to add a point, right-click a point to remove it. Below the dashed line = slower, more precise small movements; above = faster response. The green marker is your stick right now." />
+                                   Text="Drag the amber points to reshape. Double-click to add a point, right-click a point to remove it. Below the dashed line = slower, more precise small movements; above = faster response. The green marker is your stick right now." />
                     </Grid>
                 </Border>
             </Grid>
