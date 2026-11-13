@@ -9,15 +9,13 @@ public partial class App : Application
 
     public App()
     {
-        InitializeComponent();
         // Built-in controls (dropdowns, dialogs, flyouts) start in light or dark style to match the saved colours.
-        // This can only be set here, before any window exists; the main window also switches live.
-        try
-        {
-            var saved = new DualSensePrecision.Configuration.SettingsStore().Load();
-            if ((saved.Palette ?? new()).IsLight) RequestedTheme = ApplicationTheme.Light;
-        }
+        // This must be set before App.xaml loads and before any window exists; the main window also switches live.
+        bool light = false;
+        try { light = (new DualSensePrecision.Configuration.SettingsStore().Load().Palette ?? new()).IsLight; }
         catch { /* default dark */ }
+        RequestedTheme = light ? ApplicationTheme.Light : ApplicationTheme.Dark;
+        InitializeComponent();
         UnhandledException += (_, e) =>
         {
             // Surface, don't swallow: log to disk and show the message in the shell's info bar.
@@ -41,7 +39,7 @@ public partial class App : Application
         }
 
         AppLog.Prune();
-        AppLog.Info($"DualSense Precision {UpdateChecker.Current} starting on {Environment.OSVersion.VersionString}");
+        AppLog.Info($"DualSense Precision {UpdateChecker.Current} starting on {Environment.OSVersion.VersionString} ({RequestedTheme.ToString().ToLowerInvariant()} pop-ups)");
         AppServices.Initialize();
         ThemeService.Apply(AppServices.Settings.Palette ?? new());
         StartupRegistration.Refresh();

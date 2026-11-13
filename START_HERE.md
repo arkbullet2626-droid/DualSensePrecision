@@ -1,4 +1,14 @@
-# DualSense Precision 0.18.1 — release candidate for 1.0
+# DualSense Precision 0.18.2 — release candidate for 1.0
+
+**0.18.2:** after **Restart now** into a light theme, Windows-drawn pop-ups (dropdown lists, dialogs) now really start light. Before, the app could still think it had started dark and kept showing the "restart" note.
+
+### Tests for 0.18.2
+T1. Pick **Paper (light)** → **Restart now**: the app reopens in Paper and the *"You switched between a light and a dark theme…"* note is **gone**. Open **Reset app…** and press **Cancel**: the dialog is light.
+T2. Switch back to your colours → **Restart now**: the note is gone again and dialogs are dark.
+
+---
+
+# From 0.18.1
 
 **0.18.1** fixes what Claude found testing 0.18.0 on your PC:
 - **Restart now** and **Reset app** work again (they hit an error while shutting down and the app didn't come back).
@@ -87,7 +97,7 @@ Everything planned for 1.0 is in this build. If the tests below pass, the next b
 ## Install
 
 1. Close DualSense Precision completely (if it's in the tray: right-click the icon → **Exit**).
-2. Run **`DualSensePrecision-0.18.1-setup.exe`**. If SmartScreen appears: **More info → Run anyway**.
+2. Run **`DualSensePrecision-0.18.2-setup.exe`**. If SmartScreen appears: **More info → Run anyway**.
 3. VIIPER and HidHide are already installed, so their boxes don't appear. Leave **Start DualSense Precision with Windows** unticked for now (test 9 covers it).
 
 ## Tests
@@ -110,7 +120,7 @@ Everything planned for 1.0 is in this build. If the tests below pass, the next b
 9. Settings → turn on **Start with Windows**. Sign out and back in (or restart): the app starts in the tray without opening a window. Turn it off again if you don't want it.
 
 **E. Updates and About**
-10. **About** shows *Version 0.18.1*. **Check for updates** says you're up to date.
+10. **About** shows *Version 0.18.2*. **Check for updates** says you're up to date.
 11. The buttons on About open the right things: **Licence** and **Third-party notices** open text files; **Source code** / **Report a problem** / **Privacy policy** / **opifexstudios.ca** open the browser (GitHub pages need you signed in until the repo is public, and the privacy section is added to the website at release).
 
 **F. Troubleshooting**
