@@ -82,7 +82,8 @@ jobs:
           $sums = Join-Path $exe.DirectoryName 'SHA256SUMS.txt'
           @($exe, (Get-Item $stable), (Get-Item $legacy)) | ForEach-Object { "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower())  $($_.Name)" } | Set-Content $sums -Encoding ascii
           Get-Content $sums
-          $files = @($exe.FullName, $stable, $legacy, $sums)
+          # The logo, at a fixed latest/download URL for the website (like Anchor's anchor-logo.png).
+          $files = @($exe.FullName, $stable, $legacy, $sums, 'assets/brand/dual-precision-logo.png', 'assets/brand/dual-precision-mark.svg')
           gh release view $tag *> $null
           if ($LASTEXITCODE -eq 0) {
             gh release upload $tag @files --clobber
