@@ -50,6 +50,9 @@ WizardStyle=modern
 ; and the virtual pad removed, exactly like choosing Exit from its tray icon.
 CloseApplications=yes
 RestartApplications=no
+; Tells Windows to refresh shell icons after installing, so shortcuts don't keep showing an older app icon
+; (Windows caches icons by file path, and the program file keeps its path across updates).
+ChangesAssociations=yes
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Shortcuts:"
