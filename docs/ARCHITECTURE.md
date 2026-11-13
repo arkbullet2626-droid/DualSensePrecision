@@ -1,4 +1,4 @@
-# DualSense Precision — Architecture (Milestone 1)
+# Dual Precision — Architecture (Milestone 1)
 
 Status date: 2026-11-09
 

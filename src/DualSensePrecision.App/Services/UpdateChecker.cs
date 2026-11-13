@@ -5,7 +5,7 @@ namespace DualSensePrecision.App.Services;
 
 /// <summary>
 /// Asks GitHub for the newest release's version number. That's the only thing the app ever sends over the
-/// internet: GitHub sees the request (IP address and a "DualSensePrecision/x.y.z" user agent), nothing else.
+/// internet: GitHub sees the request (IP address and a "DualPrecision/x.y.z" user agent), nothing else.
 /// Can be switched off in Settings.
 /// </summary>
 public static class UpdateChecker
@@ -13,7 +13,7 @@ public static class UpdateChecker
     public const string Owner = "arkbullet2626-droid";
     public const string Repo = "DualSensePrecision";
     public static string ReleasesPage => $"https://github.com/{Owner}/{Repo}/releases/latest";
-    public static string DirectDownload => $"https://github.com/{Owner}/{Repo}/releases/latest/download/DualSensePrecision-Setup.exe";
+    public static string DirectDownload => $"https://github.com/{Owner}/{Repo}/releases/latest/download/DualPrecision-Setup.exe";
     public static string IssuesPage => $"https://github.com/{Owner}/{Repo}/issues";
     public static string SourcePage => $"https://github.com/{Owner}/{Repo}";
 
@@ -33,7 +33,7 @@ public static class UpdateChecker
         try
         {
             using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
-            http.DefaultRequestHeaders.UserAgent.ParseAdd($"DualSensePrecision/{Current}");
+            http.DefaultRequestHeaders.UserAgent.ParseAdd($"DualPrecision/{Current}");
             http.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
             using var resp = await http.GetAsync($"https://api.github.com/repos/{Owner}/{Repo}/releases/latest");
             if (!resp.IsSuccessStatusCode)

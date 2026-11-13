@@ -40,7 +40,7 @@ public sealed class TrayIcon : IDisposable
             lpszClassName = "DualSensePrecisionTray",
         };
         RegisterClassEx(ref cls);
-        _hwnd = CreateWindowEx(0, cls.lpszClassName, "DualSense Precision tray", 0, 0, 0, 0, 0, IntPtr.Zero, IntPtr.Zero, cls.hInstance, IntPtr.Zero);
+        _hwnd = CreateWindowEx(0, cls.lpszClassName, "Dual Precision tray", 0, 0, 0, 0, 0, IntPtr.Zero, IntPtr.Zero, cls.hInstance, IntPtr.Zero);
         _taskbarCreated = RegisterWindowMessage("TaskbarCreated"); // Explorer restarted → add the icon again
         _icon = File.Exists(iconPath) ? LoadImage(IntPtr.Zero, iconPath, 1 /* IMAGE_ICON */, 16, 16, 0x10 /* LR_LOADFROMFILE */) : IntPtr.Zero;
         Tooltip = tooltip;
@@ -112,7 +112,7 @@ public sealed class TrayIcon : IDisposable
     private void ShowMenu()
     {
         var menu = CreatePopupMenu();
-        AppendMenu(menu, MF_STRING, CmdOpen, "Open DualSense Precision");
+        AppendMenu(menu, MF_STRING, CmdOpen, "Open Dual Precision");
         AppendMenu(menu, MF_SEPARATOR, 0, null);
         AppendMenu(menu, MF_STRING, CmdExit, "Exit (stops the virtual controller)");
         GetCursorPos(out var pt);

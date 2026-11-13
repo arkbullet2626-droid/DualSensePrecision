@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!--
-        DualSense Precision design system, in the Opifex Studios palette (opifexstudios.ca):
+        Dual Precision design system, in the Opifex Studios palette (opifexstudios.ca):
         warm near-black surfaces, cream text, "volt" amber accent with an ember gradient, mint/coral for state.
         Type: Oxanium (display), Figtree (body), IBM Plex Mono (numbers) - bundled, SIL Open Font License.
         Spacing scale: 4 / 8 / 12 / 16 / 24 / 32.  Radius: 3 (controls), 6 (cards) - sharp, like the site.

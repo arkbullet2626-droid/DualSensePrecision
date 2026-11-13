@@ -95,7 +95,7 @@
             <Border Style="{StaticResource DsCard}">
                 <StackPanel Spacing="8">
                     <TextBlock Text="Virtual controller" Style="{StaticResource DsSectionTitle}" />
-                    <TextBlock Style="{StaticResource DsBody}" Text="Uses VIIPER with the signed usbip-win2 driver (ViGEmBus wasn't used: it's archived and no longer updated). Hiding the real controller uses HidHide. Both are separate free programs that Setup can install for you, each with Windows' permission prompt. DualSense Precision never installs drivers on its own." />
+                    <TextBlock Style="{StaticResource DsBody}" Text="Uses VIIPER with the signed usbip-win2 driver (ViGEmBus wasn't used: it's archived and no longer updated). Hiding the real controller uses HidHide. Both are separate free programs that Setup can install for you, each with Windows' permission prompt. Dual Precision never installs drivers on its own." />
                 </StackPanel>
             </Border>
 

@@ -64,7 +64,7 @@ public sealed partial class VirtualControllerPage : Page
         GetHidHideButton.Visibility = h.NeedsRestart ? Visibility.Collapsed : Visibility.Visible;
         HideInstallText.Text = h.NeedsRestart
             ? "HidHide is installed but its driver isn't running yet. Restart Windows, then come back here."
-            : "HidHide isn't installed. Get it from its official page (HidHide_1.5.230_x64.exe), run it and click through its screens, then restart Windows. Or run the DualSense Precision setup again with 'Download and install HidHide' ticked.";
+            : "HidHide isn't installed. Get it from its official page (HidHide_1.5.230_x64.exe), run it and click through its screens, then restart Windows. Or run the Dual Precision setup again with 'Download and install HidHide' ticked.";
         DoubleInputBar.IsOpen = !h.IsHiding;
     }
 
@@ -81,9 +81,9 @@ public sealed partial class VirtualControllerPage : Page
                 Content = new TextBlock
                 {
                     TextWrapping = TextWrapping.Wrap,
-                    Text = "While the virtual controller is on, DualSense Precision will ask the HidHide driver to hide your real controller " +
+                    Text = "While the virtual controller is on, Dual Precision will ask the HidHide driver to hide your real controller " +
                            "from every other program — games, Steam, browsers and controller apps — so they only see the tuned virtual pad.\n\n" +
-                           "• DualSense Precision itself can still read it.\n" +
+                           "• Dual Precision itself can still read it.\n" +
                            "• It's undone automatically when you switch the virtual controller off, switch this off, or close the app.\n" +
                            "• If the app ever closes unexpectedly, it's undone the next time the app starts. You can also undo it in HidHide's own Configuration Client.\n" +
                            "• Start (or restart) your game after switching this on — games that are already running keep seeing the controller.",
@@ -146,7 +146,7 @@ public sealed partial class VirtualControllerPage : Page
             null or VirtualState.Off => ("Off", "Games read your controller directly. Turn on to send them your tuned settings.", "DsTextTertiaryBrush", false),
             VirtualState.Connecting => ("Connecting…", v.StatusMessage ?? "", "DsWarningBrush", false),
             VirtualState.Connected => ("Active — games see an Xbox 360 controller", v.StatusMessage ?? "", "DsSuccessBrush", false),
-            VirtualState.ServerMissing => ("VIIPER isn't running", "If VIIPER is installed, DualSense Precision starts it for you; otherwise follow the setup below. Retrying every 2 seconds.", "DsDangerBrush", true),
+            VirtualState.ServerMissing => ("VIIPER isn't running", "If VIIPER is installed, Dual Precision starts it for you; otherwise follow the setup below. Retrying every 2 seconds.", "DsDangerBrush", true),
             _ => ("Problem", (v.StatusMessage ?? "Unknown error.") + " Retrying automatically.", "DsDangerBrush", true),
         };
         StateTitle.Text = title;

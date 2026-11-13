@@ -5,6 +5,8 @@
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>DualSensePrecision.App</RootNamespace>
     <AssemblyName>DualSensePrecision</AssemblyName>
+    <!-- Shown as the description in Task Manager and Startup apps. -->
+    <AssemblyTitle>Dual Precision</AssemblyTitle>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x64;ARM64</Platforms>
     <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>

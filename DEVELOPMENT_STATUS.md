@@ -1,4 +1,4 @@
-# DualSense Precision — Development Status
+# Dual Precision — Development Status
 
 Last update: 2026-11-10 · Version 0.18.0 · M1–4 verified on hardware; Stick, Trigger and Appearance verified; virtual Xbox 360 controller verified end to end; Button Mapping verified; Macros built; Xbox controller input built; optional HidHide hiding built (not yet hardware-tested).
 

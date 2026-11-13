@@ -5,7 +5,7 @@ using Microsoft.UI.Xaml.Media;
 namespace DualSensePrecision.App.Controls;
 
 /// <summary>
-/// The DualSense Precision "DP" mark (cut-corner variation), drawn as one vector path in the theme's logo colour
+/// The Dual Precision "DP" mark (cut-corner variation), drawn as one vector path in the theme's logo colour
 /// (DsLogoBrush, set in Settings → Interface → Colours → Logo). Scales to whatever size it's given.
 /// </summary>
 public sealed partial class LogoMark : UserControl

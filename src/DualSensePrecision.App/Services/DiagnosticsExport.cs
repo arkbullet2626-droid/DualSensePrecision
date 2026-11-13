@@ -43,7 +43,7 @@ public static class DiagnosticsExport
     {
         var c = AppServices.Controller;
         var sb = new StringBuilder();
-        sb.AppendLine($"DualSense Precision {UpdateChecker.Current}");
+        sb.AppendLine($"Dual Precision {UpdateChecker.Current}");
         sb.AppendLine($"Created: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
         sb.AppendLine($"Windows: {Environment.OSVersion.VersionString} ({(Environment.Is64BitOperatingSystem ? "64-bit" : "32-bit")})");
         sb.AppendLine($".NET: {Environment.Version}");

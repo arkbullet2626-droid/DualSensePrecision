@@ -1,11 +1,11 @@
-; DualSense Precision installer (Inno Setup 6).
+; Dual Precision installer (Inno Setup 6).
 ; Don't run this directly - double-click build-installer.cmd in the project folder, which publishes the app first
 ; and passes the version in. The app itself installs per-user with no administrator rights.
 ; Optionally (a ticked task, only shown when VIIPER is missing) it downloads VIIPER from its official GitHub
 ; release, verifies the file's SHA-256, and runs VIIPER's own unattended installer. That installer adds the signed
 ; usbip-win2 driver, which Windows asks administrator permission for - that prompt is the user's explicit consent.
 
-#define AppName "DualSense Precision"
+#define AppName "Dual Precision"
 #ifndef AppVersion
   #define AppVersion "0.0.0"
 #endif
@@ -39,7 +39,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0.17763
 OutputDir=Output
-OutputBaseFilename=DualSensePrecision-{#AppVersion}-setup
+OutputBaseFilename=DualPrecision-{#AppVersion}-setup
 SetupIconFile=..\src\DualSensePrecision.App\Assets\AppIcon.ico
 UninstallDisplayIcon={app}\{#AppExe}
 UninstallDisplayName={#AppName}
@@ -53,7 +53,7 @@ RestartApplications=no
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Shortcuts:"
-Name: "startup"; Description: "Start DualSense Precision with Windows (in the tray, so your settings are ready for games)"; GroupDescription: "Shortcuts:"; Flags: unchecked
+Name: "startup"; Description: "Start Dual Precision with Windows (in the tray, so your settings are ready for games)"; GroupDescription: "Shortcuts:"; Flags: unchecked
 Name: "viiper"; Description: "Download and install VIIPER {#ViiperVersion} (about 13 MB from GitHub) - needed for the virtual Xbox controller. It installs the signed usbip-win2 driver: Windows will ask for administrator permission (click Yes), and a restart is needed."; GroupDescription: "Virtual controller:"; Check: not ViiperInstalled
 Name: "hidhide"; Description: "Download and install HidHide {#HidHideVersion} (about 8 MB from GitHub) - lets the app hide your real controller from games so they only see the virtual one (you switch this on in the app). HidHide's own installer opens for you to click through; Windows asks for administrator permission for its signed driver, and a restart is needed."; GroupDescription: "Virtual controller:"; Check: not HidHideInstalled
 
@@ -63,7 +63,12 @@ Source: "..\LICENSE"; DestDir: "{app}"; DestName: "LICENSE.txt"; Flags: ignoreve
 Source: "..\THIRD-PARTY-NOTICES.md"; DestDir: "{app}"; DestName: "THIRD-PARTY-NOTICES.txt"; Flags: ignoreversion
 
 [Registry]
-Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "DualSense Precision"; ValueData: """{app}\{#AppExe}"" --minimized"; Flags: uninsdeletevalue; Tasks: startup
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "Dual Precision"; ValueData: """{app}\{#AppExe}"" --minimized"; Flags: uninsdeletevalue; Tasks: startup
+
+[InstallDelete]
+; Shortcuts from before the rename to Dual Precision (0.19), so an update doesn't leave two of each.
+Type: files; Name: "{autoprograms}\DualSense Precision.lnk"
+Type: files; Name: "{autodesktop}\DualSense Precision.lnk"
 
 [Icons]
 Name: "{autoprograms}\{#AppName}"; Filename: "{app}\{#AppExe}"
@@ -83,7 +88,7 @@ var
   HidHideDownloaded: Boolean;
   HidHideRan: Boolean;
 
-// Asks a running DualSense Precision to quit the same way its tray menu's Exit does (un-hides the controller,
+// Asks a running Dual Precision to quit the same way its tray menu's Exit does (un-hides the controller,
 // removes the virtual pad), then waits for it. Older versions ignore the message; the user is asked instead.
 const
   AppMutexName = 'DualSensePrecision.SingleInstance';
@@ -108,7 +113,7 @@ begin
     end;
   end;
   while CheckForMutexes(AppMutexName) do
-    if SuppressibleMsgBox('DualSense Precision is still running.' + #13#10 +
+    if SuppressibleMsgBox('Dual Precision is still running.' + #13#10 +
          'Right-click its tray icon and choose Exit, then click OK.', mbError, MB_OKCANCEL, IDCANCEL) = IDCANCEL then
     begin
       Result := False;
@@ -163,7 +168,7 @@ begin
         HidHideDownloaded := False;
         if not DownloadPage.AbortedByUser then
           Result := SuppressibleMsgBox('A component could not be downloaded:' + #13#10 + GetExceptionMessage + #13#10 + #13#10 +
-            'Continue installing DualSense Precision without the optional components? You can run this setup again later to add them.',
+            'Continue installing Dual Precision without the optional components? You can run this setup again later to add them.',
             mbError, MB_YESNO, IDYES) = IDYES
         else
           Result := True;
@@ -254,13 +259,14 @@ var
 begin
   if CurUninstallStep = usUninstall then
     // "Start with Windows" entry the app may have added (per-user, HKCU).
-    RegDeleteValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', 'DualSense Precision');
+    RegDeleteValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', 'Dual Precision');
+    RegDeleteValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', 'DualSense Precision'); // name before 0.19
 
   if CurUninstallStep = usPostUninstall then
   begin
     Data := ExpandConstant('{#DataDir}');
     if (not UninstallSilent) and DirExists(Data) then
-      if MsgBox('Also delete your DualSense Precision profiles, macros and settings?' + #13#10 + #13#10 +
+      if MsgBox('Also delete your Dual Precision profiles, macros and settings?' + #13#10 + #13#10 +
                 'Choose No to keep them for a future reinstall.', mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES then
         DelTree(Data, True, True, True);
   end;

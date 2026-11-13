@@ -39,7 +39,7 @@ public partial class App : Application
         }
 
         AppLog.Prune();
-        AppLog.Info($"DualSense Precision {UpdateChecker.Current} starting on {Environment.OSVersion.VersionString} ({RequestedTheme.ToString().ToLowerInvariant()} pop-ups)");
+        AppLog.Info($"Dual Precision {UpdateChecker.Current} starting on {Environment.OSVersion.VersionString} ({RequestedTheme.ToString().ToLowerInvariant()} pop-ups)");
         AppServices.Initialize();
         ThemeService.Apply(AppServices.Settings.Palette ?? new());
         StartupRegistration.Refresh();
@@ -90,7 +90,7 @@ internal static partial class SingleInstance
 
     public static void BringExistingToFront()
     {
-        var h = FindWindow(null, "DualSense Precision");
+        var h = FindWindow(null, "Dual Precision");
         if (h == IntPtr.Zero) return;
         ShowWindow(h, 9); // SW_RESTORE
         SetForegroundWindow(h);

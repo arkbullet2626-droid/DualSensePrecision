@@ -227,7 +227,7 @@ public static class DiagnosticReport
         bool touchSeen, MotionResult motion, DateTime when, bool xbox = false)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("DualSense Precision — controller diagnostic");
+        sb.AppendLine("Dual Precision — controller diagnostic");
         sb.AppendLine($"{when:yyyy-MM-dd HH:mm}");
         sb.AppendLine($"Controller: {controller}");
         sb.AppendLine($"Firmware:   {firmware}");

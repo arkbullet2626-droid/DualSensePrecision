@@ -314,7 +314,7 @@ public sealed partial class ProfilesPage : Page
             AppServices.FlushProfileSave();
             var picker = new Windows.Storage.Pickers.FileSavePicker();
             WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(MainWindow.Current!));
-            picker.FileTypeChoices.Add("DualSense Precision profile", new List<string> { ".json" });
+            picker.FileTypeChoices.Add("Dual Precision profile", new List<string> { ".json" });
             picker.SuggestedFileName = p.Name;
             var file = await picker.PickSaveFileAsync();
             if (file == null) return;

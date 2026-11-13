@@ -39,7 +39,7 @@ public sealed partial class MainWindow : Window
         ApplyThemeMode();
 
         // Tray icon: always there while the app runs, so closing the window can keep the controller working.
-        _tray = new TrayIcon("DualSense Precision", icon);
+        _tray = new TrayIcon("Dual Precision", icon);
         _tray.OpenRequested += ShowFromTray;
         _tray.ExitRequested += ExitApp;
         _tray.Show();
@@ -106,7 +106,7 @@ public sealed partial class MainWindow : Window
         AppWindow.Hide();
         if (!AppServices.Settings.TrayHintShown)
         {
-            _tray.Notify("DualSense Precision is still running",
+            _tray.Notify("Dual Precision is still running",
                 "Your controller settings and the virtual controller keep working. Right-click the tray icon and choose Exit to close it completely.");
             try { AppServices.SaveSettings(AppServices.Settings with { TrayHintShown = true }); } catch { }
         }
@@ -185,7 +185,7 @@ public sealed partial class MainWindow : Window
         var dialog = new ContentDialog
         {
             XamlRoot = Content.XamlRoot,
-            Title = "Welcome to DualSense Precision",
+            Title = "Welcome to Dual Precision",
             Content = body,
             PrimaryButtonText = "Open Virtual Controller",
             CloseButtonText = "Got it",

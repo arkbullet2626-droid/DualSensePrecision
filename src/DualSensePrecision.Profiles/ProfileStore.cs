@@ -103,7 +103,7 @@ public sealed class ProfileStore
     /// </summary>
     public Profile Import(string sourceFile, bool overwrite = false, bool asCopy = false)
     {
-        var incoming = Read(sourceFile) ?? throw new InvalidDataException("The file is not a DualSense Precision profile.");
+        var incoming = Read(sourceFile) ?? throw new InvalidDataException("The file is not a Dual Precision profile.");
         if (incoming.SchemaVersion > Profile.CurrentSchema)
             throw new InvalidDataException($"This profile was made by a newer version (schema {incoming.SchemaVersion}).");
 

@@ -1,4 +1,4 @@
-# Builds DualSense Precision and packages it into a Setup.exe.
+# Builds Dual Precision and packages it into a Setup.exe.
 # Easiest way to run it: double-click build-installer.cmd (it runs this script for you).
 
 param(
@@ -15,7 +15,7 @@ function Step($text) { Write-Host ""; Write-Host "== $text" -ForegroundColor Cya
 $props = [xml](Get-Content (Join-Path $PSScriptRoot 'Directory.Build.props'))
 $version = ($props.Project.PropertyGroup | ForEach-Object { $_.Version } | Where-Object { $_ } | Select-Object -First 1)
 if (-not $version) { throw "Couldn't read <Version> from Directory.Build.props." }
-Write-Host "DualSense Precision $version" -ForegroundColor Green
+Write-Host "Dual Precision $version" -ForegroundColor Green
 
 # 1. Inno Setup must be installed (it's what turns the build into a Setup.exe).
 $isccCandidates = @(
@@ -64,7 +64,7 @@ $sdks = if ($dotnet) { (& dotnet --list-sdks) -join "`n" } else { '' }
 if ($sdks -notmatch '(?m)^10\.') {
     Write-Host ""
     Write-Host "This script BUILDS the app from source and needs the .NET 10 SDK, which isn't installed here." -ForegroundColor Yellow
-    Write-Host "Just want to use DualSense Precision? Run the ready-made Setup.exe instead - no build needed." -ForegroundColor Yellow
+    Write-Host "Just want to use Dual Precision? Run the ready-made Setup.exe instead - no build needed." -ForegroundColor Yellow
     Write-Host "To build anyway, install the SDK and run this again:  winget install Microsoft.DotNet.SDK.10" -ForegroundColor Yellow
     exit 1
 }
@@ -89,7 +89,7 @@ Step "Building the installer"
 & $iscc "/DAppVersion=$version" installer\DualSensePrecision.iss
 if ($LASTEXITCODE -ne 0) { throw "Inno Setup failed." }
 
-$setup = Join-Path $PSScriptRoot "installer\Output\DualSensePrecision-$version-setup.exe"
+$setup = Join-Path $PSScriptRoot "installer\Output\DualPrecision-$version-setup.exe"
 Step "Done"
 Write-Host "Installer: $setup" -ForegroundColor Green
 if (-not $NoExplorer) { Start-Process explorer.exe "/select,`"$setup`"" }

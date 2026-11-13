@@ -10,7 +10,8 @@ namespace DualSensePrecision.App.Services;
 public static class StartupRegistration
 {
     private const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
-    private const string ValueName = "DualSense Precision";
+    private const string ValueName = "Dual Precision";
+    private const string OldValueName = "DualSense Precision"; // before the 0.19 rename
     public const string MinimizedArg = "--minimized";
 
     private static string Command => $"\"{Environment.ProcessPath}\" {MinimizedArg}";
@@ -32,14 +33,25 @@ public static class StartupRegistration
     {
         using var k = Registry.CurrentUser.OpenSubKey(RunKey, writable: true) ?? Registry.CurrentUser.CreateSubKey(RunKey);
         if (enabled) k.SetValue(ValueName, Command);
-        else if (k.GetValue(ValueName) != null) k.DeleteValue(ValueName);
+        else
+        {
+            if (k.GetValue(ValueName) != null) k.DeleteValue(ValueName);
+            if (k.GetValue(OldValueName) != null) k.DeleteValue(OldValueName);
+        }
     }
 
-    /// <summary>Keeps the entry pointing at this copy of the app (e.g. after an update moved it).</summary>
+    /// <summary>Keeps the entry pointing at this copy of the app (e.g. after an update moved it), and carries an
+    /// entry made under the old name over to the new one.</summary>
     public static void Refresh()
     {
         try
         {
+            using (var old = Registry.CurrentUser.OpenSubKey(RunKey, writable: true))
+                if (old?.GetValue(OldValueName) != null)
+                {
+                    old.DeleteValue(OldValueName);
+                    old.SetValue(ValueName, Command);
+                }
             if (!IsEnabled) return;
             using var k = Registry.CurrentUser.OpenSubKey(RunKey, writable: true);
             if (k?.GetValue(ValueName) as string != Command) k?.SetValue(ValueName, Command);

@@ -1,4 +1,4 @@
-# DualSense Precision
+# Dual Precision
 
 DualSense (PS5) and Xbox controller tuning for Windows 10/11: real report-timing telemetry, stick and trigger shaping, button mapping, macros, adaptive triggers (DualSense) and profiles. By Opifex Studios.
 
@@ -10,12 +10,12 @@ DualSense (PS5) and Xbox controller tuning for Windows 10/11: real report-timing
 
 ## Install (for users)
 
-**Download the latest installer: [DualSensePrecision-Setup.exe](https://github.com/arkbullet2626-droid/DualSensePrecision/releases/latest/download/DualSensePrecision-Setup.exe)** (also on the Releases page with SHA-256 checksums). Nothing else is needed: no .NET, no build tools. Everything below is for developers.
+**Download the latest installer: [DualPrecision-Setup.exe](https://github.com/arkbullet2626-droid/DualSensePrecision/releases/latest/download/DualPrecision-Setup.exe)** (also on the Releases page with SHA-256 checksums). Nothing else is needed: no .NET, no build tools. Everything below is for developers.
 
 ### Building the installer yourself
 
 Double-click `build-installer.cmd` (needs Inno Setup 6: `winget install JRSoftware.InnoSetup`). It runs the tests,
-publishes a self-contained Release build and writes `installer\Output\DualSensePrecision-<version>-setup.exe`.
+publishes a self-contained Release build and writes `installer\Output\DualPrecision-<version>-setup.exe`.
 The installer is per-user: no admin rights, no drivers. Profiles live in `%LOCALAPPDATA%\DualSensePrecision` and survive
 updates; uninstalling asks whether to keep them.
 

@@ -1,4 +1,18 @@
-# DualSense Precision 0.18.3 — release candidate for 1.0
+# Dual Precision 0.19.0 — release candidate for 1.0
+
+**0.19.0: the app is now called Dual Precision** (it supports both PlayStation and Xbox controllers). The window, tray icon, Start menu, desktop shortcut, installer, About page and notifications all use the new name. The DP logo stays.
+
+Kept the same on purpose: your settings, profiles and logs (still in `%LOCALAPPDATA%\DualSensePrecision`), the program file, and the GitHub address. Updating from 0.18 installs over your existing copy in place. If you had **Start with Windows** on, it's moved to the new name automatically.
+
+### Tests for 0.19.0
+N1. Run the setup over 0.18.3 (with the app open): it closes the app by itself, and the setup window, Finish page and title say **Dual Precision**.
+N2. The window title, About page, tray icon tooltip, Start menu entry and desktop shortcut say **Dual Precision**. Your profiles, colours and settings are all still there.
+N3. Settings → turn **Start with Windows** on, then off: Task Manager → Startup apps shows **Dual Precision** while it's on.
+N4. The controller, virtual controller and hiding still work (one controller in Rocket League).
+
+---
+
+# From 0.18.3
 
 **0.18.3** (from Claude's test of 0.18.2 on your PC):
 - **Setup closes the running app for you**, the clean way (same as tray → Exit: your controller is un-hidden and the virtual pad removed first). Updating from 0.18.2 or older still asks you once, because those versions don't understand the request yet.
@@ -32,7 +46,7 @@ T2. Switch back to your colours → **Restart now**: the note is gone again and 
 ### Tests for 0.18.1
 R1. Settings → Interface → pick **Paper (light)** → **Restart now**: the app closes and reopens in Paper within a few seconds. Pick your own colours again (or Opifex) → **Restart now** again.
 R2. **Reset app…** → leave *Also delete my profiles* unticked → confirm: the app reopens with default settings and the welcome guide, your profiles are still there.
-R3. Quit VIIPER if it's running (its tray icon → Quit, or Task Manager → end `viiper.exe`), then open DualSense Precision: within a few seconds **Virtual Controller** turns green without you starting VIIPER yourself.
+R3. Quit VIIPER if it's running (its tray icon → Quit, or Task Manager → end `viiper.exe`), then open Dual Precision: within a few seconds **Virtual Controller** turns green without you starting VIIPER yourself.
 R4. In a light theme, the green "Connected" dot text in the sidebar and the green text on About are easy to read.
 
 ---
@@ -108,9 +122,9 @@ Everything planned for 1.0 is in this build. If the tests below pass, the next b
 
 ## Install
 
-1. Close DualSense Precision completely (if it's in the tray: right-click the icon → **Exit**).
-2. Run **`DualSensePrecision-0.18.3-setup.exe`**. If SmartScreen appears: **More info → Run anyway**.
-3. VIIPER and HidHide are already installed, so their boxes don't appear. Leave **Start DualSense Precision with Windows** unticked for now (test 9 covers it).
+1. Close Dual Precision completely (if it's in the tray: right-click the icon → **Exit**).
+2. Run **`DualPrecision-0.19.0-setup.exe`**. If SmartScreen appears: **More info → Run anyway**.
+3. VIIPER and HidHide are already installed, so their boxes don't appear. Leave **Start Dual Precision with Windows** unticked for now (test 9 covers it).
 
 ## Tests
 
@@ -120,11 +134,11 @@ Everything planned for 1.0 is in this build. If the tests below pass, the next b
 3. Click through every page: nothing is unreadable, clipped or still blue.
 
 **B. Welcome guide**
-4. On first start after updating, the **Welcome to DualSense Precision** guide appears with 4 steps. **Open Virtual Controller** takes you there; it doesn't appear again on the next start.
+4. On first start after updating, the **Welcome to Dual Precision** guide appears with 4 steps. **Open Virtual Controller** takes you there; it doesn't appear again on the next start.
 
 **C. Tray**
 5. Close the window with the X: a Windows notification says it's still running, and the app's icon is in the notification area (it may be under the ^ arrow). Your controller still works in a game or in Windows' `joy.cpl`.
-6. Left-click the tray icon: the window comes back. Right-click: **Open DualSense Precision** / **Exit (stops the virtual controller)**.
+6. Left-click the tray icon: the window comes back. Right-click: **Open Dual Precision** / **Exit (stops the virtual controller)**.
 7. Choose **Exit**: the app quits, the virtual controller disappears, and your real controller is visible to games again.
 8. Settings → turn off **Closing the window keeps the app running in the tray**: now the X quits the app completely. Turn it back on.
 
@@ -132,7 +146,7 @@ Everything planned for 1.0 is in this build. If the tests below pass, the next b
 9. Settings → turn on **Start with Windows**. Sign out and back in (or restart): the app starts in the tray without opening a window. Turn it off again if you don't want it.
 
 **E. Updates and About**
-10. **About** shows *Version 0.18.3*. **Check for updates** says you're up to date.
+10. **About** shows *Version 0.19.0*. **Check for updates** says you're up to date.
 11. The buttons on About open the right things: **Licence** and **Third-party notices** open text files; **Source code** / **Report a problem** / **Privacy policy** / **opifexstudios.ca** open the browser (GitHub pages need you signed in until the repo is public, and the privacy section is added to the website at release).
 
 **F. Troubleshooting**

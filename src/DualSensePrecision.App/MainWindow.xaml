@@ -3,7 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:DualSensePrecision.App.Controls"
-    Title="DualSense Precision">
+    Title="Dual Precision">
 
     <Grid Background="{StaticResource DsBackgroundBrush}">
         <Grid.RowDefinitions>
@@ -15,7 +15,7 @@
         <Grid x:Name="TitleBar" Padding="16,0,140,0">
             <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                 <controls:LogoMark Width="20" Height="20" />
-                <TextBlock Text="DualSense Precision" FontSize="12" Foreground="{StaticResource DsTextSecondaryBrush}" VerticalAlignment="Center" />
+                <TextBlock Text="Dual Precision" FontSize="12" Foreground="{StaticResource DsTextSecondaryBrush}" VerticalAlignment="Center" />
                 <Border x:Name="MockBadge" Style="{StaticResource DsPill}" Background="#33E0782F" Visibility="Collapsed">
                     <TextBlock Text="SIMULATED CONTROLLER" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource DsWarningBrush}" />
                 </Border>

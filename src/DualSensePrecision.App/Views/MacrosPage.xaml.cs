@@ -195,7 +195,7 @@ public sealed partial class MacrosPage : Page
         {
             var picker = new Windows.Storage.Pickers.FileSavePicker();
             WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(MainWindow.Current!));
-            picker.FileTypeChoices.Add("DualSense Precision macro", new List<string> { ".json" });
+            picker.FileTypeChoices.Add("Dual Precision macro", new List<string> { ".json" });
             picker.SuggestedFileName = s.Name;
             var file = await picker.PickSaveFileAsync();
             if (file == null) return;
@@ -218,7 +218,7 @@ public sealed partial class MacrosPage : Page
             string text = await Windows.Storage.FileIO.ReadTextAsync(file);
             var m = JsonSerializer.Deserialize<MacroDefinition>(text, Json.Options)
                     ?? throw new InvalidDataException("The file is empty.");
-            if (m.Steps == null) throw new InvalidDataException("This isn't a DualSense Precision macro file.");
+            if (m.Steps == null) throw new InvalidDataException("This isn't a Dual Precision macro file.");
             // Always imported as a new macro: never overwrites an existing one.
             m = MacroLimits.Sanitize(m with { Id = Guid.NewGuid().ToString("N"), Name = UniqueName(m.Name) });
             SaveMacros(Macros.Append(m).ToList());

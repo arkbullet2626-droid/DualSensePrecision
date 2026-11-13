@@ -17,7 +17,7 @@
                     </Grid.ColumnDefinitions>
                     <controls:LogoMark Width="72" Height="72" VerticalAlignment="Top" />
                     <StackPanel Grid.Column="1" Spacing="4">
-                        <TextBlock Text="DualSense Precision" Style="{StaticResource DsPageTitle}" />
+                        <TextBlock Text="Dual Precision" Style="{StaticResource DsPageTitle}" />
                         <TextBlock x:Name="VersionText" Style="{StaticResource DsBody}" FontFamily="{StaticResource DsMonoFont}" />
                         <TextBlock Style="{StaticResource DsBody}"
                                    Text="By Opifex Studios. Free and open source under the MIT licence. Controller tuning for the DualSense and Xbox controllers on Windows." />
@@ -61,11 +61,11 @@
                 <StackPanel Spacing="12">
                     <TextBlock Text="Licence, credits and privacy" Style="{StaticResource DsSectionTitle}" />
                     <TextBlock Style="{StaticResource DsBody}"
-                               Text="DualSense Precision is MIT-licensed. It's built with .NET, the Windows App SDK and CommunityToolkit.Mvvm (all MIT), and uses the Oxanium, Figtree and IBM Plex Mono fonts (SIL Open Font License). VIIPER, usbip-win2 and HidHide are separate free programs with their own licences, installed only if you choose them." />
+                               Text="Dual Precision is MIT-licensed. It's built with .NET, the Windows App SDK and CommunityToolkit.Mvvm (all MIT), and uses the Oxanium, Figtree and IBM Plex Mono fonts (SIL Open Font License). VIIPER, usbip-win2 and HidHide are separate free programs with their own licences, installed only if you choose them." />
                     <TextBlock Style="{StaticResource DsBody}"
                                Text="Privacy: everything the app saves stays on your PC in %LOCALAPPDATA%\DualSensePrecision. No accounts, analytics or crash reports. The only internet request is the update check, which you can turn off in Settings." />
                     <TextBlock Style="{StaticResource DsBody}"
-                               Text="DualSense and PlayStation are trademarks of Sony Interactive Entertainment; Xbox is a trademark of Microsoft. DualSense Precision isn't affiliated with or endorsed by either." />
+                               Text="DualSense and PlayStation are trademarks of Sony Interactive Entertainment; Xbox is a trademark of Microsoft. Dual Precision isn't affiliated with or endorsed by either." />
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <Button Content="Licence" Click="OnLicense" />
                         <Button Content="Third-party notices" Click="OnNotices" />

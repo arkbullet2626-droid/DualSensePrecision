@@ -34,7 +34,7 @@ public sealed partial class SettingsPage : Page
         Unloaded += (_, _) => { if (_animating) StopAnimating(); Host?.ClearPreview(); Host?.Settle(0, 0); };
         Preferred.SelectedIndex = s.PreferredController == ControllerFamily.Xbox ? 1 : 0;
         var v = typeof(SettingsPage).Assembly.GetName().Version;
-        VersionText.Text = $"DualSense Precision {v?.Major}.{v?.Minor}.{v?.Build} · Opifex Studios · data in %LOCALAPPDATA%\\DualSensePrecision";
+        VersionText.Text = $"Dual Precision {v?.Major}.{v?.Minor}.{v?.Build} · Opifex Studios · data in %LOCALAPPDATA%\\DualSensePrecision";
         _loading = false;
     }
 
@@ -429,7 +429,7 @@ public sealed partial class SettingsPage : Page
         {
             var picker = new global::Windows.Storage.Pickers.FileSavePicker();
             WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(MainWindow.Current!));
-            picker.SuggestedFileName = $"DualSense Precision diagnostics {DateTime.Now:yyyy-MM-dd HHmm}";
+            picker.SuggestedFileName = $"Dual Precision diagnostics {DateTime.Now:yyyy-MM-dd HHmm}";
             picker.FileTypeChoices.Add("Zip file", new List<string> { ".zip" });
             var file = await picker.PickSaveFileAsync();
             if (file == null) return "";
@@ -453,7 +453,7 @@ public sealed partial class SettingsPage : Page
         var dialog = new ContentDialog
         {
             XamlRoot = XamlRoot,
-            Title = "Reset DualSense Precision?",
+            Title = "Reset Dual Precision?",
             Content = body,
             PrimaryButtonText = "Reset and restart",
             CloseButtonText = "Cancel",

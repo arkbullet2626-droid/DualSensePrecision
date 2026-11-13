@@ -14,7 +14,7 @@ namespace DualSensePrecision.App.Services;
 ///  - Hides only while the virtual pad is connected; un-hides when it stops, the app closes, or the setting is off.
 ///  - Adds only its own entries to HidHide's lists and removes only those, so other apps' settings are left alone.
 ///  - Remembers what it hid (in settings), so after a crash the next start un-hides it.
-///  - DualSense Precision itself is on HidHide's allowed-apps list, so it keeps reading the controller.
+///  - Dual Precision itself is on HidHide's allowed-apps list, so it keeps reading the controller.
 /// </summary>
 public sealed class HideService : IDisposable
 {
